@@ -1,6 +1,6 @@
 import { IHolder } from "../interfaces/IHolder";
 import HolderRepository from "../repositories/HolderRepository";
-import CustomError from "../classes/CustomError";
+import { UserAttributes } from "../classes/UserSchema";
 
 export default class HolderService {
     holderRepository: HolderRepository;
@@ -10,7 +10,9 @@ export default class HolderService {
     }
 
     async Create(body: IHolder) {
-        return this.holderRepository.Create(body);
+        const userData = new UserAttributes(body);
+        userData.addHolder(body.holder)
+        return this.holderRepository.Create(userData);
     }
 
     async ReadAll(query: any) {
