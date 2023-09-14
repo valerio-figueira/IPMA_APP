@@ -9,6 +9,7 @@ const db = new Database;
 class HolderModel extends Model<IHolderBase> {
     id_titular!: number;
     id_usuario!: number;
+    matricula!: number | null;
     status!: 'Ativo' | 'Aposentado' | 'LIP';
 }
 
@@ -29,6 +30,10 @@ HolderModel.init(
                 key: 'id_usuario',
             },
         },
+        matricula: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
         status: {
             type: DataTypes.ENUM('Ativo', 'Aposentado', 'LIP'),
         },
@@ -36,7 +41,7 @@ HolderModel.init(
     {
         sequelize: db.sequelize,
         tableName: 'TITULAR',
-        modelName: 'Titular',
+        modelName: 'HolderModel',
         timestamps: false,
     }
 );

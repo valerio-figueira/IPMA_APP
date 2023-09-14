@@ -47,7 +47,7 @@ ContactModel.init(
   {
     sequelize: db.sequelize,
     tableName: 'CONTATO',
-    modelName: 'Contato',
+    modelName: 'ContactModel',
     timestamps: false,
   }
 );

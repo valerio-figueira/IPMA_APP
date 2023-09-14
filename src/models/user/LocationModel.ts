@@ -50,7 +50,7 @@ LocationModel.init(
     {
         sequelize: db.sequelize,
         tableName: 'LOCALIZACAO',
-        modelName: 'Localizacao',
+        modelName: 'LocationModel',
         timestamps: false,
     }
 );

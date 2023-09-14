@@ -51,7 +51,7 @@ DocumentModel.init(
     {
         sequelize: db.sequelize,
         tableName: 'DOCUMENTO',
-        modelName: 'Documento',
+        modelName: 'DocumentModel',
         timestamps: false,
     }
 );

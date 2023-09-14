@@ -43,7 +43,7 @@ DependentModel.init(
   {
     sequelize: db.sequelize,
     tableName: 'DEPENDENTE',
-    modelName: 'Dependente',
+    modelName: 'DependentModel',
     timestamps: false,
   }
 );
