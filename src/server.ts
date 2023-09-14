@@ -1,4 +1,4 @@
-import express, { Application, Request, Response, NextFunction, Router } from "express";
+import express, { Application, Request, Response, NextFunction } from "express";
 import path from "path";
 import cors from 'cors';
 import BodyParser, { json } from 'body-parser';
@@ -54,16 +54,10 @@ export default class Server {
     }
 
     private setupRoutes() {
-        const authenticatedRouter = Router();
-
-        authenticatedRouter.use(this.isAuthenticated);
-        authenticatedRouter.use("/api/v1/holders", HolderRoutes);
-        authenticatedRouter.use("/api/v1/dependents", DependentRoutes);
-
-        this.APP.use(authenticatedRouter);
-
         this.APP.use("/login", LoginRoutes);
         this.APP.get("/", this.rootHandler);
+        this.APP.use("/api/v1/holders", HolderRoutes);
+        this.APP.use("/api/v1/dependents", DependentRoutes);
     }
 
     private rootHandler(req: Request, res: Response) {

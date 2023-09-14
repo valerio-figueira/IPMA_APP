@@ -1,15 +1,16 @@
 import { IContact, IDocument, ILocation, IUser } from "./IUser";
 
-export interface IHolderBase {
-    id_titular: number;
+export interface IDependentBase {
+    id_dependente: number;
     id_usuario: number;
-    status: 'Ativo' | 'Aposentado' | 'LIP';
+    id_titular: number;
+    grau_parentesco: string | null;
 }
 
-export interface IHolder {
+export interface IDependent {
     user: IUser;
     contact: IContact;
     location: ILocation;
     document: IDocument;
-    titular: IHolderBase;
+    titular: IDependentBase;
 }
