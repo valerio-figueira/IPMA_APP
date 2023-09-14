@@ -1,11 +1,12 @@
 import { Model, DataTypes } from 'sequelize';
 import Database from "../db/Database";
 import UserModel from './user/UserModel';
+import { IHolderBase } from '../interfaces/IHolder';
 
 const db = new Database;
 
 
-class HolderModel extends Model {
+class HolderModel extends Model<IHolderBase> {
     id_titular!: number;
     id_usuario!: number;
     status!: 'Ativo' | 'Aposentado' | 'LIP';

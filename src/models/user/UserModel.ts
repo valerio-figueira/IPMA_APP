@@ -1,9 +1,10 @@
 import { Model, DataTypes } from 'sequelize';
 import Database from "../../db/Database";
+import { IUser } from '../../interfaces/IUser';
 
 const db = new Database;
 
-class UserModel extends Model {
+class UserModel extends Model<IUser> {
     id_usuario!: number;
     nome!: string;
     sexo!: 'Masculino' | 'Feminino' | 'Outro';

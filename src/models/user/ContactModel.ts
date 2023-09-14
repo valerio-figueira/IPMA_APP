@@ -1,10 +1,11 @@
 import { Model, DataTypes } from 'sequelize';
 import Database from "../../db/Database";
 import UserModel from './UserModel';
+import { IContact } from '../../interfaces/IUser';
 
 const db = new Database;
 
-class ContactModel extends Model {
+class ContactModel extends Model<IContact> {
   id_contato!: number;
   id_usuario!: number;
   celular_1?: string | null;

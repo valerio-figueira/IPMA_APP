@@ -1,10 +1,11 @@
 import { Model, DataTypes } from 'sequelize';
 import Database from "../../db/Database";
 import UserModel from './UserModel';
+import { ILocation } from '../../interfaces/IUser';
 
 const db = new Database;
 
-class LocationModel extends Model {
+class LocationModel extends Model<ILocation> {
     id_localizacao!: number;
     id_usuario!: number;
     endereco?: string | null;

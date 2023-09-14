@@ -1,10 +1,11 @@
 import { Model, DataTypes } from 'sequelize';
 import Database from "../../db/Database";
 import UserModel from './UserModel';
+import { IDocument } from '../../interfaces/IUser';
 
 const db = new Database;
 
-class DocumentModel extends Model {
+class DocumentModel extends Model<IDocument> {
     id_documento!: number;
     id_usuario!: number;
     cpf!: string;
