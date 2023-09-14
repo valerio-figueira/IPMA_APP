@@ -8,7 +8,7 @@ export interface IUser {
     data_nasc: Date | null;
     nome_pai: string | null;
     nome_mae: string | null;
-    data_cadastro: Date;
+    data_cadastro?: Date;
 }
 
 export interface IContact {
