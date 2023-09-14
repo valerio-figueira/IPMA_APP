@@ -1,6 +1,7 @@
 import { IHolder } from "../interfaces/IHolder";
 import HolderRepository from "../repositories/HolderRepository";
-import { UserAttributes } from "../classes/UserSchema";
+import { UserAttributes, User, Contact, Document, Location } from "../classes/UserSchema";
+import CustomError from "../classes/CustomError";
 
 export default class HolderService {
     holderRepository: HolderRepository;
@@ -9,9 +10,17 @@ export default class HolderService {
         this.holderRepository = new HolderRepository();
     }
 
-    async Create(body: IHolder) {
-        const userData = new UserAttributes(body);
-        userData.addHolder(body.holder)
+    async Create(body: any) {
+        const user = new User(body)
+        const document = new Document(body)
+        const contact = new Contact(body)
+        const location = new Location(body)
+
+        const userData = new UserAttributes({ user, document, contact, location });
+        userData.addHolder(body)
+
+        console.log(userData)
+
         return this.holderRepository.Create(userData);
     }
 

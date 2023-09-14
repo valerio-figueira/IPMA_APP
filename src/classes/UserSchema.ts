@@ -1,5 +1,6 @@
 import { IUser, IContact, IDocument, ILocation, IUserAttributes } from "../interfaces/IUser";
 import { IHolderBase } from "../interfaces/IHolder";
+import { Holder } from "./HolderSchema";
 
 export class UserAttributes {
     user: User;
@@ -16,7 +17,7 @@ export class UserAttributes {
     }
 
     addHolder(holder: IHolderBase) {
-        this.holder = holder;
+        this.holder = new Holder(holder)
     }
 }
 
@@ -28,7 +29,7 @@ export class User {
     data_nasc: Date | null;
     nome_pai: string | null;
     nome_mae: string | null;
-    data_cadastro: Date;
+    data_cadastro?: Date;
 
     constructor(user: IUser) {
         this.nome = user.nome;
@@ -37,7 +38,6 @@ export class User {
         this.data_nasc = user.data_nasc;
         this.nome_pai = user.nome_pai;
         this.nome_mae = user.nome_mae;
-        this.data_cadastro = user.data_cadastro;
     }
 }
 

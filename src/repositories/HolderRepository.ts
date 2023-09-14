@@ -21,7 +21,7 @@ export default class HolderRepository {
 
         try {
             const user = await UserModel.create(query.user, { transaction: t });
-            query.user.id_usuario = user.id_usuario;
+            query = this.insertIdValues(query, user.id_usuario);
             const document = await DocumentModel.create(query.document, { transaction: t });
             const contact = await ContactModel.create(query.contact, { transaction: t });
             const location = await LocationModel.create(query.location, { transaction: t });
@@ -42,4 +42,13 @@ export default class HolderRepository {
     async Update(holder_id: string, query: IHolder) { }
 
     async Delete(holder_id: string) { }
+
+    insertIdValues(data: IUserAttributes, user_id: number) {
+        data.contact.id_usuario = user_id
+        data.document.id_usuario = user_id
+        data.location.id_usuario = user_id
+        data.user.id_usuario = user_id
+        data.holder!.id_usuario = user_id
+        return data;
+    }
 }
