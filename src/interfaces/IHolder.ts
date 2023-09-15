@@ -14,3 +14,28 @@ export interface IHolder {
     document: IDocument;
     holder: IHolderBase;
 }
+
+export interface IHolderRequest {
+    nome: 'string';
+    sexo: 'string' | null;
+    estado_civil: 'string' | null;
+    data_nasc: 'string' | null;
+    nome_pai: 'string' | null;
+    nome_mae: 'string' | null;
+    celular_1: 'string' | null;
+    celular_2: 'string' | null;
+    tel_residencial: 'string' | null;
+    email: 'string' | null;
+    endereco: 'string' | null;
+    numero: 'number' | null;
+    bairro: 'string' | null;
+    cidade: 'string' | null;
+    estado: 'string' | null;
+    cpf: 'string';
+    identidade: 'string';
+    data_expedicao: 'string' | null;
+    cartao_sus: 'string' | null;
+    status: 'string' | null;
+    matricula: 'number' | null;
+    [key: string]: string | number | null
+};

@@ -1,9 +1,6 @@
 import { IHolder } from "../interfaces/IHolder";
 import { IUserAttributes } from "../interfaces/IUser";
-import UserModel from "../models/user/UserModel";
-import ContactModel from "../models/user/ContactModel";
-import DocumentModel from "../models/user/DocumentModel";
-import LocationModel from "../models/user/LocationModel";
+import UserRepository from "./UserRepository";
 import HolderModel from "../models/HolderModel";
 import Database from "../db/Database";
 import CustomError from '../classes/CustomError';
@@ -11,8 +8,10 @@ import { Transaction } from 'sequelize';
 
 export default class HolderRepository {
     db: Database;
+    userRepository: UserRepository;
 
     constructor() {
+        this.userRepository = new UserRepository();
         this.db = new Database();
     }
 
@@ -20,12 +19,9 @@ export default class HolderRepository {
         const t: Transaction = await this.db.sequelize.transaction();
 
         try {
-            const user = await UserModel.create(query.user, { transaction: t });
-            query = this.insertIdValues(query, user.id_usuario);
-            const document = await DocumentModel.create(query.document, { transaction: t });
-            const contact = await ContactModel.create(query.contact, { transaction: t });
-            const location = await LocationModel.create(query.location, { transaction: t });
-            const holder = await HolderModel.create(query.holder, { transaction: t });
+            const { user, document, contact, location } = await this.userRepository.Create(query, t);
+
+            const holder = await HolderModel.create(query.holder, { transaction: t })
 
             await t.commit();
             return { user, document, contact, location, holder };
@@ -43,12 +39,4 @@ export default class HolderRepository {
 
     async Delete(holder_id: string) { }
 
-    insertIdValues(data: IUserAttributes, user_id: number) {
-        data.contact.id_usuario = user_id
-        data.document.id_usuario = user_id
-        data.location.id_usuario = user_id
-        data.user.id_usuario = user_id
-        data.holder!.id_usuario = user_id
-        return data;
-    }
 }

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import HolderService from "../services/HolderService";
+import UserValidator from "./validation/UserValidator";
 
 export default class HolderController {
     holderService: HolderService;
@@ -10,6 +11,7 @@ export default class HolderController {
 
     async Create(req: Request, res: Response) {
         try {
+            UserValidator.validate(req.body)
             res.status(201).json(await this.holderService.Create(req.body))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
