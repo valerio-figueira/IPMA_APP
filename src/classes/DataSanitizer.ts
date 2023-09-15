@@ -39,6 +39,23 @@ export default class DataSanitizer {
         }
       }
     }
-    console.log(data)
   }
+
+  static sanitizeObjectKeys(obj: any) {
+    for(let key in obj) {
+      if(key.match('contact.')) {
+        obj[key.replace('contact.', '')] = obj[key]
+        delete obj[key]
+      }
+      if(key.match('document.')) {
+        obj[key.replace('document.', '')] = obj[key]
+        delete obj[key]
+      }
+      if(key.match('location.')) {
+        obj[key.replace('location.', '')] = obj[key]
+        delete obj[key]
+      }
+    }
+  }
+
 }
