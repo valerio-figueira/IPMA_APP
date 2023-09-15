@@ -21,7 +21,12 @@ export default class UserRepository {
 
     async ReadAll() { }
 
-    async ReadOne() { }
+    async ReadOne(user_id: number) {
+        return await UserModel.findOne({
+            where: { id_usuario: user_id },
+            include: [ContactModel, DocumentModel, LocationModel],
+        })
+    }
 
     async Update() { }
 
