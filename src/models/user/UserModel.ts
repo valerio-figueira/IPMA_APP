@@ -1,6 +1,9 @@
 import { Model, DataTypes } from 'sequelize';
 import Database from "../../db/Database";
 import { IUser } from '../../interfaces/IUser';
+import DocumentModel from './DocumentModel';
+import ContactModel from './ContactModel';
+import LocationModel from './LocationModel';
 
 const db = new Database;
 
@@ -55,5 +58,18 @@ UserModel.init(
     }
 );
 
+UserModel.hasOne(DocumentModel, {
+    foreignKey: 'id_usuario'
+})
+UserModel.hasOne(ContactModel, {
+    foreignKey: 'id_usuario'
+})
+UserModel.hasOne(LocationModel, {
+    foreignKey: 'id_usuario'
+})
+
+DocumentModel.belongsTo(UserModel);
+LocationModel.belongsTo(UserModel);
+ContactModel.belongsTo(UserModel);
 
 export default UserModel
