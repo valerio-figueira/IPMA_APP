@@ -1,6 +1,6 @@
 import { IHolderRequest } from "../interfaces/IHolder";
 
-export default class DataConverter {
+export default class DataSanitizer {
   static convertToUpperCase(data: any): any {
     if (!data) return null;
     if (typeof data === 'string') {
@@ -21,22 +21,22 @@ export default class DataConverter {
   }
 
   static sanitizeData(data: any): any {
-    if (data.cpf) return data.cpf.replace(/\D/g, '');
-    if (data.identidade) return data.identidade.replace(/\W/g, '');
-    if (data.celular_1) return data.celular_1.replace(/\D/g, '');
-    if (data.celular_2) return data.celular_2.replace(/\D/g, '');
-    if (data.tel_residencial) return data.tel_residencial.replace(/\D/g, '');
+    if (data.cpf) data.cpf = data.cpf.replace(/\D/g, '');
+    if (data.identidade) data.identidade = data.identidade.replace(/\W/g, '');
+    if (data.celular_1) data.celular_1 = data.celular_1.replace(/\D/g, '');
+    if (data.celular_2) data.celular_2 = data.celular_2.replace(/\D/g, '');
+    if (data.tel_residencial) data.tel_residencial = data.tel_residencial.replace(/\D/g, '');
   }
 
   static convertData(data: IHolderRequest) {
-    console.log('entrou no convertData')
+    this.sanitizeData(data);
     for (const key in data) {
       console.log(data[key])
       if (data.hasOwnProperty(key)) {
-        // Aplicar as conversões desejadas aos campos
-        data[key] = this.sanitizeData(data[key]);
-        data[key] = this.convertToUpperCase(data[key]);
         data[key] = this.convertEmptyToNull(data[key]);
+        if(key !== 'email') {
+          data[key] = this.convertToUpperCase(data[key]);
+        }
       }
     }
     console.log(data)

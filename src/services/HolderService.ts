@@ -3,7 +3,7 @@ import HolderRepository from "../repositories/HolderRepository";
 import { UserAttributes, User, Contact, Document, Location } from "../classes/UserSchema";
 import CustomError from "../classes/CustomError";
 import { IHolderRequest } from "../interfaces/IHolder";
-import DataConverter from "../classes/DataConverter";
+import DataSanitizer from "../classes/DataSanitizer";
 
 export default class HolderService {
     holderRepository: HolderRepository;
@@ -13,8 +13,7 @@ export default class HolderService {
     }
 
     async Create(body: any) {
-        console.log(body)
-        body = DataConverter.convertData(body)
+        DataSanitizer.convertData(body)
         const user = new User(body)
         const document = new Document(body)
         const contact = new Contact(body)
@@ -40,12 +39,6 @@ export default class HolderService {
 
     async Delete(holder_id: string) {
         return this.holderRepository.Delete(holder_id);
-    }
-
-    convertEmptyToNull(data: IHolderRequest) {
-        for (let key in data) {
-            if (data[key] === '') data[key] = null
-        }
     }
 
 }
