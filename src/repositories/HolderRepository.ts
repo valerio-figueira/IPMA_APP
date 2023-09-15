@@ -35,8 +35,8 @@ export default class HolderRepository {
 
     async ReadOne(holder_id: string) {
         try {
-            const holder = await HolderModel.findOne({ where: { id_titular: holder_id } })
-            const user = await this.userRepository.ReadOne(holder!.id_titular)
+            const holder = await HolderModel.findOne({ where: { id_titular: holder_id }, raw: true })
+            const user = await this.userRepository.ReadOne(holder!.id_usuario)
             return { holder, user }
         } catch (error: any) {
             throw new CustomError(`Titular não encontrado: ${error.message}`, 500)

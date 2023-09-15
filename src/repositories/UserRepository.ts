@@ -22,9 +22,25 @@ export default class UserRepository {
     async ReadAll() { }
 
     async ReadOne(user_id: number) {
-        return await UserModel.findOne({
+        return UserModel.findOne({
             where: { id_usuario: user_id },
-            include: [ContactModel, DocumentModel, LocationModel],
+            include: [
+                {
+                    model: ContactModel,
+                    as: 'contact',
+                    attributes: { exclude: ['id_usuario', 'id_contato'] }
+                },
+                {
+                    model: DocumentModel,
+                    as: 'document',
+                    attributes: { exclude: ['id_usuario', 'id_documento'] },
+                },
+                {
+                    model: LocationModel,
+                    as: 'location',
+                    attributes: { exclude: ['id_usuario', 'id_localizacao'] }
+                }
+            ], plain: true, raw: true
         })
     }
 
