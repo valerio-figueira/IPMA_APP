@@ -11,17 +11,17 @@ export default class UserValidator {
 
         this.validateStringOrNumber(data)
         this.validateDate(data.data_nasc)
+        this.validateDate(data.data_expedicao)
 
         return
     }
 
-    static validateDate(data: string | null) {
+    static validateDate(date: string | null) {
         const regex = /^\d{4}-\d{2}-\d{2}$/;
-        if (data !== "") {
-            if (data !== null) {
-                if (regex.test(data)) {
-                    throw new CustomError('Data inválida', 400)
-                }
+        if (date === '') return
+        if (date !== null) {
+            if (!regex.test(date)) {
+                throw new CustomError('Data inválida', 400)
             }
         }
     }
