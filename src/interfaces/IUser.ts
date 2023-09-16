@@ -45,4 +45,5 @@ export interface IUserAttributes {
     contact: IContact;
     location: ILocation;
     holder?: IHolderBase;
+    [key: string]: any;
 }

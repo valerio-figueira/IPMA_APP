@@ -49,10 +49,8 @@ export default class UserRepository {
     async Delete() { }
 
     insertIdValues(data: IUserAttributes, user_id: number) {
-        data.contact.id_usuario = user_id
-        data.document.id_usuario = user_id
-        data.location.id_usuario = user_id
-        data.user.id_usuario = user_id
-        data.holder!.id_usuario = user_id
+        for(let key in data) {
+            data[key].id_usuario = user_id
+        }
     }
 }
