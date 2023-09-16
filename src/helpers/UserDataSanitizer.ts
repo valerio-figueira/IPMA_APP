@@ -1,7 +1,7 @@
 import StringSanitizer from "./StringSanitizer"
 
-class UserDataSanitizer {
-    static sanitizeUserBody(data: any) {
+export default class UserDataSanitizer {
+    static sanitizeBody(data: any) {
         for (const key in data) {
             data[key] = this.sanitizeFields(key, data[key])
             data[key] = StringSanitizer.convertToUpperCase(key, data[key])
@@ -11,7 +11,7 @@ class UserDataSanitizer {
         console.log(data)
     }
 
-    static formatarCPF(cpf: any) {
+    static formatarCPF(cpf: string) {
         return cpf.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
     }
 
@@ -40,7 +40,7 @@ class UserDataSanitizer {
         return data
     }
 
-    static sanitizeUserModel(model: any) {
+    static sanitizeModel(model: any) {
         const newData: any = {}
         for (let key1 in model) {
             for (let key2 in model[key1].dataValues) {
