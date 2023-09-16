@@ -10,20 +10,32 @@ export default class UserValidator {
         }
 
         this.validateStringOrNumber(data)
+        this.validateDate(data.data_nasc)
 
         return
+    }
+
+    static validateDate(data: string | null) {
+        const regex = /^\d{4}-\d{2}-\d{2}$/;
+        if (data !== "") {
+            if (data !== null) {
+                if (regex.test(data)) {
+                    throw new CustomError('Data inválida', 400)
+                }
+            }
+        }
     }
 
     static validateStringOrNumber(data: IHolderRequest) {
         for (let key in data) {
             if (typeof data[key] !== 'string') {
-                if(typeof data[key] !== 'number') {
-                    if(data[key] !== null) {
+                if (typeof data[key] !== 'number') {
+                    if (data[key] !== null) {
                         throw new CustomError('Erro na validação dos dados', 400)
-                    }                    
+                    }
                 }
             }
-        }   
+        }
     }
 
     static isValidCPF(cpf: string): boolean {
