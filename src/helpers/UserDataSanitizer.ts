@@ -3,6 +3,7 @@ import StringSanitizer from "./StringSanitizer"
 export default class UserDataSanitizer {
     static sanitizeBody(data: any) {
         for (const key in data) {
+            data[key] = this.filterDate(data[key])
             data[key] = this.sanitizeFields(key, data[key])
             data[key] = StringSanitizer.convertToUpperCase(key, data[key])
             data[key] = StringSanitizer.sanitizeEmptyFields(data[key])
@@ -45,6 +46,7 @@ export default class UserDataSanitizer {
     }
 
     static sanitizeFields(key: string, data: any) {
+        if(!data) return null
         if(key.match('status')) this.filterStatus(data[key])
         if (key.match('cpf')) return data.replace(/\D/g, '');
         if (key.match('identidade')) return data.replace(/\W/g, '');
@@ -85,7 +87,7 @@ export default class UserDataSanitizer {
 
         if(!obj) return null
         if(obj === '0000-00-00') return null
-        if(obj.match(regex)) return obj.replace(/-/g, '')
+        if(regex.test(obj)) return obj.replace(/-/g, '/')
 
         return obj
     }
