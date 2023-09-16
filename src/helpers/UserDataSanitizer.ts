@@ -11,7 +11,19 @@ export default class UserDataSanitizer {
         console.log(data)
     }
 
-    static formatarCPF(cpf: string) {
+    static sanitizeQuery(data: any) {
+        for(let key in data) {
+            if(typeof data[key] === 'string') data[key] = StringSanitizer.convertToUpperCase(key, data[key])
+            if(key.match('cpf')) data[key] = this.formatCPF(data[key])
+            if(key.match('data_nasc')) data[key] = this.filterDate(data[key])
+            if(key.match('data_expedicao')) data[key] = this.filterDate(data[key])
+            if(data[key] === null) data[key] = undefined
+        }
+
+        return data
+    }
+
+    static formatCPF(cpf: string) {
         return cpf.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
     }
 
@@ -33,6 +45,7 @@ export default class UserDataSanitizer {
     }
 
     static sanitizeFields(key: string, data: any) {
+        if(key.match('status')) this.filterStatus(data[key])
         if (key.match('cpf')) return data.replace(/\D/g, '');
         if (key.match('identidade')) return data.replace(/\W/g, '');
         if (key.match('celular')) return data.replace(/\D/g, '');
@@ -48,7 +61,9 @@ export default class UserDataSanitizer {
             }
         }
         this.removeUnnecessaryID(newData)
-        newData.cpf = this.formatarCPF(newData.cpf)
+        newData.cpf = this.formatCPF(newData.cpf)
+        newData.data_nasc = this.filterDate(newData.data_nasc)
+        newData.data_expedicao = this.filterDate(newData.data_expedicao)
         return newData
     }
 
@@ -56,5 +71,22 @@ export default class UserDataSanitizer {
         if (obj.id_documento) delete obj.id_documento
         if (obj.id_contato) delete obj.id_contato
         if (obj.id_localizacao) delete obj.id_localizacao
+    }
+
+    static filterStatus(obj: any) {
+        if(obj === 'Aposentado') return
+        if(obj === 'Ativo') return
+
+        return null
+    }
+
+    static filterDate(obj: any) {
+        const regex = /^\d{4}-\d{2}-\d{2}$/;
+
+        if(!obj) return null
+        if(obj === '0000-00-00') return null
+        if(obj.match(regex)) return obj.replace(/-/g, '')
+
+        return obj
     }
 }

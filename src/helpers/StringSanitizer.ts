@@ -20,4 +20,16 @@ export default class StringSanitizer {
       }
       return text
   }
+
+  static sanitizeDate(date: string) {
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    if(!date) return null;
+    if(!regex.test(date)) {
+        return this.convertDate(date)
+    }
+  }
+
+  static convertDate(date: string) {
+    return date.replace(/\//g, '-');
+  }
 }
