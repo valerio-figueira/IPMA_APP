@@ -3,7 +3,7 @@ import HolderRepository from "../repositories/HolderRepository";
 import { UserAttributes, User, Contact, Document, Location } from "../classes/UserSchema";
 import CustomError from "../classes/CustomError";
 import { IHolderRequest } from "../interfaces/IHolder";
-import DataSanitizer from "../classes/DataSanitizer";
+import UserDataSanitizer from "../helpers/UserDataSanitizer";
 
 export default class HolderService {
     holderRepository: HolderRepository;
@@ -13,7 +13,7 @@ export default class HolderService {
     }
 
     async Create(body: any) {
-        DataSanitizer.convertData(body)
+        UserDataSanitizer.sanitizeBody(body)
         const user = new User(body)
         const document = new Document(body)
         const contact = new Contact(body)
@@ -22,7 +22,10 @@ export default class HolderService {
         const userData = new UserAttributes({ user, document, contact, location });
         userData.addHolder(body)
 
-        return this.holderRepository.Create(userData);
+        const rawData = await this.holderRepository.Create(userData);
+        let sanitizedData = UserDataSanitizer.sanitizeModel(rawData)
+        console.log(sanitizedData)
+        return sanitizedData
     }
 
     async ReadAll(query: any) {
@@ -32,7 +35,7 @@ export default class HolderService {
     async ReadOne(holder_id: string) {
         const data = await this.holderRepository.ReadOne(holder_id);
         const { holder, user } = data;
-        DataSanitizer.sanitizeObjectKeys(user)
+        UserDataSanitizer.sanitizeObjectKeys(user)
         return { ...holder, ...user }
     }
 

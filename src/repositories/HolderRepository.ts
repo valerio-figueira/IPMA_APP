@@ -21,13 +21,13 @@ export default class HolderRepository {
         try {
             const { user, document, contact, location } = await this.userRepository.Create(query, t);
 
-            const holder = await HolderModel.create(query.holder, { transaction: t })
+            const holder = await HolderModel.create(query.holder, { transaction: t, raw: true })
 
             await t.commit();
             return { user, document, contact, location, holder };
         } catch (error: any) {
             await t.rollback();
-            throw new CustomError(`Erro ao criar o titular: ${error.message}`, 500)
+            throw new CustomError(`Erro ao criar o titular: ${error}`, 500)
         }
     }
 
