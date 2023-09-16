@@ -1,4 +1,4 @@
-import StringSanitizer from "../classes/DataSanitizer"
+import StringSanitizer from "./StringSanitizer"
 
 class UserDataSanitizer {
     static sanitizeUserBody(data: any) {
