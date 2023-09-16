@@ -33,10 +33,12 @@ export default class HolderService {
     }
 
     async ReadOne(holder_id: string) {
-        const data = await this.holderRepository.ReadOne(holder_id);
-        const { holder, user } = data;
+        const { holder, user } = await this.holderRepository.ReadOne(holder_id);
+
         UserDataSanitizer.sanitizeObjectKeys(user)
-        return { ...holder, ...user }
+        const sanitizedQuery = UserDataSanitizer.sanitizeQuery({ ...holder, ...user })
+
+        return sanitizedQuery
     }
 
     async Update(holder_id: string, query: IHolder) {
