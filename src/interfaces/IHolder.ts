@@ -1,4 +1,8 @@
 import { IContact, IDocument, ILocation, IUser } from "./IUser";
+import UserModel from "../models/user/UserModel";
+import DocumentModel from "../models/user/DocumentModel";
+import ContactModel from "../models/user/ContactModel";
+import LocationModel from "../models/user/LocationModel";
 
 export interface IHolderBase {
     id_titular?: number;
@@ -13,6 +17,14 @@ export interface IHolder {
     location: ILocation;
     document: IDocument;
     holder: IHolderBase;
+}
+
+export interface IHolderAttributes {
+  user: UserModel;
+  document: DocumentModel;
+  contact: ContactModel;
+  location: LocationModel;
+  [key: string]: UserModel | DocumentModel | ContactModel | LocationModel;
 }
 
 export interface IHolderRequest {
