@@ -1,6 +1,9 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 export default class Session {
     static config = {
-        secret: 'mystery key',
+        secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: false
     }
