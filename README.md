@@ -59,11 +59,11 @@ Para executar a aplicação em seu ambiente local, siga estas etapas:
 
 ### Instale as dependências:
 
-#### npm install
+#### `npm install`
 
 ### Inicie o servidor de desenvolvimento:
 
-#### npm run dev
+#### `npm run dev`
 
 Agora a aplicação estará disponível em http://localhost:9292.
 
