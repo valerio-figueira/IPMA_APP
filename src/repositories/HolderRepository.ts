@@ -61,7 +61,7 @@ export default class HolderRepository {
                             }
                         ]
                     }
-                ]
+                ], raw: true, nest: true
             })
         } catch (error: any) {
             throw new CustomError(`Erro ao consultar titulares: ${error}`, 500)
@@ -70,9 +70,33 @@ export default class HolderRepository {
 
     async ReadOne(holder_id: string) {
         try {
-            const holder = await HolderModel.findOne({ where: { id_titular: holder_id }, raw: true })
-            const user = await this.userRepository.ReadOne(holder!.id_usuario)
-            return { holder, user }
+            return HolderModel.findOne({
+                where: { 'id_titular': holder_id },
+                include: [
+                    {
+                        model: UserModel,
+                        as: 'user',
+                        attributes: { exclude: ['id_usuario'] },
+                        include: [
+                            {
+                                model: ContactModel,
+                                as: 'contact',
+                                attributes: { exclude: ['id_usuario', 'id_contato'] }
+                            },
+                            {
+                                model: DocumentModel,
+                                as: 'document',
+                                attributes: { exclude: ['id_usuario', 'id_documento'] },
+                            },
+                            {
+                                model: LocationModel,
+                                as: 'location',
+                                attributes: { exclude: ['id_usuario', 'id_localizacao'] }
+                            }
+                        ]
+                    }
+                ], raw: true, nest: true
+            })
         } catch (error: any) {
             throw new CustomError(`Titular não encontrado: ${error.message}`, 500)
         }
