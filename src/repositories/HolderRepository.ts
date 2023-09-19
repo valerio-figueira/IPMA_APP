@@ -1,4 +1,3 @@
-import { IHolder } from "../interfaces/IHolder";
 import { IUserAttributes } from "../interfaces/IUser";
 import UserRepository from "./UserRepository";
 import HolderModel from "../models/HolderModel";
@@ -101,7 +100,21 @@ export default class HolderRepository {
         }
     }
 
-    async Update(holder_id: string, query: IHolder) { }
+    async Update(holder_id: string, query: IUserAttributes) {
+        const t: Transaction = await this.db.sequelize.transaction();
+
+        try {
+            const user = await UserModel.findByPk(holder_id, { transaction: t });
+    
+            if (!user) {
+                await t.rollback();
+                throw new CustomError('Usuário não encontrado', 404);
+            }
+
+        } catch (error) {
+            
+        }
+    }
 
     async Delete(holder_id: string) {
         const t: Transaction = await this.db.sequelize.transaction();
