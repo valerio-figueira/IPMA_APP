@@ -12,9 +12,9 @@ export default class UserRepository {
 
         this.insertIdValues(query, user.id_usuario);
 
-        const document = await DocumentModel.create(query.document, { transaction });
-        const contact = await ContactModel.create(query.contact, { transaction });
-        const location = await LocationModel.create(query.location, { transaction });
+        const document = await DocumentModel.create(query.document, { transaction, raw: true });
+        const contact = await ContactModel.create(query.contact, { transaction, raw: true });
+        const location = await LocationModel.create(query.location, { transaction, raw: true });
 
         return { user, document, contact, location }
     }
@@ -22,8 +22,7 @@ export default class UserRepository {
     async ReadAll() { }
 
     async ReadOne(user_id: number) {
-        return UserModel.findOne({
-            where: { id_usuario: user_id },
+        return UserModel.findByPk(user_id, {
             include: [
                 {
                     model: ContactModel,
@@ -46,10 +45,26 @@ export default class UserRepository {
 
     async Update() { }
 
-    async Delete() { }
+    async Delete(user_id: number, transaction: Transaction) {
+        await DocumentModel.destroy({
+            where: { id_usuario: user_id }, transaction
+        });
+
+        await LocationModel.destroy({
+            where: { id_usuario: user_id }, transaction
+        });
+
+        await ContactModel.destroy({
+            where: { id_usuario: user_id }, transaction
+        });
+
+        await UserModel.destroy({
+            where: { id_usuario: user_id }, transaction
+        });
+    }
 
     insertIdValues(data: IUserAttributes, user_id: number) {
-        for(let key in data) {
+        for (let key in data) {
             data[key].id_usuario = user_id
         }
     }

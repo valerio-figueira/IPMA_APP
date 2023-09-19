@@ -70,8 +70,7 @@ export default class HolderRepository {
 
     async ReadOne(holder_id: string) {
         try {
-            return HolderModel.findOne({
-                where: { 'id_titular': holder_id },
+            return HolderModel.findByPk(holder_id, {
                 include: [
                     {
                         model: UserModel,
@@ -104,6 +103,28 @@ export default class HolderRepository {
 
     async Update(holder_id: string, query: IHolder) { }
 
-    async Delete(holder_id: string) { }
+    async Delete(holder_id: string) {
+        const t: Transaction = await this.db.sequelize.transaction();
+
+        try {
+            const holder = await HolderModel.findByPk(holder_id, { raw: true })
+            const user_id = holder!['id_usuario']
+            const user = await UserModel.findByPk(user_id, { raw: true })
+
+            await HolderModel.destroy({
+                where: { id_usuario: user_id },
+                transaction: t,
+            })
+
+            await this.userRepository.Delete((user_id as number), t)
+
+            await t.commit()
+
+            return { message: `O usuário ${user?.nome} foi removido` }
+        } catch (error: any) {
+            await t.rollback();
+            throw new CustomError(`Falha ao remover titular: ${error.message}`, 500)
+        }
+    }
 
 }
