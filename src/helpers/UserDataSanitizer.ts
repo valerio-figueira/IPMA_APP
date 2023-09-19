@@ -14,13 +14,18 @@ export default class UserDataSanitizer {
 
     static sanitizeQuery(data: any) {
         for(let key in data) {
-            if(typeof data[key] === 'string') data[key] = StringSanitizer.convertToUpperCase(key, data[key])
-            if(key.match('cpf')) data[key] = this.formatCPF(data[key])
-            if(key.match('data_nasc')) data[key] = this.filterDate(data[key])
-            if(key.match('data_expedicao')) data[key] = this.filterDate(data[key])
-            if(data[key] === null) data[key] = undefined
+            for(let nestedKey in data[key]) {
+                if(typeof data[key][nestedKey] === 'string') data[key][nestedKey] = StringSanitizer.convertToUpperCase(nestedKey, data[key][nestedKey])
+                if(nestedKey.match('data_nasc')) data[key][nestedKey] = this.filterDate(data[key][nestedKey])
+                if(nestedKey.match('contact') || nestedKey.match('document') || nestedKey.match('location')) {
+                    for(let subNestedKey in data[key][nestedKey]) {
+                        if(typeof data[key][nestedKey][subNestedKey] === 'string') data[key][nestedKey][subNestedKey] = StringSanitizer.convertToUpperCase(subNestedKey, data[key][nestedKey][subNestedKey])
+                        if(subNestedKey.match('cpf')) data[key][nestedKey][subNestedKey] = this.formatCPF(data[key][nestedKey][subNestedKey])
+                        if(subNestedKey.match('data_expedicao')) data[key][nestedKey][subNestedKey] = this.filterDate(data[key][nestedKey][subNestedKey])
+                    }
+                }
+            }
         }
-
         return data
     }
 
