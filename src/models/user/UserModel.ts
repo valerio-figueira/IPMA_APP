@@ -4,6 +4,7 @@ import { IUser } from '../../interfaces/IUser';
 import DocumentModel from './DocumentModel';
 import ContactModel from './ContactModel';
 import LocationModel from './LocationModel';
+import HolderModel from '../HolderModel';
 
 const db = new Database;
 
@@ -70,6 +71,10 @@ UserModel.hasOne(LocationModel, {
     foreignKey: 'id_usuario',
     as: 'location'
 })
+UserModel.hasOne(HolderModel, {
+    foreignKey: 'id_usuario',
+    as: 'holder'
+})
 
 DocumentModel.belongsTo(UserModel, {
     foreignKey: 'id_usuario'
@@ -80,5 +85,9 @@ LocationModel.belongsTo(UserModel, {
 ContactModel.belongsTo(UserModel, {
     foreignKey: 'id_usuario'
 });
+HolderModel.belongsTo(UserModel, {
+    foreignKey: 'id_usuario',
+    as: 'user'
+})
 
 export default UserModel

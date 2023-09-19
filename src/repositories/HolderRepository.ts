@@ -5,6 +5,10 @@ import HolderModel from "../models/HolderModel";
 import Database from "../db/Database";
 import CustomError from '../classes/CustomError';
 import { Transaction } from 'sequelize';
+import ContactModel from "../models/user/ContactModel";
+import DocumentModel from "../models/user/DocumentModel";
+import LocationModel from "../models/user/LocationModel";
+import UserModel from "../models/user/UserModel";
 
 export default class HolderRepository {
     db: Database;
@@ -31,7 +35,38 @@ export default class HolderRepository {
         }
     }
 
-    async ReadAll(query: { nome: string, tipo: string }) { }
+    async ReadAll() {
+        try {
+            return HolderModel.findAll({
+                include: [
+                    {
+                        model: UserModel,
+                        as: 'user',
+                        attributes: { exclude: ['id_usuario'] },
+                        include: [
+                            {
+                                model: ContactModel,
+                                as: 'contact',
+                                attributes: { exclude: ['id_usuario', 'id_contato'] }
+                            },
+                            {
+                                model: DocumentModel,
+                                as: 'document',
+                                attributes: { exclude: ['id_usuario', 'id_documento'] },
+                            },
+                            {
+                                model: LocationModel,
+                                as: 'location',
+                                attributes: { exclude: ['id_usuario', 'id_localizacao'] }
+                            }
+                        ]
+                    }
+                ]
+            })
+        } catch (error: any) {
+            throw new CustomError(`Erro ao consultar titulares: ${error}`, 500)
+        }
+    }
 
     async ReadOne(holder_id: string) {
         try {

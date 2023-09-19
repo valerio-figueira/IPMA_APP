@@ -28,8 +28,8 @@ export default class HolderService {
         return sanitizedData
     }
 
-    async ReadAll(query: any) {
-        return this.holderRepository.ReadAll(query)
+    async ReadAll() {
+        return this.holderRepository.ReadAll()
     }
 
     async ReadOne(holder_id: string) {
