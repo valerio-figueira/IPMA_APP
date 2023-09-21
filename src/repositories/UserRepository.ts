@@ -4,6 +4,8 @@ import ContactModel from "../models/user/ContactModel";
 import DocumentModel from "../models/user/DocumentModel";
 import LocationModel from "../models/user/LocationModel";
 import { Transaction } from 'sequelize';
+import { UserAttributes } from "../classes/UserSchema";
+import CustomError from "../classes/CustomError";
 
 export default class UserRepository {
 
@@ -43,7 +45,31 @@ export default class UserRepository {
         })
     }
 
-    async Update() { }
+    async Update(user_id: number, query: IUserAttributes, transaction: Transaction) {
+        try {
+            await UserModel.update(query.user, {
+                where: { id_usuario: user_id },
+                transaction
+            })
+
+            await ContactModel.update(query.contact, {
+                where: { id_usuario: user_id },
+                transaction
+            })
+
+            await DocumentModel.update(query.document, {
+                where: { id_usuario: user_id },
+                transaction
+            })
+
+            await LocationModel.update(query.location, {
+                where: { id_usuario: user_id },
+                transaction
+            })
+        } catch (error) {
+            throw new CustomError(`Houve uma falha ao atualizar os dados pessoais do ${query.user.nome}`, 400)
+        }
+    }
 
     async Delete(user_id: number, transaction: Transaction) {
         await DocumentModel.destroy({

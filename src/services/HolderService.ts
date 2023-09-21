@@ -38,8 +38,21 @@ export default class HolderService {
         return UserDataSanitizer.sanitizeQuery(rawData)
     }
 
-    async Update(holder_id: string, query: IHolder) {
-        return this.holderRepository.Update(holder_id, query);
+    async Update(holder_id: string, body: any) {
+        UserDataSanitizer.sanitizeBody(body)
+        const user = new User(body)
+        const document = new Document(body)
+        const contact = new Contact(body)
+        const location = new Location(body)
+
+        const userData = new UserAttributes({ user, document, contact, location });
+        userData.addHolder(body)
+
+        if (!userData.holder) throw new CustomError('Falha ao processar os dados do titular', 400)
+
+        const rawData = await this.holderRepository.Update(holder_id, userData)
+
+        return UserDataSanitizer.sanitizeQuery(rawData)
     }
 
     async Delete(holder_id: string) {

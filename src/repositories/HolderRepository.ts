@@ -67,7 +67,7 @@ export default class HolderRepository {
         }
     }
 
-    async ReadOne(holder_id: string) {
+    async ReadOne(holder_id: string | number) {
         try {
             return HolderModel.findByPk(holder_id, {
                 include: [
@@ -104,15 +104,28 @@ export default class HolderRepository {
         const t: Transaction = await this.db.sequelize.transaction();
 
         try {
-            const user = await UserModel.findByPk(holder_id, { transaction: t });
-    
-            if (!user) {
-                await t.rollback();
-                throw new CustomError('Usuário não encontrado', 404);
+            const holder = await HolderModel.findByPk(holder_id, { transaction: t, raw: true });
+
+            if (!holder) {
+                await t.rollback()
+                throw new CustomError('Usuário não encontrado', 404)
             }
 
-        } catch (error) {
-            
+            await this.userRepository.Update(holder.id_usuario, query, t)
+
+            if(query.holder?.id_usuario) {
+                await HolderModel.update(query.holder, {
+                    where: { id_usuario: query.user.id_usuario },
+                    transaction: t
+                })
+            }
+
+            await t.commit()
+
+            return await this.ReadOne(holder.id_titular)
+        } catch (error: any) {
+            await t.rollback()
+            throw new CustomError(`Não foi possível atualizar os dados do usuário: ${error.message}`, error.status || 500)
         }
     }
 
