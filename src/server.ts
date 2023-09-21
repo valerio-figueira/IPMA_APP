@@ -58,6 +58,7 @@ export default class Server {
         this.APP.get("/", this.rootHandler);
         this.APP.use("/api/v1/holders", HolderRoutes);
         this.APP.use("/api/v1/dependents", DependentRoutes);
+        this.APP.use("/api/v1/members", DependentRoutes);
     }
 
     private rootHandler(req: Request, res: Response) {
