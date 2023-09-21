@@ -12,6 +12,7 @@ import Session from "./config/Session";
 import HolderRoutes from './routes/HolderRoutes';
 import DependentRoutes from './routes/DependentRoutes';
 import LoginRoutes from './routes/LoginRoutes';
+import ContractRegistryRoutes from './routes/ContractRegistryModelRoutes'
 
 declare module 'express-session' {
     interface SessionData { user: string; }
@@ -58,7 +59,7 @@ export default class Server {
         this.APP.get("/", this.rootHandler);
         this.APP.use("/api/v1/holders", HolderRoutes);
         this.APP.use("/api/v1/dependents", DependentRoutes);
-        this.APP.use("/api/v1/members", DependentRoutes);
+        this.APP.use("/api/v1/contract-registry", ContractRegistryRoutes);
     }
 
     private rootHandler(req: Request, res: Response) {
