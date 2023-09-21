@@ -3,12 +3,12 @@ import Database from "../db/Database";
 import HolderModel from './HolderModel';
 import DependentModel from './DependentModel';
 import BusinessContractModel from './BusinessContractModel';
-import IEnrolled from '../interfaces/IEnrolled';
+import IMemberModel from '../interfaces/IMemberModel';
 
 const db = new Database;
 
 
-class EnrolledModel extends Model<IEnrolled> {
+class MemberModel extends Model<IMemberModel> {
     id_conveniado!: number;
     id_titular!: number;
     id_dependente?: number;
@@ -19,7 +19,7 @@ class EnrolledModel extends Model<IEnrolled> {
 }
 
 
-EnrolledModel.init(
+MemberModel.init(
     {
         id_conveniado: {
             type: DataTypes.INTEGER,
@@ -54,32 +54,32 @@ EnrolledModel.init(
     {
         sequelize: db.sequelize,
         tableName: 'CONVENIADO',
-        modelName: 'EnrolledModel',
+        modelName: 'MemberModel',
         timestamps: false,
     }
 );
 
-EnrolledModel.belongsTo(HolderModel, {
+MemberModel.belongsTo(HolderModel, {
     foreignKey: 'id_titular',
     as: 'holder'
 });
 
-EnrolledModel.belongsTo(DependentModel, {
+MemberModel.belongsTo(DependentModel, {
     foreignKey: 'id_dependente',
     as: 'dependent'
 });
 
-EnrolledModel.belongsTo(BusinessContractModel, {
+MemberModel.belongsTo(BusinessContractModel, {
     foreignKey: 'id_convenio',
     as: 'convenio'
 });
 
-DependentModel.hasMany(EnrolledModel, {
+DependentModel.hasMany(MemberModel, {
     foreignKey: 'id_dependente'
 })
 
-BusinessContractModel.hasMany(EnrolledModel, {
+BusinessContractModel.hasMany(MemberModel, {
     foreignKey: 'id_convenio'
 })
 
-export default EnrolledModel;
+export default MemberModel;

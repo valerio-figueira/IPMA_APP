@@ -1,4 +1,4 @@
-interface Enrolled {
+interface IMemberModel {
     id_conveniado?: number;
     id_titular: number;
     id_dependente?: number | null;
@@ -8,4 +8,4 @@ interface Enrolled {
     data_exclusao?: Date | null;
 }
 
-export default Enrolled;
+export default IMemberModel;
