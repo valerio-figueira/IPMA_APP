@@ -32,6 +32,7 @@ export class User {
     data_cadastro?: Date;
 
     constructor(user: IUser) {
+        this.id_usuario = user.id_usuario;
         this.nome = user.nome;
         this.sexo = user.sexo;
         this.estado_civil = user.estado_civil;
@@ -50,6 +51,7 @@ export class Contact {
     email: string | null;
 
     constructor(contact: IContact) {
+        this.id_usuario = contact.id_usuario;
         this.celular_1 = contact.celular_1;
         this.celular_2 = contact.celular_2;
         this.tel_residencial = contact.tel_residencial;
@@ -66,6 +68,7 @@ export class Document {
     cartao_sus: string | null;
 
     constructor(document: IDocument) {
+        this.id_usuario = document.id_usuario;
         this.cpf = document.cpf;
         this.identidade = document.identidade;
         this.data_expedicao = document.data_expedicao;
@@ -83,6 +86,7 @@ export class Location {
     estado: string | null;
 
     constructor(location: ILocation) {
+        this.id_usuario = location.id_usuario;
         this.endereco = location.endereco;
         this.numero = location.numero;
         this.bairro = location.bairro;
