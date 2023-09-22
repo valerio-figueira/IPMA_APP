@@ -32,7 +32,7 @@ export default class HolderService {
         return this.holderRepository.ReadAll()
     }
 
-    async ReadOne(holder_id: string) {
+    async ReadOne(holder_id: string | number) {
         const rawData = await this.holderRepository.ReadOne(holder_id);
 
         return UserDataSanitizer.sanitizeQuery(rawData)
