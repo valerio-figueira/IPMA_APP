@@ -10,11 +10,11 @@ export default class BusinessContractRepository {
     }
 
     async ReadAll() {
-        return await BusinessContractModel.findAll({ raw: true })
+        return BusinessContractModel.findAll({ raw: true })
     }
 
     async ReadOne(contract_id: string) {
-        return await BusinessContractModel.findOne({
+        return BusinessContractModel.findOne({
             where: { id_convenio: contract_id },
             raw: true
         })
@@ -27,7 +27,7 @@ export default class BusinessContractRepository {
     }
 
     async Delete(query: IBusinessContract) {
-        return await BusinessContractModel.destroy({
+        return BusinessContractModel.destroy({
             where: { id_convenio: query.id_convenio }
         })
     }
