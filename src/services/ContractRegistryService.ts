@@ -44,8 +44,20 @@ export default class ContractRegistryService {
         return this.contractRegistryRepository.Update();
     }
 
-    async Delete() {
-        return this.contractRegistryRepository.Delete();
+    async Delete(body: IContractRegistry) {
+        const holder = await this.holderService.ReadOne(body.id_titular)
+
+        if (!holder) throw new CustomError('Não foi possível localizar os dados do titular', 400)
+
+        const businessContract = await this.businessContractService.ReadOne(body.id_convenio);
+
+        if (!businessContract) throw new CustomError('Não foi possível localizar os dados do convênio', 400)
+
+        const deletedRegistry = await this.contractRegistryRepository.Delete(body);
+
+        if(!deletedRegistry) throw new CustomError('Registro do conveniado não foi deletado', 400)
+
+        return { message: `${holder.user.nome} foi removido do convênio ${businessContract.nome_convenio}` }
     }
 
 }

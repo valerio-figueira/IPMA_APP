@@ -23,12 +23,12 @@ router.get("/:id", async (req, res) => {
 });
 
 // UPDATE
-router.put("/:id", async (req, res) => {
+router.put("/", async (req, res) => {
     contractRegistryController.Update(req, res)
 })
 
 // DELETE
-router.delete("/:id", async (req, res) => {
+router.delete("/", async (req, res) => {
     contractRegistryController.Delete(req, res)
 })
 

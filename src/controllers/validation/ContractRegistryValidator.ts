@@ -10,6 +10,11 @@ export default class ContractRegistryValidator {
         this.isNumber(data)
     }
 
+    static validateMember(data: IContractRegistry) {
+        if(!data.id_conveniado) throw new CustomError('Não é possível excluir um membro sem especificar a identificação', 400)
+        if(typeof data.id_conveniado !== 'number') throw new CustomError('Verifique a identificação do conveniado', 400)
+    }
+
     static isNumber(data: IContractRegistry) {
         if(typeof data.id_convenio !== 'number') throw new CustomError('Verifique a identificação do convênio', 400)
         if(data.id_dependente) {

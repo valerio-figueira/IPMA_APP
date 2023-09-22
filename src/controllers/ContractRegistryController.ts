@@ -45,7 +45,9 @@ export default class ContractRegistryController {
 
     async Delete(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.contractRegistryService.Delete())
+            ContractRegistryValidator.validate(req.body)
+            ContractRegistryValidator.validateMember(req.body)
+            res.status(200).json(await this.contractRegistryService.Delete(req.body))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }

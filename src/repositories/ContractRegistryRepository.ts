@@ -15,6 +15,14 @@ export default class ContractRegistryRepository {
 
     async Update() { }
 
-    async Delete() { }
+    async Delete(body: IContractRegistry) {
+        return ContractRegistryModel.destroy({
+            where: {
+                id_conveniado: body.id_conveniado,
+                id_convenio: body.id_convenio,
+                id_titular: body.id_titular
+            }
+        })
+    }
 
 }
