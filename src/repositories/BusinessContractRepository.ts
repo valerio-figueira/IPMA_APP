@@ -13,7 +13,7 @@ export default class BusinessContractRepository {
         return BusinessContractModel.findAll({ raw: true })
     }
 
-    async ReadOne(contract_id: string) {
+    async ReadOne(contract_id: string | number) {
         return BusinessContractModel.findOne({
             where: { id_convenio: contract_id },
             raw: true

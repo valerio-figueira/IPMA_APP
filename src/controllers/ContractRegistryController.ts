@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import ContractRegistryService from "../services/ContractRegistryService";
+import ContractRegistryValidator from "./validation/ContractRegistryValidator";
 
 
 export default class ContractRegistryController {
@@ -11,6 +12,7 @@ export default class ContractRegistryController {
 
     async Create(req: Request, res: Response) {
         try {
+            ContractRegistryValidator.validate(req.body)
             res.status(201).json(await this.contractRegistryService.Create(req.body))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })

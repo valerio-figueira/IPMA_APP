@@ -25,7 +25,7 @@ export default class BusinessContractService {
         return contract;
     }
 
-    async ReadOne(contract_id: string) {
+    async ReadOne(contract_id: string | number) {
         const contract = await this.businessContractRepository.ReadOne(contract_id);
 
         if(!contract) throw new CustomError('O Convênio não foi alterado ou localizado', 404)
