@@ -35,69 +35,61 @@ export default class HolderRepository {
     }
 
     async ReadAll() {
-        try {
-            return HolderModel.findAll({
-                include: [
-                    {
-                        model: UserModel,
-                        as: 'user',
-                        attributes: { exclude: ['id_usuario'] },
-                        include: [
-                            {
-                                model: ContactModel,
-                                as: 'contact',
-                                attributes: { exclude: ['id_usuario', 'id_contato'] }
-                            },
-                            {
-                                model: DocumentModel,
-                                as: 'document',
-                                attributes: { exclude: ['id_usuario', 'id_documento'] },
-                            },
-                            {
-                                model: LocationModel,
-                                as: 'location',
-                                attributes: { exclude: ['id_usuario', 'id_localizacao'] }
-                            }
-                        ]
-                    }
-                ], raw: true, nest: true
-            })
-        } catch (error: any) {
-            throw new CustomError(`Erro ao consultar titulares: ${error}`, 500)
-        }
+        return HolderModel.findAll({
+            include: [
+                {
+                    model: UserModel,
+                    as: 'user',
+                    attributes: { exclude: ['id_usuario'] },
+                    include: [
+                        {
+                            model: ContactModel,
+                            as: 'contact',
+                            attributes: { exclude: ['id_usuario', 'id_contato'] }
+                        },
+                        {
+                            model: DocumentModel,
+                            as: 'document',
+                            attributes: { exclude: ['id_usuario', 'id_documento'] },
+                        },
+                        {
+                            model: LocationModel,
+                            as: 'location',
+                            attributes: { exclude: ['id_usuario', 'id_localizacao'] }
+                        }
+                    ]
+                }
+            ], raw: true, nest: true
+        })
     }
 
     async ReadOne(holder_id: string | number) {
-        try {
-            return HolderModel.findByPk(holder_id, {
-                include: [
-                    {
-                        model: UserModel,
-                        as: 'user',
-                        attributes: { exclude: ['id_usuario'] },
-                        include: [
-                            {
-                                model: ContactModel,
-                                as: 'contact',
-                                attributes: { exclude: ['id_usuario', 'id_contato'] }
-                            },
-                            {
-                                model: DocumentModel,
-                                as: 'document',
-                                attributes: { exclude: ['id_usuario', 'id_documento'] },
-                            },
-                            {
-                                model: LocationModel,
-                                as: 'location',
-                                attributes: { exclude: ['id_usuario', 'id_localizacao'] }
-                            }
-                        ]
-                    }
-                ], raw: true, nest: true
-            })
-        } catch (error: any) {
-            throw new CustomError(`Titular não encontrado: ${error.message}`, 500)
-        }
+        return HolderModel.findByPk(holder_id, {
+            include: [
+                {
+                    model: UserModel,
+                    as: 'user',
+                    attributes: { exclude: ['id_usuario'] },
+                    include: [
+                        {
+                            model: ContactModel,
+                            as: 'contact',
+                            attributes: { exclude: ['id_usuario', 'id_contato'] }
+                        },
+                        {
+                            model: DocumentModel,
+                            as: 'document',
+                            attributes: { exclude: ['id_usuario', 'id_documento'] },
+                        },
+                        {
+                            model: LocationModel,
+                            as: 'location',
+                            attributes: { exclude: ['id_usuario', 'id_localizacao'] }
+                        }
+                    ]
+                }
+            ], raw: true, nest: true
+        })
     }
 
     async Update(query: IUserAttributes) {
@@ -115,7 +107,7 @@ export default class HolderRepository {
                 transaction: t
             })
 
-            if(!userResult && !holderResult) throw new CustomError(`Nenhum dado foi alterado para ${query.user.nome}`, 400)
+            if (!userResult && !holderResult) throw new CustomError(`Nenhum dado foi alterado para ${query.user.nome}`, 400)
 
             await t.commit()
 

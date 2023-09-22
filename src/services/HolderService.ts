@@ -24,12 +24,16 @@ export default class HolderService {
 
         const rawData = await this.holderRepository.Create(userData);
         let sanitizedData = UserDataSanitizer.sanitizeModel(rawData)
-        console.log(sanitizedData)
+
         return sanitizedData
     }
 
     async ReadAll() {
-        return this.holderRepository.ReadAll()
+        const holders = await this.holderRepository.ReadAll()
+
+        if(holders.length === 0) throw new CustomError('Nenhum titular foi encontrado', 400)
+
+        return holders
     }
 
     async ReadOne(holder_id: string | number) {
