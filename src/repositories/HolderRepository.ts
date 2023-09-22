@@ -100,32 +100,29 @@ export default class HolderRepository {
         }
     }
 
-    async Update(holder_id: string, query: IUserAttributes) {
+    async Update(query: IUserAttributes) {
         const t: Transaction = await this.db.sequelize.transaction();
 
         try {
-            const holder = await HolderModel.findByPk(holder_id, { transaction: t, raw: true });
+            const holder = await HolderModel.findByPk(query.holder?.id_titular, { transaction: t, raw: true });
 
-            if (!holder) {
-                await t.rollback()
-                throw new CustomError('Usuário não encontrado', 404)
-            }
+            if (!holder) throw new CustomError('Usuário não encontrado', 404)
 
-            await this.userRepository.Update(holder.id_usuario, query, t)
+            const userResult = await this.userRepository.Update(holder.id_usuario, query, t)
 
-            if(query.holder?.id_usuario) {
-                await HolderModel.update(query.holder, {
-                    where: { id_usuario: query.user.id_usuario },
-                    transaction: t
-                })
-            }
+            const [holderResult] = await HolderModel.update(query.holder!, {
+                where: { id_usuario: query.user.id_usuario },
+                transaction: t
+            })
+
+            if(!userResult && !holderResult) throw new CustomError(`Nenhum dado foi alterado para ${query.user.nome}`, 400)
 
             await t.commit()
 
             return await this.ReadOne(holder.id_titular)
         } catch (error: any) {
             await t.rollback()
-            throw new CustomError(`Não foi possível atualizar os dados do usuário: ${error.message}`, error.status || 500)
+            throw new CustomError(error.message || 'Não foi possível atualizar os dados do usuário', error.status || 500)
         }
     }
 

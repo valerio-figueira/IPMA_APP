@@ -46,7 +46,7 @@ export interface IHolderRequest {
     cpf: 'string';
     identidade: 'string';
     data_expedicao: 'string' | null;
-    cartao_sus: 'string' | null;
+    cartao_saude: 'string' | null;
     status: 'string' | null;
     matricula: 'number' | null;
     [key: string]: string | number | null

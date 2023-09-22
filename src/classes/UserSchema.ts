@@ -65,14 +65,14 @@ export class Document {
     cpf: string;
     identidade: string;
     data_expedicao: Date | null;
-    cartao_sus: string | null;
+    cartao_saude: string | null;
 
     constructor(document: IDocument) {
         this.id_usuario = document.id_usuario;
         this.cpf = document.cpf;
         this.identidade = document.identidade;
         this.data_expedicao = document.data_expedicao;
-        this.cartao_sus = document.cartao_sus;
+        this.cartao_saude = document.cartao_saude;
     }
 }
 

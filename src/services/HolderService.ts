@@ -38,7 +38,7 @@ export default class HolderService {
         return UserDataSanitizer.sanitizeQuery(rawData)
     }
 
-    async Update(holder_id: string, body: any) {
+    async Update(body: any) {
         UserDataSanitizer.sanitizeBody(body)
         const user = new User(body)
         const document = new Document(body)
@@ -50,7 +50,11 @@ export default class HolderService {
 
         if (!userData.holder) throw new CustomError('Falha ao processar os dados do titular', 400)
 
-        const rawData = await this.holderRepository.Update(holder_id, userData)
+        if (!userData.holder.id_titular) throw new CustomError('Falha ao processar identificação do titular', 400)
+
+        if (!userData.user.id_usuario) throw new CustomError('Falha ao processar a identificação de usuário', 400)
+
+        const rawData = await this.holderRepository.Update(userData)
 
         return UserDataSanitizer.sanitizeQuery(rawData)
     }

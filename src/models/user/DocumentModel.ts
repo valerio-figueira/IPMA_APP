@@ -11,7 +11,7 @@ class DocumentModel extends Model<IDocument> {
     cpf!: string;
     identidade!: string;
     data_expedicao?: Date | null;
-    cartao_sus?: string | null;
+    cartao_saude?: string | null;
 }
 
 
@@ -44,7 +44,7 @@ DocumentModel.init(
         data_expedicao: {
             type: DataTypes.DATE,
         },
-        cartao_sus: {
+        cartao_saude: {
             type: DataTypes.STRING(15),
         },
     },

@@ -36,7 +36,7 @@ export interface IDocument {
     cpf: string;
     identidade: string;
     data_expedicao: Date | null;
-    cartao_sus: string | null;
+    cartao_saude: string | null;
 }
 
 export interface IUserAttributes {

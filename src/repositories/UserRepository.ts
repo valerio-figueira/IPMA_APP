@@ -46,29 +46,27 @@ export default class UserRepository {
     }
 
     async Update(user_id: number, query: IUserAttributes, transaction: Transaction) {
-        try {
-            await UserModel.update(query.user, {
-                where: { id_usuario: user_id },
-                transaction
-            })
+        const [user] = await UserModel.update(query.user, {
+            where: { id_usuario: user_id },
+            transaction
+        })
 
-            await ContactModel.update(query.contact, {
-                where: { id_usuario: user_id },
-                transaction
-            })
+        const [contact] = await ContactModel.update(query.contact, {
+            where: { id_usuario: user_id },
+            transaction
+        })
 
-            await DocumentModel.update(query.document, {
-                where: { id_usuario: user_id },
-                transaction
-            })
+        const [document] = await DocumentModel.update(query.document, {
+            where: { id_usuario: user_id },
+            transaction
+        })
 
-            await LocationModel.update(query.location, {
-                where: { id_usuario: user_id },
-                transaction
-            })
-        } catch (error) {
-            throw new CustomError(`Houve uma falha ao atualizar os dados pessoais do ${query.user.nome}`, 400)
-        }
+        const [location] = await LocationModel.update(query.location, {
+            where: { id_usuario: user_id },
+            transaction
+        })
+
+        return this.checkAffectedCount({ user, contact, document, location })
     }
 
     async Delete(user_id: number, transaction: Transaction) {
@@ -93,5 +91,12 @@ export default class UserRepository {
         for (let key in data) {
             data[key].id_usuario = user_id
         }
+    }
+
+    checkAffectedCount(data: any) {
+        for (let entry in data) {
+            if (data[entry]) return true
+        }
+        return false
     }
 }
