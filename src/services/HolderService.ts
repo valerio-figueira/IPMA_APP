@@ -50,10 +50,6 @@ export default class HolderService {
 
         if (!userData.holder) throw new CustomError('Falha ao processar os dados do titular', 400)
 
-        if (!userData.holder.id_titular) throw new CustomError('Falha ao processar identificação do titular', 400)
-
-        if (!userData.user.id_usuario) throw new CustomError('Falha ao processar a identificação de usuário', 400)
-
         const rawData = await this.holderRepository.Update(userData)
 
         return UserDataSanitizer.sanitizeQuery(rawData)

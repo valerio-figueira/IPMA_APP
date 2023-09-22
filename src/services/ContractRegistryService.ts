@@ -1,6 +1,7 @@
 import ContractRegistryRepository from "../repositories/ContractRegistryRepository";
 
 
+
 export default class ContractRegistryService {
     contractRegistryRepository: ContractRegistryRepository;
 
@@ -8,7 +9,7 @@ export default class ContractRegistryService {
         this.contractRegistryRepository = new ContractRegistryRepository();
     }
 
-    async Create() {
+    async Create(body: any) {
         return this.contractRegistryRepository.Create(undefined);
     }
 

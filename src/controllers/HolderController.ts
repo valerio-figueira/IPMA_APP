@@ -36,6 +36,7 @@ export default class HolderController {
 
     async Update(req: Request, res: Response) {
         try {
+            UserValidator.validateIdentifications(req.body)
             res.status(200).json(await this.holderService.Update(req.body))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })

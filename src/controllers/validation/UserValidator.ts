@@ -16,6 +16,11 @@ export default class UserValidator {
         return
     }
 
+    static validateIdentifications(data: any) {
+        this.hasUserIdentification(data)
+        this.hasHolderIdentification(data)
+    }
+
     static validateDate(date: string | null) {
         const regex = /^\d{4}-\d{2}-\d{2}$/;
         if (date === '') return
@@ -44,5 +49,13 @@ export default class UserValidator {
 
     static isValidDate(dateStr: string): boolean {
         return true
+    }
+
+    static hasUserIdentification(data: any) {
+        if(!data.id_usuario) throw new CustomError('Não foi possível validar a identificação de usuário', 400)
+    }
+
+    static hasHolderIdentification(data: any) {
+        if(!data.id_titular) throw new CustomError('Não foi possível validar a identificação de titular', 400)
     }
 }

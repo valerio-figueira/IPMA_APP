@@ -11,7 +11,7 @@ export default class ContractRegistryController {
 
     async Create(req: Request, res: Response) {
         try {
-            res.status(201).json(await this.contractRegistryService.Create())
+            res.status(201).json(await this.contractRegistryService.Create(req.body))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
