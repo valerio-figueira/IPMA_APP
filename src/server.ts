@@ -13,6 +13,7 @@ import HolderRoutes from './routes/HolderRoutes';
 import DependentRoutes from './routes/DependentRoutes';
 import LoginRoutes from './routes/LoginRoutes';
 import ContractRegistryRoutes from './routes/ContractRegistryModelRoutes'
+import BusinessContractRoutes from './routes/BusinessContractRoutes'
 
 declare module 'express-session' {
     interface SessionData { user: string; }
@@ -55,11 +56,12 @@ export default class Server {
     }
 
     private setupRoutes() {
-        this.APP.use("/login", LoginRoutes);
-        this.APP.get("/", this.rootHandler);
-        this.APP.use("/api/v1/holders", HolderRoutes);
-        this.APP.use("/api/v1/dependents", DependentRoutes);
-        this.APP.use("/api/v1/contract-registry", ContractRegistryRoutes);
+        this.APP.use('/login', LoginRoutes);
+        this.APP.get('/', this.rootHandler);
+        this.APP.use('/api/v1/holders', HolderRoutes);
+        this.APP.use('/api/v1/dependents', DependentRoutes);
+        this.APP.use('/api/v1/contract-registry', ContractRegistryRoutes);
+        this.APP.use('/api/v1/business-contract', BusinessContractRoutes)
     }
 
     private rootHandler(req: Request, res: Response) {
