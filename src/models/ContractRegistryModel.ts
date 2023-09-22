@@ -71,7 +71,12 @@ ContractRegistryModel.belongsTo(DependentModel, {
 
 ContractRegistryModel.belongsTo(BusinessContractModel, {
     foreignKey: 'id_convenio',
-    as: 'convenio'
+    as: 'contract'
+});
+
+HolderModel.hasMany(ContractRegistryModel, {
+    foreignKey: 'id_titular',
+    as: 'subscription'
 });
 
 DependentModel.hasMany(ContractRegistryModel, {
@@ -79,7 +84,8 @@ DependentModel.hasMany(ContractRegistryModel, {
 })
 
 BusinessContractModel.hasMany(ContractRegistryModel, {
-    foreignKey: 'id_convenio'
+    foreignKey: 'id_convenio',
+    as: 'contract'
 })
 
 export default ContractRegistryModel;
