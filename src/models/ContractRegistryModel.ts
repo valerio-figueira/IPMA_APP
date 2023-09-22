@@ -54,7 +54,7 @@ ContractRegistryModel.init(
     {
         sequelize: db.sequelize,
         tableName: 'CONVENIADO',
-        modelName: 'MemberModel',
+        modelName: 'ContractRegistryModel',
         timestamps: false,
     }
 );
