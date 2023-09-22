@@ -1,4 +1,4 @@
-import CustomError from "../../classes/CustomError";
+import CustomError from "../../utils/CustomError";
 import { IHolderRequest } from "../../interfaces/IHolder";
 
 export default class UserValidator {

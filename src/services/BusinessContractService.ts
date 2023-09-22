@@ -1,7 +1,7 @@
 import BusinessContractRepository from "../repositories/BusinessContractRepository";
 import BusinessContractSchema from "../classes/BusinessContractSchema";
 import IBusinessContract from "../interfaces/IBusinessContract";
-import CustomError from "../classes/CustomError";
+import CustomError from "../utils/CustomError";
 import BusinessContractModel from "../models/BusinessContractModel";
 
 export default class BusinessContractService {

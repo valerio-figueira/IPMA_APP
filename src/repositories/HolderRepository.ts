@@ -2,7 +2,7 @@ import { IUserAttributes } from "../interfaces/IUser";
 import UserRepository from "./UserRepository";
 import HolderModel from "../models/HolderModel";
 import Database from "../db/Database";
-import CustomError from '../classes/CustomError';
+import CustomError from '../utils/CustomError';
 import { Transaction } from 'sequelize';
 import ContactModel from "../models/user/ContactModel";
 import DocumentModel from "../models/user/DocumentModel";

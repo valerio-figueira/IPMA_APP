@@ -5,7 +5,7 @@ import DocumentModel from "../models/user/DocumentModel";
 import LocationModel from "../models/user/LocationModel";
 import { Transaction } from 'sequelize';
 import { UserAttributes } from "../classes/UserSchema";
-import CustomError from "../classes/CustomError";
+import CustomError from "../utils/CustomError";
 
 export default class UserRepository {
 
