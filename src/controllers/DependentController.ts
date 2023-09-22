@@ -13,7 +13,7 @@ export default class DependentController {
         try {
             res.status(201).json(await this.dependentService.Create(req.body))
         } catch (error: any) {
-            res.status(500).json({ error: error.message })
+            res.status(error.status || 500).json({ error: error.message })
         }
     }
 
@@ -21,7 +21,7 @@ export default class DependentController {
         try {
             res.status(200).json(await this.dependentService.ReadAll(req.params.holder))
         } catch (error: any) {
-            res.status(500).json({ error: error.message })
+            res.status(error.status || 500).json({ error: error.message })
         }
     }
 
@@ -29,7 +29,7 @@ export default class DependentController {
         try {
             res.status(200).json(await this.dependentService.ReadOne(req.params.holder, req.params.dependent))
         } catch (error: any) {
-            res.status(500).json({ error: error.message })
+            res.status(error.status || 500).json({ error: error.message })
         }
     }
 

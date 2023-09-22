@@ -13,7 +13,7 @@ export default class BusinessContractController {
         try {
             res.status(201).json(await this.businessContractService.Create())
         } catch (error: any) {
-            res.status(500).json({ error: error.message })
+            res.status(error.status || 500).json({ error: error.message })
         }
     }
 
@@ -21,7 +21,7 @@ export default class BusinessContractController {
         try {
             res.status(200).json(await this.businessContractService.ReadAll())
         } catch (error: any) {
-            res.status(500).json({ error: error.message })
+            res.status(error.status || 500).json({ error: error.message })
         }
     }
 
@@ -29,7 +29,7 @@ export default class BusinessContractController {
         try {
             res.status(200).json(await this.businessContractService.ReadOne())
         } catch (error: any) {
-            res.status(500).json({ error: error.message })
+            res.status(error.status || 500).json({ error: error.message })
         }
     }
 
@@ -37,7 +37,7 @@ export default class BusinessContractController {
         try {
             res.status(200).json(await this.businessContractService.Update())
         } catch (error: any) {
-            res.status(500).json({ error: error.message })
+            res.status(error.status || 500).json({ error: error.message })
         }
     }
 
@@ -45,7 +45,7 @@ export default class BusinessContractController {
         try {
             res.status(200).json(await this.businessContractService.Delete())
         } catch (error: any) {
-            res.status(500).json({ error: error.message })
+            res.status(error.status || 500).json({ error: error.message })
         }
     }
 
