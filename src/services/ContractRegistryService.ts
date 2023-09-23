@@ -33,28 +33,26 @@ export default class ContractRegistryService {
     }
 
     async ReadAll(query: any) {
-        const holders = []
-        let nestedSubscriptions: any | null = null
         const subscriptions: any[] = await this.contractRegistryRepository.ReadAll(query);
 
         if (!subscriptions || subscriptions.length === 0) throw new CustomError('Nenhum registro encontrado!', 400)
-        // Busca titulares e aninha os convênios
-        for (let i = 0; i < subscriptions.length; i++) { 
-            if (nestedSubscriptions) {
-                if (subscriptions[i].id_titular === nestedSubscriptions.id_titular) {
-                    const index = holders.findIndex(holder => holder.id_titular === subscriptions[i].id_titular)
-                    holders[index]['subscriptions'][subscriptions[i]['contract'].nome_convenio] = { ...subscriptions[i] }
-                    break
-                }
+
+        const holders: Record<number, any> = {}
+
+        for (let subscription of subscriptions) {
+            const idTitular = subscription.id_titular
+
+            if (!holders[idTitular]) {
+                const holder = await this.holderService.ReadOne(idTitular)
+                holder['subscriptions'] = {}
+                holders[idTitular] = holder
             }
-            nestedSubscriptions = subscriptions[i]
-            const holder = await this.holderService.ReadOne(subscriptions[i].id_titular)
-            holder['subscriptions'] = {}
-            holder['subscriptions'][subscriptions[i]['contract'].nome_convenio] = { ...subscriptions[i] }
-            holders.push(holder)
+            console.log(holders)
+            const contractName = subscription['contract']['nome_convenio']
+            holders[idTitular]['subscriptions'][contractName] = { ...subscription }
         }
 
-        return holders
+        return Object.values(holders)
     }
 
     async ReadOne(subscription_id: string | number) {
