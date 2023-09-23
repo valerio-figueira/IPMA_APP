@@ -3,6 +3,7 @@ import IContractRegistry from "../interfaces/IContractRegistry";
 import CustomError from "../utils/CustomError";
 import HolderService from "./HolderService";
 import BusinessContractService from "./BusinessContractService";
+import ContractRegistrySchema from "../classes/ContractRegistrySchema";
 
 
 export default class ContractRegistryService {
@@ -47,7 +48,7 @@ export default class ContractRegistryService {
                 holder['subscriptions'] = {}
                 holders[idTitular] = holder
             }
-            console.log(holders)
+
             const contractName = subscription['contract']['nome_convenio']
             holders[idTitular]['subscriptions'][contractName] = { ...subscription }
         }
@@ -63,8 +64,20 @@ export default class ContractRegistryService {
         return data;
     }
 
-    async Update() {
-        return this.contractRegistryRepository.Update();
+    async Update(body: IContractRegistry) {
+        const subscription = new ContractRegistrySchema(body)
+
+        if(!subscription.id_conveniado) throw new CustomError('Verifique a identificação do conveniado', 400)
+
+        if(!subscription.ativo && !subscription.data_exclusao) {
+            subscription.data_exclusao = new Date(Date.now())
+        }
+
+        const [AffectedCount] = await this.contractRegistryRepository.Update(subscription);
+
+        if(AffectedCount === 0) throw new CustomError('Nenhum dado foi alterado', 400)
+
+        return this.ReadOne(subscription.id_conveniado)
     }
 
     async Delete(body: IContractRegistry) {

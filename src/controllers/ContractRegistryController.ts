@@ -37,7 +37,9 @@ export default class ContractRegistryController {
 
     async Update(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.contractRegistryService.Update())
+            ContractRegistryValidator.validate(req.body)
+            ContractRegistryValidator.validateMember(req.body)
+            res.status(200).json(await this.contractRegistryService.Update(req.body))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }

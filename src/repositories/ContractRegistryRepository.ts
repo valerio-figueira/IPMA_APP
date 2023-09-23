@@ -25,9 +25,9 @@ export default class ContractRegistryRepository {
             attributes: { exclude: ['id_convenio'] }
         }]
 
-        if(query.id_titular) whereClause.id_titular = query.id_titular
+        if (query.id_titular) whereClause.id_titular = query.id_titular
 
-        if(query.nome_convenio) includeClause[0].where = {
+        if (query.nome_convenio) includeClause[0].where = {
             nome_convenio: query.nome_convenio
         }
 
@@ -35,7 +35,7 @@ export default class ContractRegistryRepository {
             where: whereClause,
             include: includeClause,
             raw: true, nest: true
-        }) 
+        })
     }
 
     async ReadOne(subscription_id: string | number) {
@@ -71,11 +71,15 @@ export default class ContractRegistryRepository {
                     as: 'contract',
                     attributes: { exclude: ['id_convenio'] }
                 }]
-            }], raw: true, nest: true, 
+            }], raw: true, nest: true,
         })
     }
 
-    async Update() { }
+    async Update(body: IContractRegistry) {
+        return ContractRegistryModel.update(body, {
+            where: { id_conveniado: body.id_conveniado }
+        })
+    }
 
     async Delete(body: IContractRegistry) {
         return ContractRegistryModel.destroy({
