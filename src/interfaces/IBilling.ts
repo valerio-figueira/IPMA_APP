@@ -1,6 +1,6 @@
 export default interface IBilling {
     id_mensalidade?: number;
-    id_titular: number;
+    id_conveniado: number;
     valor: number;
     mes_referencia: number;
     ano_referencia: number;
