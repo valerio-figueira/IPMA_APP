@@ -60,7 +60,7 @@ export default class ContractRegistryService {
     async ReadOne(subscription_id: string | number) {
         const data = await this.contractRegistryRepository.ReadOne(subscription_id);
 
-        if(!data) throw new CustomError('Nenhum registro encontrado!', 400)
+        if (!data) throw new CustomError('Nenhum registro encontrado!', 400)
 
         return UserDataSanitizer.sanitizeQuery(data);
     }
@@ -68,17 +68,17 @@ export default class ContractRegistryService {
     async Update(body: IContractRegistry) {
         const subscription = new ContractRegistrySchema(body)
 
-        if(!subscription.id_conveniado) throw new CustomError('Verifique a identificação do conveniado', 400)
+        if (!subscription.id_conveniado) throw new CustomError('Verifique a identificação do conveniado', 400)
 
-        if(!subscription.ativo && !subscription.data_exclusao) {
-            subscription.data_exclusao = new Date(Date.now())
-        }
+        if (!subscription.ativo && !subscription.data_exclusao) subscription.data_exclusao = new Date(Date.now())
+
+        if (subscription.ativo && subscription.data_exclusao) subscription.data_exclusao = null
 
         const [AffectedCount] = await this.contractRegistryRepository.Update(subscription);
 
-        if(AffectedCount === 0) throw new CustomError('Nenhum dado foi alterado', 400)
+        if (AffectedCount === 0) throw new CustomError('Nenhum dado foi alterado', 400)
 
-        return this.ReadOne(subscription.id_conveniado)
+        return UserDataSanitizer.sanitizeQuery(await this.ReadOne(subscription.id_conveniado));
     }
 
     async Delete(body: IContractRegistry) {
