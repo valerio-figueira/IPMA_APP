@@ -10,7 +10,7 @@ export default class BillingController {
 
     async Create(req: Request, res: Response) {
         try {
-            res.status(201).json(await this.billingService.Create())
+            res.status(201).json(await this.billingService.Create(req.body))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
@@ -18,7 +18,7 @@ export default class BillingController {
 
     async ReadAll(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.billingService.ReadAll())
+            res.status(200).json(await this.billingService.ReadAll(req.query))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
