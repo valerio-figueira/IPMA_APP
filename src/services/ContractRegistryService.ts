@@ -5,29 +5,31 @@ import HolderService from "./HolderService";
 import BusinessContractService from "./BusinessContractService";
 import ContractRegistrySchema from "../classes/ContractRegistrySchema";
 import UserDataSanitizer from "../helpers/UserDataSanitizer";
+import BillingService from "./BillingService";
+import IBilling from "../interfaces/IBilling";
 
 
 export default class ContractRegistryService {
     contractRegistryRepository: ContractRegistryRepository;
     holderService: HolderService;
     businessContractService: BusinessContractService;
+    billingService: BillingService;
 
     constructor() {
         this.contractRegistryRepository = new ContractRegistryRepository();
         this.holderService = new HolderService()
         this.businessContractService = new BusinessContractService()
+        this.billingService = new BillingService()
     }
 
-    async Create(body: IContractRegistry) {
-        const holder = await this.holderService.ReadOne(body.id_titular)
+    async Create(body: IContractRegistry & IBilling) {
+        const holder = await this.findHolder(body)
 
-        if (!holder) throw new CustomError('Não foi possível localizar os dados do titular', 400)
-
-        const businessContract = await this.businessContractService.ReadOne(body.id_convenio);
-
-        if (!businessContract) throw new CustomError('Não foi possível localizar os dados do convênio', 400)
+        const businessContract = await this.findBusinessContract(body)
 
         const contractRegistry = await this.contractRegistryRepository.Create(body);
+
+        await this.billingService.Create(body)
 
         if (!contractRegistry) throw new CustomError('Não foi possível registrar o usuário no convênio', 500)
 
@@ -82,19 +84,31 @@ export default class ContractRegistryService {
     }
 
     async Delete(body: IContractRegistry) {
-        const holder = await this.holderService.ReadOne(body.id_titular)
+        const holder = await this.findHolder(body)
 
-        if (!holder) throw new CustomError('Não foi possível localizar os dados do titular', 400)
-
-        const businessContract = await this.businessContractService.ReadOne(body.id_convenio);
-
-        if (!businessContract) throw new CustomError('Não foi possível localizar os dados do convênio', 400)
+        const businessContract = await this.findBusinessContract(body)
 
         const deletedRegistry = await this.contractRegistryRepository.Delete(body);
 
         if (!deletedRegistry) throw new CustomError('Registro do conveniado não foi deletado', 400)
 
         return { message: `${holder.user.nome} foi removido do convênio ${businessContract.nome_convenio}` }
+    }
+
+    async findHolder(body: IContractRegistry) {
+        const holder = await this.holderService.ReadOne(body.id_titular)
+
+        if (!holder) throw new CustomError('Não foi possível localizar os dados do titular', 400)
+
+        return holder
+    }
+
+    async findBusinessContract(body: IContractRegistry) {
+        const businessContract = await this.businessContractService.ReadOne(body.id_convenio);
+
+        if (!businessContract) throw new CustomError('Não foi possível localizar os dados do convênio', 400)
+
+        return businessContract;
     }
 
 }
