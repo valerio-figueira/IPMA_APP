@@ -18,7 +18,7 @@ export default class ContractRegistryRepository {
     }
 
     async ReadAll(query: any) {
-        const whereClause: any = {}
+        const whereClause: any = { ativo: query.ativo || true }
         const includeClause: any = [{
             model: BusinessContractModel,
             as: 'contract',
