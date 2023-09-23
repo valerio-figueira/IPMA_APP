@@ -16,12 +16,12 @@ BillingModel.init(
             primaryKey: true,
             autoIncrement: true,
         },
-        id_titular: {
+        id_conveniado: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
                 model: ContractRegistryModel,
-                key: 'id_titular',
+                key: 'id_conveniado',
             }
         },
         valor: {
@@ -72,12 +72,12 @@ BillingModel.init(
 );
 
 BillingModel.belongsTo(ContractRegistryModel, {
-    foreignKey: 'id_titular',
+    foreignKey: 'id_conveniado',
     as: 'subscription'
 })
 
 ContractRegistryModel.hasMany(BillingModel, {
-    foreignKey: 'id_titular',
+    foreignKey: 'id_conveniado',
     as: 'billing'
 })
 
