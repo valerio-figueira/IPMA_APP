@@ -39,6 +39,8 @@ export default class HolderService {
     async ReadOne(holder_id: string | number) {
         const rawData = await this.holderRepository.ReadOne(holder_id);
 
+        if(!rawData) throw new CustomError('Nenhum registro encontrado!', 400)
+
         return UserDataSanitizer.sanitizeQuery(rawData)
     }
 

@@ -56,7 +56,11 @@ export default class ContractRegistryService {
     }
 
     async ReadOne(subscription_id: string | number) {
-        return this.contractRegistryRepository.ReadOne(subscription_id);
+        const data = await this.contractRegistryRepository.ReadOne(subscription_id);
+
+        if(!data) throw new CustomError('Nenhum registro encontrado!', 400)
+
+        return data;
     }
 
     async Update() {
