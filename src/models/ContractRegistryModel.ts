@@ -29,6 +29,10 @@ ContractRegistryModel.init(
         id_titular: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            references: {
+                model: HolderModel,
+                key: 'id_titular',
+            }
         },
         id_dependente: {
             type: DataTypes.INTEGER,
@@ -36,6 +40,10 @@ ContractRegistryModel.init(
         id_convenio: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            references: {
+                model: BusinessContractModel,
+                key: 'id_convenio',
+            }
         },
         ativo: {
             type: DataTypes.BOOLEAN,
