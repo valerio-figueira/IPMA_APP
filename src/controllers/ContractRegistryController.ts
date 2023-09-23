@@ -21,7 +21,7 @@ export default class ContractRegistryController {
 
     async ReadAll(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.contractRegistryService.ReadAll())
+            res.status(200).json(await this.contractRegistryService.ReadAll(req.query))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
@@ -29,7 +29,7 @@ export default class ContractRegistryController {
 
     async ReadOne(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.contractRegistryService.ReadOne())
+            res.status(200).json(await this.contractRegistryService.ReadOne(req.params.id))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }

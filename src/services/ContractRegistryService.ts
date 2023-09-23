@@ -32,12 +32,33 @@ export default class ContractRegistryService {
         return { message: `${holder.user.nome} agora é conveniado(a) da ${businessContract.nome_convenio}` }
     }
 
-    async ReadAll() {
-        return this.contractRegistryRepository.ReadAll();
+    async ReadAll(query: any) {
+        const holders = []
+        let nestedSubscriptions: any | null = null
+        const subscriptions: any[] = await this.contractRegistryRepository.ReadAll(query);
+
+        if (!subscriptions || subscriptions.length === 0) throw new CustomError('Nenhum registro encontrado!', 400)
+        // Busca titulares e aninha os convênios
+        for (let i = 0; i < subscriptions.length; i++) { 
+            if (nestedSubscriptions) {
+                if (subscriptions[i].id_titular === nestedSubscriptions.id_titular) {
+                    const index = holders.findIndex(holder => holder.id_titular === subscriptions[i].id_titular)
+                    holders[index]['subscriptions'][subscriptions[i]['contract'].nome_convenio] = { ...subscriptions[i] }
+                    break
+                }
+            }
+            nestedSubscriptions = subscriptions[i]
+            const holder = await this.holderService.ReadOne(subscriptions[i].id_titular)
+            holder['subscriptions'] = {}
+            holder['subscriptions'][subscriptions[i]['contract'].nome_convenio] = { ...subscriptions[i] }
+            holders.push(holder)
+        }
+
+        return holders
     }
 
-    async ReadOne() {
-        return this.contractRegistryRepository.ReadOne();
+    async ReadOne(subscription_id: string | number) {
+        return this.contractRegistryRepository.ReadOne(subscription_id);
     }
 
     async Update() {
@@ -55,7 +76,7 @@ export default class ContractRegistryService {
 
         const deletedRegistry = await this.contractRegistryRepository.Delete(body);
 
-        if(!deletedRegistry) throw new CustomError('Registro do conveniado não foi deletado', 400)
+        if (!deletedRegistry) throw new CustomError('Registro do conveniado não foi deletado', 400)
 
         return { message: `${holder.user.nome} foi removido do convênio ${businessContract.nome_convenio}` }
     }

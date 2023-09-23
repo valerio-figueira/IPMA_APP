@@ -6,7 +6,8 @@ import DocumentModel from "../models/user/DocumentModel";
 import LocationModel from "../models/user/LocationModel";
 import UserModel from "../models/user/UserModel";
 import BusinessContractModel from "../models/BusinessContractModel";
-import { Sequelize, Op } from "sequelize";
+import { Sequelize, Op, HasMany } from "sequelize";
+import CustomError from "../utils/CustomError";
 
 export default class ContractRegistryRepository {
 
@@ -16,11 +17,29 @@ export default class ContractRegistryRepository {
         return ContractRegistryModel.create(query, { raw: true })
     }
 
-    async ReadAll() {
-        return HolderModel.findAll({
-            where: {
-                '$subscription.id_titular$': { [Op.not]: null }
-            },
+    async ReadAll(query: any) {
+        const whereClause: any = {}
+        const includeClause: any = [{
+            model: BusinessContractModel,
+            as: 'contract',
+            attributes: { exclude: ['id_convenio'] }
+        }]
+
+        if(query.id_titular) whereClause.id_titular = query.id_titular
+
+        if(query.nome_convenio) includeClause[0].where = {
+            nome_convenio: query.nome_convenio
+        }
+
+        return ContractRegistryModel.findAll({
+            where: whereClause,
+            include: includeClause,
+            raw: true, nest: true
+        }) 
+    }
+
+    async ReadOne(subscription_id: string | number) {
+        return HolderModel.findOne({
             include: [{
                 model: UserModel,
                 as: 'user',
@@ -45,17 +64,16 @@ export default class ContractRegistryRepository {
             }, {
                 model: ContractRegistryModel,
                 as: 'subscription',
+                where: { id_conveniado: subscription_id },
                 attributes: { exclude: ['id_titular', 'id_convenio'] },
                 include: [{
                     model: BusinessContractModel,
                     as: 'contract',
                     attributes: { exclude: ['id_convenio'] }
                 }]
-            }], raw: true, nest: true
+            }], raw: true, nest: true, 
         })
     }
-
-    async ReadOne() { }
 
     async Update() { }
 
