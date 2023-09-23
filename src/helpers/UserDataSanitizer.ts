@@ -13,20 +13,23 @@ export default class UserDataSanitizer {
     }
 
     static sanitizeQuery(data: any) {
-        for(let key in data) {
-            for(let nestedKey in data[key]) {
-                if(typeof data[key][nestedKey] === 'string') data[key][nestedKey] = StringSanitizer.convertToUpperCase(nestedKey, data[key][nestedKey])
-                if(nestedKey.match('data_nasc')) data[key][nestedKey] = this.filterDate(data[key][nestedKey])
-                if(nestedKey.match('contact') || nestedKey.match('document') || nestedKey.match('location')) {
-                    for(let subNestedKey in data[key][nestedKey]) {
-                        if(typeof data[key][nestedKey][subNestedKey] === 'string') data[key][nestedKey][subNestedKey] = StringSanitizer.convertToUpperCase(subNestedKey, data[key][nestedKey][subNestedKey])
-                        if(subNestedKey.match('cpf')) data[key][nestedKey][subNestedKey] = this.formatCPF(data[key][nestedKey][subNestedKey])
-                        if(subNestedKey.match('data_expedicao')) data[key][nestedKey][subNestedKey] = this.filterDate(data[key][nestedKey][subNestedKey])
-                    }
-                }
+        for (const key in data) {
+            this.sanitizeNestedObject(data[key]);
+        }
+
+        return data;
+    }
+
+    static sanitizeNestedObject(data: any) {
+        for (const key in data) {
+            if (typeof data[key] === 'string') data[key] = StringSanitizer.convertToUpperCase(key, data[key])
+            if (key.match('data_nasc')) data[key] = this.filterDate(data[key])
+            if (key.match('cpf')) data[key] = this.formatCPF(data[key])
+            if (key.match('data_expedicao')) data[key] = this.filterDate(data[key])
+            if (typeof data[key] === 'object' && data[key] !== null) {
+                this.sanitizeNestedObject(data[key]);
             }
         }
-        return data
     }
 
     static formatCPF(cpf: string) {
@@ -51,8 +54,8 @@ export default class UserDataSanitizer {
     }
 
     static sanitizeFields(key: string, data: any) {
-        if(!data) return null
-        if(key.match('status')) this.filterStatus(data[key])
+        if (!data) return null
+        if (key.match('status')) this.filterStatus(data[key])
         if (key.match('cpf')) return data.replace(/\D/g, '');
         if (key.match('identidade')) return data.replace(/\W/g, '');
         if (key.match('celular')) return data.replace(/\D/g, '');
@@ -81,8 +84,8 @@ export default class UserDataSanitizer {
     }
 
     static filterStatus(obj: any) {
-        if(obj === 'Aposentado') return
-        if(obj === 'Ativo') return
+        if (obj === 'Aposentado') return
+        if (obj === 'Ativo') return
 
         return null
     }
@@ -90,9 +93,9 @@ export default class UserDataSanitizer {
     static filterDate(obj: any) {
         const regex = /^\d{4}-\d{2}-\d{2}$/;
 
-        if(!obj) return null
-        if(obj === '0000-00-00') return null
-        if(regex.test(obj)) return obj.replace(/-/g, '/')
+        if (!obj) return null
+        if (obj === '0000-00-00') return null
+        if (regex.test(obj)) return obj.replace(/-/g, '/')
 
         return obj
     }

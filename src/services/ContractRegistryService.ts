@@ -4,6 +4,7 @@ import CustomError from "../utils/CustomError";
 import HolderService from "./HolderService";
 import BusinessContractService from "./BusinessContractService";
 import ContractRegistrySchema from "../classes/ContractRegistrySchema";
+import UserDataSanitizer from "../helpers/UserDataSanitizer";
 
 
 export default class ContractRegistryService {
@@ -61,7 +62,7 @@ export default class ContractRegistryService {
 
         if(!data) throw new CustomError('Nenhum registro encontrado!', 400)
 
-        return data;
+        return UserDataSanitizer.sanitizeQuery(data);
     }
 
     async Update(body: IContractRegistry) {
