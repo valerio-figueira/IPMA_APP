@@ -26,29 +26,27 @@ export default class Queries {
         }]
     }]
 
-    static HolderIncludeUser = [
-        {
-            model: UserModel,
-            as: 'user',
-            attributes: { exclude: ['id_usuario'] },
-            include: [
-                {
-                    model: ContactModel,
-                    as: 'contact',
-                    attributes: { exclude: ['id_usuario', 'id_contato'] }
-                },
-                {
-                    model: DocumentModel,
-                    as: 'document',
-                    attributes: { exclude: ['id_usuario', 'id_documento'] },
-                },
-                {
-                    model: LocationModel,
-                    as: 'location',
-                    attributes: { exclude: ['id_usuario', 'id_localizacao'] }
-                }
-            ]
-        }
-    ]
+    static IncludeUserData = [{
+        model: UserModel,
+        as: 'user',
+        attributes: { exclude: ['id_usuario'] },
+        include: [
+            {
+                model: ContactModel,
+                as: 'contact',
+                attributes: { exclude: ['id_usuario', 'id_contato'] }
+            },
+            {
+                model: DocumentModel,
+                as: 'document',
+                attributes: { exclude: ['id_usuario', 'id_documento'] },
+            },
+            {
+                model: LocationModel,
+                as: 'location',
+                attributes: { exclude: ['id_usuario', 'id_localizacao'] }
+            }
+        ]
+    }]
 
 }

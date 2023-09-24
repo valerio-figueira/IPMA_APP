@@ -34,14 +34,14 @@ export default class HolderRepository {
 
     async ReadAll() {
         return HolderModel.findAll({
-            include: Queries.HolderIncludeUser, 
+            include: Queries.IncludeUserData, 
             raw: true, nest: true
         })
     }
 
     async ReadOne(holder_id: string | number) {
         return HolderModel.findByPk(holder_id, {
-            include: Queries.HolderIncludeUser, 
+            include: Queries.IncludeUserData, 
             raw: true, nest: true
         })
     }
