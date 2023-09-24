@@ -4,10 +4,8 @@ import HolderModel from "../models/HolderModel";
 import Database from "../db/Database";
 import CustomError from '../utils/CustomError';
 import { Transaction } from 'sequelize';
-import ContactModel from "../models/user/ContactModel";
-import DocumentModel from "../models/user/DocumentModel";
-import LocationModel from "../models/user/LocationModel";
 import UserModel from "../models/user/UserModel";
+import Queries from "../db/Queries";
 
 export default class HolderRepository {
     db: Database;
@@ -36,59 +34,15 @@ export default class HolderRepository {
 
     async ReadAll() {
         return HolderModel.findAll({
-            include: [
-                {
-                    model: UserModel,
-                    as: 'user',
-                    attributes: { exclude: ['id_usuario'] },
-                    include: [
-                        {
-                            model: ContactModel,
-                            as: 'contact',
-                            attributes: { exclude: ['id_usuario', 'id_contato'] }
-                        },
-                        {
-                            model: DocumentModel,
-                            as: 'document',
-                            attributes: { exclude: ['id_usuario', 'id_documento'] },
-                        },
-                        {
-                            model: LocationModel,
-                            as: 'location',
-                            attributes: { exclude: ['id_usuario', 'id_localizacao'] }
-                        }
-                    ]
-                }
-            ], raw: true, nest: true
+            include: Queries.HolderIncludeUser, 
+            raw: true, nest: true
         })
     }
 
     async ReadOne(holder_id: string | number) {
         return HolderModel.findByPk(holder_id, {
-            include: [
-                {
-                    model: UserModel,
-                    as: 'user',
-                    attributes: { exclude: ['id_usuario'] },
-                    include: [
-                        {
-                            model: ContactModel,
-                            as: 'contact',
-                            attributes: { exclude: ['id_usuario', 'id_contato'] }
-                        },
-                        {
-                            model: DocumentModel,
-                            as: 'document',
-                            attributes: { exclude: ['id_usuario', 'id_documento'] },
-                        },
-                        {
-                            model: LocationModel,
-                            as: 'location',
-                            attributes: { exclude: ['id_usuario', 'id_localizacao'] }
-                        }
-                    ]
-                }
-            ], raw: true, nest: true
+            include: Queries.HolderIncludeUser, 
+            raw: true, nest: true
         })
     }
 
