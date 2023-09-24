@@ -1,6 +1,8 @@
 import { IUser, IContact, IDocument, ILocation, IUserAttributes } from "../interfaces/IUser";
 import { IHolderBase } from "../interfaces/IHolder";
 import { Holder } from "./HolderSchema";
+import { IDependentBase } from "../interfaces/IDependent";
+import { Dependent } from "./DependentSchema";
 
 export class UserAttributes {
     user: User;
@@ -8,6 +10,7 @@ export class UserAttributes {
     contact: Contact;
     location: Location;
     holder?: IHolderBase;
+    dependent?: IDependentBase;
 
     constructor(attributes: IUserAttributes) {
         this.user = new User(attributes.user);
@@ -18,6 +21,10 @@ export class UserAttributes {
 
     addHolder(holder: IHolderBase) {
         this.holder = new Holder(holder)
+    }
+
+    addDependent(dependent: IDependentBase) {
+        this.dependent = new Dependent(dependent)
     }
 }
 
