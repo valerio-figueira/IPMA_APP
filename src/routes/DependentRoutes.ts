@@ -12,7 +12,7 @@ router.post("/:holder", async (req, res) => {
 });
 
 // READ ALL
-router.get("/:holder/dependents", async (req, res) => {
+router.get("/:holder", async (req, res) => {
     dependentController.ReadAll(req, res);
 });
 
