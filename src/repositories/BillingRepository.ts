@@ -20,16 +20,16 @@ export default class BillingRepository {
 
     async ReadAll(query: any) {
         const month = new Date().getMonth();
-        const whereClause: any = { 
+        const whereClause: any = {
             ativo: query.ativo || 1,
             '$billing.id_conveniado$': { [Op.not]: null },
             '$billing.mes_referencia$': query.mes_referencia || month
         }
 
-        if(query.nome_convenio) {
+        if (query.nome_convenio) {
             whereClause['$contract.nome_convenio$'] = query.nome_convenio
         }
-        
+
         return ContractRegistryModel.findAll({
             where: whereClause,
             include: Queries.ContractRegistryIncludeAll,
@@ -41,6 +41,10 @@ export default class BillingRepository {
 
     async Update() { }
 
-    async Delete() { }
+    async Delete(billing_id: string | number) {
+        return BillingModel.destroy({
+            where: { id_mensalidade: billing_id }
+        })
+    }
 
 }

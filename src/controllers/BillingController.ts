@@ -42,7 +42,7 @@ export default class BillingController {
 
     async Delete(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.billingService.Delete())
+            res.status(200).json(await this.billingService.Delete(req.params.id))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }

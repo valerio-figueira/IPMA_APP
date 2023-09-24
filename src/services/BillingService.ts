@@ -37,8 +37,8 @@ export default class BillingService {
         return this.billingRepository.Update();
     }
 
-    async Delete() {
-        return this.billingRepository.Delete();
+    async Delete(billing_id: string | number) {
+        return this.billingRepository.Delete(billing_id);
     }
 
     verifyDate(billing: IBilling) {
