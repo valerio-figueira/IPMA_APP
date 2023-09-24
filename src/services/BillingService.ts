@@ -29,8 +29,8 @@ export default class BillingService {
         return this.billingRepository.ReadAll(query);
     }
 
-    async ReadOne() {
-        return this.billingRepository.ReadOne();
+    async ReadOne(billing_id: string | number) {
+        return this.billingRepository.ReadOne(billing_id);
     }
 
     async Update() {

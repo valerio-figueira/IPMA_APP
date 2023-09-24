@@ -37,7 +37,28 @@ export default class BillingRepository {
         })
     }
 
-    async ReadOne() { }
+    async ReadOne(billing_id: string | number) {
+        return ContractRegistryModel.findOne({
+            include: [{
+                model: BillingModel,
+                as: 'billing',
+                where: { id_mensalidade: billing_id },
+                attributes: { exclude: ['id_conveniado'] }
+            }, {
+                model: BusinessContractModel,
+                as: 'contract'
+            }, {
+                model: HolderModel,
+                as: 'holder',
+                attributes: { exclude: ['id_usuario'] },
+                include: [{
+                    model: UserModel,
+                    as: 'user'
+                }]
+            }],
+            raw: true, nest: true
+        })
+    }
 
     async Update() { }
 
