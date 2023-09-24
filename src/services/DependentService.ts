@@ -2,13 +2,16 @@ import { Contact, Document, Location, User, UserAttributes } from "../classes/Us
 import UserDataSanitizer from "../helpers/UserDataSanitizer";
 import { IHolder } from "../interfaces/IHolder";
 import DependentRepository from "../repositories/DependentRepository";
+import HolderRepository from "../repositories/HolderRepository";
 
 
 export default class DependentService {
     dependentRepository: DependentRepository;
+    holderRepository: HolderRepository;
 
     constructor() {
         this.dependentRepository = new DependentRepository();
+        this.holderRepository = new HolderRepository();
     }
 
     async Create(body: any) {
@@ -28,7 +31,24 @@ export default class DependentService {
     }
 
     async ReadAll(holder: string) {
-        return this.dependentRepository.ReadAll(holder);
+        const dependents: any[] = await this.dependentRepository.ReadAll(holder);
+
+        const holderData: Record<number, any> = {}
+
+        for(let dependent of dependents) {
+            const idTitular = dependent.id_titular
+
+            if(!holderData[idTitular]) {
+                const holderFinded: any = await this.holderRepository.ReadOne(idTitular)
+                holderFinded['dependents'] = {}
+                holderData[idTitular] = holderFinded
+            }
+
+            const dependentName = dependent['user']['nome']
+            holderData[idTitular]['dependents'][dependentName] = { ...dependent }
+        }
+
+        return Object.values(holderData)
     }
 
     async ReadOne(holder: string, dependent: string) {

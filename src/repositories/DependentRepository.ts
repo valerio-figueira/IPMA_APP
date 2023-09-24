@@ -4,6 +4,11 @@ import { IUserAttributes } from "../interfaces/IUser";
 import DependentModel from "../models/DependentModel";
 import CustomError from "../utils/CustomError";
 import UserRepository from "./UserRepository";
+import HolderModel from "../models/HolderModel";
+import UserModel from "../models/user/UserModel";
+import ContactModel from "../models/user/ContactModel";
+import DocumentModel from "../models/user/DocumentModel";
+import LocationModel from "../models/user/LocationModel";
 
 export default class DependentRepository {
     db: Database;
@@ -30,7 +35,35 @@ export default class DependentRepository {
         }
     }
 
-    async ReadAll(holder: string) { }
+    async ReadAll(holder: string) {
+        return DependentModel.findAll({
+            where: { id_titular: holder },
+            attributes: { exclude: ['id_usuario'] },
+            include: [{
+                model: UserModel,
+                as: 'user',
+                attributes: { exclude: ['id_usuario'] },
+                include: [
+                    {
+                        model: ContactModel,
+                        as: 'contact',
+                        attributes: { exclude: ['id_usuario', 'id_contato'] }
+                    },
+                    {
+                        model: DocumentModel,
+                        as: 'document',
+                        attributes: { exclude: ['id_usuario', 'id_documento'] },
+                    },
+                    {
+                        model: LocationModel,
+                        as: 'location',
+                        attributes: { exclude: ['id_usuario', 'id_localizacao'] }
+                    }
+                ]
+            }]
+            , raw: true, nest: true
+        })
+    }
 
     async ReadOne(holder: string, dependent: string) { }
 
