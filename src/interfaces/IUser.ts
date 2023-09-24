@@ -1,3 +1,4 @@
+import IContractRegistry from "./IContractRegistry";
 import { IDependentBase } from "./IDependent";
 import { IHolderBase } from "./IHolder";
 
@@ -47,5 +48,6 @@ export interface IUserAttributes {
     location: ILocation;
     holder?: IHolderBase;
     dependent?: IDependentBase;
+    contract?: IContractRegistry
     [key: string]: any;
 }
