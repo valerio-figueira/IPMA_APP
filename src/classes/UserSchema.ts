@@ -3,6 +3,8 @@ import { IHolderBase } from "../interfaces/IHolder";
 import { Holder } from "./HolderSchema";
 import { IDependentBase } from "../interfaces/IDependent";
 import { Dependent } from "./DependentSchema";
+import IContractRegistry from "../interfaces/IContractRegistry";
+import ContractRegistry from "./ContractRegistrySchema";
 
 export class UserAttributes {
     user: User;
@@ -11,6 +13,7 @@ export class UserAttributes {
     location: Location;
     holder?: IHolderBase;
     dependent?: IDependentBase;
+    contract?: IContractRegistry;
 
     constructor(attributes: IUserAttributes) {
         this.user = new User(attributes.user);
@@ -25,6 +28,10 @@ export class UserAttributes {
 
     addDependent(dependent: IDependentBase) {
         this.dependent = new Dependent(dependent)
+    }
+
+    addContract(contract: IContractRegistry) {
+        this.contract = new ContractRegistry(contract)
     }
 }
 
