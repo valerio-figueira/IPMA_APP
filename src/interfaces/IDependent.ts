@@ -1,8 +1,8 @@
 import { IContact, IDocument, ILocation, IUser } from "./IUser";
 
 export interface IDependentBase {
-    id_dependente: number;
-    id_usuario: number;
+    id_dependente?: number;
+    id_usuario?: number;
     id_titular: number;
     grau_parentesco: string | null;
 }
