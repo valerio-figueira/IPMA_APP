@@ -9,6 +9,8 @@ import UserModel from "../models/user/UserModel";
 import ContactModel from "../models/user/ContactModel";
 import DocumentModel from "../models/user/DocumentModel";
 import LocationModel from "../models/user/LocationModel";
+import ContractRegistryModel from "../models/ContractRegistryModel";
+
 
 export default class DependentRepository {
     db: Database;
@@ -27,8 +29,13 @@ export default class DependentRepository {
 
             const dependent = await DependentModel.create(query.dependent, { transaction: t, raw: true })
 
+            query.contract!.id_dependente = dependent.id_dependente
+
+            const contract = await ContractRegistryModel.create(query.contract, { transaction: t, raw: true })
+
             await t.commit();
-            return { user, document, contact, location, dependent };
+
+            return this.createNestedObj([dependent, user, document, contact, location, contract]);
         } catch (error: any) {
             await t.rollback();
             throw new CustomError(`Erro ao cadastrar dependente: ${error}`, 500)
@@ -99,4 +106,18 @@ export default class DependentRepository {
 
     async Delete() { }
 
+    createNestedObj(data: any[]) {
+        return {
+            dependent: {
+                ...data[0].toJSON(),
+                user: {
+                    ...data[1].toJSON(),
+                    document: data[2].toJSON(),
+                    contact: data[3].toJSON(),
+                    location: data[4].toJSON(),
+                },
+                contract: data[5].toJSON()
+            }
+        }
+    }
 }

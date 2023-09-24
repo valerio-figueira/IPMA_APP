@@ -1,3 +1,4 @@
+import ContractRegistry from "../classes/ContractRegistrySchema";
 import { Contact, Document, Location, User, UserAttributes } from "../classes/UserSchema";
 import UserDataSanitizer from "../helpers/UserDataSanitizer";
 import { IHolder } from "../interfaces/IHolder";
@@ -23,11 +24,9 @@ export default class DependentService {
 
         const userData = new UserAttributes({ user, document, contact, location });
         userData.addDependent(body)
+        userData.addContract(body)
 
-        const rawData = await this.dependentRepository.Create(userData)
-        let sanitizedData = UserDataSanitizer.sanitizeModel(rawData)
-
-        return sanitizedData
+        return await this.dependentRepository.Create(userData)
     }
 
     async ReadAll(holder: string) {

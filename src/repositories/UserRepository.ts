@@ -10,7 +10,7 @@ import CustomError from "../utils/CustomError";
 export default class UserRepository {
 
     async Create(query: IUserAttributes, transaction: Transaction) {
-        const user = await UserModel.create(query.user, { transaction });
+        const user = await UserModel.create(query.user, { transaction, raw: true });
 
         this.insertIdValues(query, user.id_usuario);
 
