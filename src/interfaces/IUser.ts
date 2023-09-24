@@ -1,3 +1,4 @@
+import { IDependentBase } from "./IDependent";
 import { IHolderBase } from "./IHolder";
 
 export interface IUser {
@@ -45,5 +46,6 @@ export interface IUserAttributes {
     contact: IContact;
     location: ILocation;
     holder?: IHolderBase;
+    dependent?: IDependentBase;
     [key: string]: any;
 }
