@@ -3,10 +3,11 @@ import IContractRegistry from "../interfaces/IContractRegistry";
 import CustomError from "../utils/CustomError";
 import HolderService from "./HolderService";
 import BusinessContractService from "./BusinessContractService";
-import ContractRegistrySchema from "../classes/ContractRegistrySchema";
+import ContractRegistry from "../classes/ContractRegistrySchema";
 import UserDataSanitizer from "../helpers/UserDataSanitizer";
 import BillingService from "./BillingService";
 import IBilling from "../interfaces/IBilling";
+import DependentService from "./DependentService";
 
 
 export default class ContractRegistryService {
@@ -14,15 +15,18 @@ export default class ContractRegistryService {
     holderService: HolderService;
     businessContractService: BusinessContractService;
     billingService: BillingService;
+    dependentService: DependentService;
 
     constructor() {
         this.contractRegistryRepository = new ContractRegistryRepository();
         this.holderService = new HolderService()
+        this.dependentService = new DependentService()
         this.businessContractService = new BusinessContractService()
         this.billingService = new BillingService()
     }
 
     async Create(body: IContractRegistry & IBilling) {
+        const dependent: any = await this.findDependent(body)
         const holder = await this.findHolder(body)
 
         const businessContract = await this.findBusinessContract(body)
@@ -33,7 +37,9 @@ export default class ContractRegistryService {
 
         if (!contractRegistry) throw new CustomError('Não foi possível registrar o usuário no convênio', 500)
 
-        return { message: `${holder.user.nome} agora é conveniado(a) da ${businessContract.nome_convenio}` }
+        const name = dependent.user.nome || holder.user.nome
+
+        return { message: `${name} agora é conveniado(a) da ${businessContract.nome_convenio}` }
     }
 
     async ReadAll(query: any) {
@@ -68,7 +74,7 @@ export default class ContractRegistryService {
     }
 
     async Update(body: IContractRegistry) {
-        const subscription = new ContractRegistrySchema(body)
+        const subscription = new ContractRegistry(body)
 
         if (!subscription.id_conveniado) throw new CustomError('Verifique a identificação do conveniado', 400)
 
@@ -93,6 +99,16 @@ export default class ContractRegistryService {
         if (!deletedRegistry) throw new CustomError('Registro do conveniado não foi deletado', 400)
 
         return { message: `${holder.user.nome} foi removido do convênio ${businessContract.nome_convenio}` }
+    }
+
+    async findDependent(body: IContractRegistry) {
+        if (!body.id_dependente) return
+
+        const dependent = await this.dependentService.ReadOne(body.id_titular, body.id_dependente)
+
+        if (!dependent) throw new CustomError('Não foi possível localizar os dados do dependente', 400)
+
+        return dependent
     }
 
     async findHolder(body: IContractRegistry) {
