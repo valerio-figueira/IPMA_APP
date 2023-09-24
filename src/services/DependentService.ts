@@ -51,8 +51,8 @@ export default class DependentService {
         return Object.values(holderData)
     }
 
-    async ReadOne(holder: string, dependent: string) {
-        return this.dependentRepository.ReadOne(holder, dependent);
+    async ReadOne(holder: string | number, id_dependente: string | number) {
+        return this.dependentRepository.ReadOne(holder, id_dependente);
     }
 
     async Update() { }

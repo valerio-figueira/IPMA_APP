@@ -65,7 +65,35 @@ export default class DependentRepository {
         })
     }
 
-    async ReadOne(holder: string, dependent: string) { }
+    async ReadOne(holder: string | number, id_dependente: string | number) {
+        return DependentModel.findOne({
+            where: { id_titular: holder, id_dependente },
+            attributes: { exclude: ['id_usuario'] },
+            include: [{
+                model: UserModel,
+                as: 'user',
+                attributes: { exclude: ['id_usuario'] },
+                include: [
+                    {
+                        model: ContactModel,
+                        as: 'contact',
+                        attributes: { exclude: ['id_usuario', 'id_contato'] }
+                    },
+                    {
+                        model: DocumentModel,
+                        as: 'document',
+                        attributes: { exclude: ['id_usuario', 'id_documento'] },
+                    },
+                    {
+                        model: LocationModel,
+                        as: 'location',
+                        attributes: { exclude: ['id_usuario', 'id_localizacao'] }
+                    }
+                ]
+            }]
+            , raw: true, nest: true
+        })
+    }
 
     async Update() { }
 
