@@ -42,25 +42,7 @@ export default class ContractRegistryRepository {
         return HolderModel.findOne({
             include: [{
                 model: UserModel,
-                as: 'user',
-                attributes: { exclude: ['id_usuario'] },
-                include: [
-                    {
-                        model: ContactModel,
-                        as: 'contact',
-                        attributes: { exclude: ['id_usuario', 'id_contato'] }
-                    },
-                    {
-                        model: DocumentModel,
-                        as: 'document',
-                        attributes: { exclude: ['id_usuario', 'id_document'] }
-                    },
-                    {
-                        model: LocationModel,
-                        as: 'location',
-                        attributes: { exclude: ['id_usuario', 'id_localizacao'] }
-                    }
-                ]
+                as: 'user'
             }, {
                 model: ContractRegistryModel,
                 as: 'subscription',
