@@ -1,6 +1,6 @@
 import IContractRegistry from "../interfaces/IContractRegistry";
 
-export default class ContractRegistrySchema {
+export default class ContractRegistry {
     id_conveniado?: number;
     id_titular: number;
     id_dependente?: number | null;
