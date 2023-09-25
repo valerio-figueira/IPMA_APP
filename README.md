@@ -53,6 +53,10 @@ A aplicação está em desenvolvimento e atualmente oferece as seguintes funcion
 - Gerenciamento de convênios médicos e odontológicos.
 - Controle de pagamentos e mensalidades.
 
+## Modelagem de Dados
+
+![Data Model](https://github.com/valerio-figueira/IPMA_EXPRESS_SERVER/blob/master/src/db/data_model_sql.png)
+
 ## Como Começar
 
 Para executar a aplicação em seu ambiente local, siga estas etapas:
