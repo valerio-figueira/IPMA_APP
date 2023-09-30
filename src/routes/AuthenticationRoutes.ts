@@ -1,5 +1,6 @@
 import { Router } from "express";
 import AuthenticationController from "../controllers/AuthenticationController";
+import JWT from "../authentication/JWT";
 
 
 const authenticationController = new AuthenticationController();
@@ -32,5 +33,9 @@ router.delete("/:id", async (req, res) => {
     authenticationController.Delete(req, res)
 })
 
+// LOGIN
+router.post('/login', async (req, res) => {
+    JWT.Login(req, res)
+})
 
 export default router;
