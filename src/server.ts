@@ -18,12 +18,11 @@ import BusinessContractRoutes from './routes/BusinessContractRoutes'
 import BillingRoutes from './routes/BillingRoutes'
 import DoctorRoutes from './routes/DoctorRoutes'
 import AuthenticationRoutes from './routes/AuthenticationRoutes'
+import JWT from "./authentication/JWT";
 
 declare module 'express-session' {
     interface SessionData { user: string; }
 }
-
-require("dotenv").config();
 
 export default class Server {
     APP: Application;
@@ -54,10 +53,8 @@ export default class Server {
         this.APP.use(express.static(path.join("public")));
     }
 
-    private isAuthenticated(req: Request, res: Response, next: NextFunction) {
-        console.log(req.session.user)
-        if (req.session.user) next()
-        else res.redirect('/')
+    private isAuthenticate(req: Request, res: Response, next: NextFunction) {
+        JWT.verifyToken(req, res, next)
     }
 
     private setupRoutes() {
