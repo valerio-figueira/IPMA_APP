@@ -45,7 +45,7 @@ export default class JWT {
     static async Login(req: Request, res: Response) {
         const { username, password } = req.body;
 
-        const userFound = await this.findUserInDataBase(username, password)
+        const userFound = await this.findUserInDatabase(username, password)
 
         if (username === userFound?.id_login && password === userFound?.senha_autenticacao) {
             const user = {
@@ -61,7 +61,7 @@ export default class JWT {
         }
     }
 
-    static async findUserInDataBase(username: string, password: string) {
+    static async findUserInDatabase(username: string, password: string) {
         return AuthenticationModel.findOne({
             where: {
                 id_login: username,
