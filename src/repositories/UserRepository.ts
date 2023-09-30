@@ -6,10 +6,17 @@ import LocationModel from "../models/user/LocationModel";
 import { Transaction } from 'sequelize';
 import { UserAttributes } from "../classes/UserSchema";
 import CustomError from "../utils/CustomError";
+import Database from "../db/Database";
 
 export default class UserRepository {
+    db: Database
 
-    async Create(query: IUserAttributes, transaction: Transaction) {
+    constructor() {
+        this.db = new Database();
+    }
+
+    async Create(query: IUserAttributes, transaction: Transaction | undefined = undefined) {
+        if (!transaction) transaction = await this.db.sequelize.transaction()
         const user = await UserModel.create(query.user, { transaction, raw: true });
 
         this.insertIdValues(query, user.id_usuario);
@@ -23,7 +30,7 @@ export default class UserRepository {
 
     async ReadAll() { }
 
-    async ReadOne(user_id: number) {
+    async ReadOne(user_id: number | string) {
         return UserModel.findByPk(user_id, {
             include: [
                 {
