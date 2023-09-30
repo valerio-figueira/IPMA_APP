@@ -6,6 +6,8 @@ import CustomError from '../utils/CustomError';
 import { Transaction } from 'sequelize';
 import UserModel from "../models/user/UserModel";
 import Queries from "../db/Queries";
+import ContractRegistryModel from "../models/ContractRegistryModel";
+import DependentModel from "../models/DependentModel";
 
 export default class HolderRepository {
     db: Database;
@@ -34,14 +36,14 @@ export default class HolderRepository {
 
     async ReadAll() {
         return HolderModel.findAll({
-            include: Queries.IncludeUserData, 
+            include: Queries.IncludeUserData,
             raw: true, nest: true
         })
     }
 
     async ReadOne(holder_id: string | number) {
         return HolderModel.findByPk(holder_id, {
-            include: Queries.IncludeUserData, 
+            include: Queries.IncludeUserData,
             raw: true, nest: true
         })
     }
@@ -79,6 +81,23 @@ export default class HolderRepository {
             const holder = await HolderModel.findByPk(holder_id, { raw: true })
             const user_id = holder!['id_usuario']
             const user = await UserModel.findByPk(user_id, { raw: true })
+            const dependents = await DependentModel.findAll({
+                where: { id_titular: holder_id }
+            })
+
+            if (dependents.length > 0) {
+                for (let dependent of dependents) {
+                    await ContractRegistryModel.destroy({
+                        where: { id_titular: holder_id },
+                        transaction: t,
+                    })
+
+                    await DependentModel.destroy({
+                        where: { id_dependente: dependent.id_dependente },
+                        transaction: t,
+                    })
+                }
+            }
 
             await HolderModel.destroy({
                 where: { id_usuario: user_id },
@@ -89,7 +108,7 @@ export default class HolderRepository {
 
             await t.commit()
 
-            return { message: `O usuário ${user?.nome} foi removido` }
+            return { message: `O usuário ${user?.nome} foi removido juntamente com todas as suas dependências` }
         } catch (error: any) {
             await t.rollback();
             throw new CustomError(`Falha ao remover titular: ${error.message}`, 500)
