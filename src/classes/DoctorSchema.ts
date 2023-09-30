@@ -9,7 +9,7 @@ export default class DoctorSchema {
     endereco?: string | null
     bairro?: string | null
     telefone?: string | null
-    data_registro?: Date
+    data_registro?: string
 
     constructor(body: IDoctor) {
         this.codigo_prestador = body.codigo_prestador
