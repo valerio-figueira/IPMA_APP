@@ -33,7 +33,7 @@ router.put('/', async (req, res) => {
 })
 
 // DELETE
-router.delete('/', async (req, res) => {
+router.delete('/:id', async (req, res) => {
     doctorController.Delete(req, res)
 })
 
