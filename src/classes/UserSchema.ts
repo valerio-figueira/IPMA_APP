@@ -5,8 +5,10 @@ import { IDependentBase } from "../interfaces/IDependent";
 import { Dependent } from "./DependentSchema";
 import IContractRegistry from "../interfaces/IContractRegistry";
 import ContractRegistry from "./ContractRegistrySchema";
+import IAuthentication from "../interfaces/IAuthentication";
 
 export class UserAttributes {
+    authentication?: IAuthentication;
     user: User;
     document: Document;
     contact: Contact;
@@ -32,6 +34,10 @@ export class UserAttributes {
 
     addContract(contract: IContractRegistry) {
         this.contract = new ContractRegistry(contract)
+    }
+
+    addAuthentication(authentication: IAuthentication) {
+        this.authentication = authentication
     }
 }
 
