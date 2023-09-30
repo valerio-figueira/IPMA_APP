@@ -3,6 +3,7 @@ import path from "path";
 import cors from 'cors';
 import BodyParser, { json } from 'body-parser';
 import session from "express-session";
+import fileUpload from "express-fileupload";
 
 // CONFIG
 import Cors from "./config/Cors";
@@ -15,6 +16,7 @@ import LoginRoutes from './routes/LoginRoutes';
 import ContractRegistryRoutes from './routes/ContractRegistryModelRoutes'
 import BusinessContractRoutes from './routes/BusinessContractRoutes'
 import BillingRoutes from './routes/BillingRoutes'
+import DoctorRoutes from './routes/DoctorRoutes'
 
 declare module 'express-session' {
     interface SessionData { user: string; }
@@ -46,6 +48,7 @@ export default class Server {
         this.APP.use(BodyParser.json());
 
         this.APP.use(session(Session.config))
+        this.APP.use(fileUpload())
 
         this.APP.use(express.static(path.join("public")));
     }
@@ -64,6 +67,7 @@ export default class Server {
         this.APP.use('/api/v1/contract-registry', ContractRegistryRoutes)
         this.APP.use('/api/v1/business-contract', BusinessContractRoutes)
         this.APP.use('/api/v1/billings', BillingRoutes)
+        this.APP.use('/api/v1/doctors', DoctorRoutes)
     }
 
     private rootHandler(req: Request, res: Response) {
