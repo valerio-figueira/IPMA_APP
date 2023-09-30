@@ -61,7 +61,8 @@ UserModel.hasOne(AuthenticationModel, {
 })
 
 AuthenticationModel.belongsTo(UserModel, {
-    foreignKey: 'id_usuario'
+    foreignKey: 'id_usuario',
+    as: 'user'
 })
 
 export default AuthenticationModel
