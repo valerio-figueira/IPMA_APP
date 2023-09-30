@@ -1,3 +1,4 @@
+import Queries from "../db/Queries";
 import IAuthentication from "../interfaces/IAuthentication";
 import AuthenticationModel from "../models/AuthenticationModel";
 
@@ -11,13 +12,17 @@ export default class AuthenticationRepository {
     }
 
     async ReadAll(query: any) {
-        return AuthenticationModel.findAll({ raw: true })
+        return AuthenticationModel.findAll({
+            include: Queries.IncludeUserData,
+            raw: true, nest: true
+        })
     }
 
     async ReadOne(auth_id: string | number) {
         return AuthenticationModel.findOne({
             where: { id_autenticacao: auth_id },
-            raw: true
+            include: Queries.IncludeUserData,
+            raw: true, nest: true
         })
     }
 

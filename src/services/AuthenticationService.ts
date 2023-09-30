@@ -28,7 +28,7 @@ export default class AutenticationService {
             if (!userName) {
                 throw new CustomError('Usuário não foi encontrado', 400);
             }
-            return { message: `${userName} foi registrado(a) no sistema!` };
+            return this.authenticationRepository.ReadOne(auth.id_autenticacao)
         }
     }
 
