@@ -51,7 +51,7 @@ export default class DoctorController {
 
     async Delete(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.doctorService.Update(req.params.id))
+            res.status(200).json(await this.doctorService.Delete(req.params.id))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
