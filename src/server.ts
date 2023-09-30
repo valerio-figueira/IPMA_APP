@@ -17,6 +17,7 @@ import ContractRegistryRoutes from './routes/ContractRegistryModelRoutes'
 import BusinessContractRoutes from './routes/BusinessContractRoutes'
 import BillingRoutes from './routes/BillingRoutes'
 import DoctorRoutes from './routes/DoctorRoutes'
+import AuthenticationRoutes from './routes/AuthenticationRoutes'
 
 declare module 'express-session' {
     interface SessionData { user: string; }
@@ -68,6 +69,7 @@ export default class Server {
         this.APP.use('/api/v1/business-contract', BusinessContractRoutes)
         this.APP.use('/api/v1/billings', BillingRoutes)
         this.APP.use('/api/v1/doctors', DoctorRoutes)
+        this.APP.use('/api/v1/authentications', AuthenticationRoutes)
     }
 
     private rootHandler(req: Request, res: Response) {
