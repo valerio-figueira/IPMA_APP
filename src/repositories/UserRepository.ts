@@ -7,6 +7,9 @@ import { Transaction } from 'sequelize';
 import { UserAttributes } from "../classes/UserSchema";
 import CustomError from "../utils/CustomError";
 import Database from "../db/Database";
+import Queries from "../db/Queries";
+
+type OptionalTransaction = Transaction | undefined;
 
 export default class UserRepository {
     db: Database
@@ -15,7 +18,7 @@ export default class UserRepository {
         this.db = new Database();
     }
 
-    async Create(query: IUserAttributes, transaction: Transaction | undefined = undefined) {
+    async Create(query: IUserAttributes, transaction: OptionalTransaction = undefined) {
         if (!transaction) transaction = await this.db.sequelize.transaction()
         const user = await UserModel.create(query.user, { transaction, raw: true });
 
@@ -28,7 +31,12 @@ export default class UserRepository {
         return { user, document, contact, location }
     }
 
-    async ReadAll() { }
+    async ReadAll() {
+        return UserModel.findAll({
+            include: Queries.IncludeUserData,
+            raw: true
+        })
+    }
 
     async ReadOne(user_id: number | string) {
         return UserModel.findByPk(user_id, {
@@ -52,7 +60,9 @@ export default class UserRepository {
         })
     }
 
-    async Update(user_id: number, query: IUserAttributes, transaction: Transaction) {
+    async Update(user_id: number, query: IUserAttributes, transaction: OptionalTransaction = undefined) {
+        if (!transaction) transaction = await this.db.sequelize.transaction()
+
         const [user] = await UserModel.update(query.user, {
             where: { id_usuario: user_id },
             transaction
@@ -76,7 +86,9 @@ export default class UserRepository {
         return this.checkAffectedCount({ user, contact, document, location })
     }
 
-    async Delete(user_id: number, transaction: Transaction) {
+    async Delete(user_id: number | string, transaction: OptionalTransaction = undefined) {
+        if (!transaction) transaction = await this.db.sequelize.transaction()
+
         await DocumentModel.destroy({
             where: { id_usuario: user_id }, transaction
         });

@@ -23,14 +23,30 @@ export default class UserService {
         }
     }
 
-    async ReadAll(query: any) { }
+    async ReadAll() {
+        return this.userRepository.ReadAll()
+    }
 
     async ReadOne(user_id: string | number) {
         return this.userRepository.ReadOne(user_id)
     }
 
-    async Update() { }
+    async Update(body: any) {
+        const user = new User(body)
+        const document = new Document(body)
+        const contact = new Contact(body)
+        const location = new Location(body)
+        const userData = new UserAttributes({ user, document, contact, location });
 
-    async Delete(user_id: string | number) { }
+        try {
+            return this.userRepository.Update(user.id_usuario!, userData)
+        } catch (error: any) {
+            throw new CustomError('Não foi possível registrar o usuário', 400)
+        }
+    }
+
+    async Delete(user_id: string | number) {
+        return this.userRepository.Delete(user_id)
+    }
 
 }
