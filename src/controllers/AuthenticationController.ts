@@ -34,7 +34,7 @@ export default class AuthenticationController {
 
     async Update(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.authenticationService.Update())
+            res.status(200).json(await this.authenticationService.Update(req.body))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
