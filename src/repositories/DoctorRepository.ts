@@ -14,23 +14,32 @@ export default class DoctorRepository {
     }
 
     async ReadAll(query: any) {
-        return await DoctorModel.findAll({ raw: true })
+        const whereClause: any = {}
+
+        if (query.especialidade) {
+            whereClause['especialidade'] = query.especialidade
+        }
+
+        return DoctorModel.findAll({
+            where: whereClause, raw: true
+        })
     }
 
     async ReadOne(id_doctor: string | number) {
-        return await DoctorModel.findOne({
-            where: { id_medico: id_doctor }
+        return DoctorModel.findOne({
+            where: { id_medico: id_doctor },
+            raw: true
         })
     }
 
     async Update(query: IDoctor) {
-        return await DoctorModel.update(query, {
+        return DoctorModel.update(query, {
             where: { id_medico: query.id_medico }
         })
     }
 
     async Delete(id_doctor: string | number) {
-        return await DoctorModel.destroy({
+        return DoctorModel.destroy({
             where: { id_medico: id_doctor }
         })
     }

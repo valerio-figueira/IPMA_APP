@@ -36,11 +36,29 @@ export default class DoctorService {
     }
 
     async Update(query: IDoctor) {
-        return this.doctorRepository.Update(query)
+        if (!query.id_medico) throw new CustomError('Insira o código de identificação', 400)
+
+        const [affectedCount] = await this.doctorRepository.Update(query)
+
+        if (affectedCount === 0) throw new CustomError('Nenhum médico foi atualizado', 400)
+
+        const doctor: any = await this.doctorRepository.ReadOne(query.id_medico);
+
+        if (!doctor) throw new CustomError('Nenhum médico foi encontrado', 400)
+
+        return doctor
     }
 
     async Delete(id_doctor: string | number) {
-        return this.doctorRepository.Delete(id_doctor)
+        const doctor: any = await this.doctorRepository.ReadOne(id_doctor);
+
+        if (!doctor) throw new CustomError('Nenhum médico foi encontrado', 400)
+
+        const deletedDoctor = await this.doctorRepository.Delete(id_doctor)
+
+        if (deletedDoctor === 0) throw new CustomError('Nenhum médico foi removido', 400)
+
+        return { message: `${doctor.nome_medico} foi removido do sistema` }
     }
 
     async ExtractData(files: FileArray | undefined | null) {
