@@ -13,6 +13,9 @@ declare global {
 
 export default class JWT {
     private static SECRET_KEY = (process.env.SECRET_KEY as string)
+    static AllUsersAccess = ['SUPERUSUARIO', 'ADMINISTRADOR', 'FUNCIONARIO', 'USUARIO_COMUM']
+    static ADMAccess = ['SUPERUSUARIO', 'ADMINISTRADOR']
+    static ROOTAccess = ['SUPERUSUARIO']
 
     static async verifyToken(req: Request, res: Response, next: NextFunction) {
         const token = req.header('x-auth-token');
@@ -30,11 +33,12 @@ export default class JWT {
         }
     }
 
-    static verifyPermission(permission: string) {
-        return (req: Request, res: Response, next: NextFunction) => {
+    static isAuthorized(permissions: string[]) {
+        return async (req: Request, res: Response, next: NextFunction) => {
+            await this.verifyToken(req, res, next)
             const user = req.user;
 
-            if (user && user.role === permission) {
+            if (user && permissions.includes(user.role)) {
                 next();
             } else {
                 res.status(403).json({ message: 'Acesso proibido. Você não tem permissão para acessar esta rota.' });
