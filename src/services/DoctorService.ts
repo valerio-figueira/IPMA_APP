@@ -105,7 +105,7 @@ export default class DoctorService {
         if (column.match(/Nome\sPrestador/gi)) return 'doctor_name'
         if (column.match(/Endereço/gi)) return 'address'
         if(column.match(/Especialidade/gi)) return 'speciality'
-        if(column.match(/Localização/gi)) return 'location'
+        if(column.match(/Localidade/gi)) return 'location'
         if(column.match(/CEP/gi)) return 'zip_code'
         if(column.match(/Bairro/gi)) return 'neighborhood'
         if(column.match(/Cidade/gi)) return 'city'
