@@ -10,7 +10,10 @@ export default class DoctorRepository {
     }
 
     async BulkCreate() {
-        return await DoctorModel.bulkCreate(Doctors)
+        const doctors: IDoctor[] | null = Doctors
+
+        if (doctors) return await DoctorModel.bulkCreate(doctors)
+        else return null
     }
 
     async ReadAll(query: any) {
