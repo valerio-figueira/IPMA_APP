@@ -23,9 +23,9 @@ export default class UserDataSanitizer {
     static sanitizeNestedObject(data: any) {
         for (const key in data) {
             if (typeof data[key] === 'string') data[key] = StringSanitizer.convertToUpperCase(key, data[key])
-            if (key.match('data_nasc')) data[key] = this.filterDate(data[key])
+            if (key.match('birth_date')) data[key] = this.filterDate(data[key])
             if (key.match('cpf')) data[key] = this.formatCPF(data[key])
-            if (key.match('data_expedicao')) data[key] = this.filterDate(data[key])
+            if (key.match('issue_date')) data[key] = this.filterDate(data[key])
             if (typeof data[key] === 'object' && data[key] !== null) {
                 this.sanitizeNestedObject(data[key]);
             }
@@ -36,30 +36,13 @@ export default class UserDataSanitizer {
         return cpf.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
     }
 
-    static sanitizeObjectKeys(obj: any) {
-        for (let key in obj) {
-            if (key.match('contact.')) {
-                obj[key.replace('contact.', '')] = obj[key]
-                delete obj[key]
-            }
-            if (key.match('document.')) {
-                obj[key.replace('document.', '')] = obj[key]
-                delete obj[key]
-            }
-            if (key.match('location.')) {
-                obj[key.replace('location.', '')] = obj[key]
-                delete obj[key]
-            }
-        }
-    }
-
     static sanitizeFields(key: string, data: any) {
         if (!data) return null
         if (key.match('status')) this.filterStatus(data[key])
         if (key.match('cpf')) return data.replace(/\D/g, '');
-        if (key.match('identidade')) return data.replace(/\W/g, '');
-        if (key.match('celular')) return data.replace(/\D/g, '');
-        if (key.match('residencial')) return data.replace(/\D/g, '');
+        if (key.match('identity')) return data.replace(/\W/g, '');
+        if (key.match('phone_number')) return data.replace(/\D/g, '');
+        if (key.match('residential_phone')) return data.replace(/\D/g, '');
         return data
     }
 
@@ -72,20 +55,20 @@ export default class UserDataSanitizer {
         }
         this.removeUnnecessaryID(newData)
         newData.cpf = this.formatCPF(newData.cpf)
-        newData.data_nasc = this.filterDate(newData.data_nasc)
-        newData.data_expedicao = this.filterDate(newData.data_expedicao)
+        newData.birth_date = this.filterDate(newData.birth_date)
+        newData.issue_date = this.filterDate(newData.issue_date)
         return newData
     }
 
     static removeUnnecessaryID(obj: any) {
-        if (obj.id_documento) delete obj.id_documento
-        if (obj.id_contato) delete obj.id_contato
-        if (obj.id_localizacao) delete obj.id_localizacao
+        if (obj.document_id) delete obj.document_id
+        if (obj.contact_id) delete obj.contact_id
+        if (obj.location_id) delete obj.location_id
     }
 
     static filterStatus(obj: any) {
-        if (obj === 'Aposentado') return
-        if (obj === 'Ativo') return
+        if (obj === 'Retired') return
+        if (obj === 'Active') return
 
         return null
     }

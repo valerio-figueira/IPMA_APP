@@ -5,13 +5,13 @@ export default class UserValidator {
 
     static validate(data: IHolderRequest) {
         // Verifique se os campos obrigatórios estão presentes
-        if (!data.nome || !data.cpf || !data.identidade) {
+        if (!data.name || !data.cpf || !data.identity) {
             throw new CustomError('Verifique os campos obrigatórios', 400)
         }
 
         this.validateStringOrNumber(data)
-        this.validateDate(data.data_nasc)
-        this.validateDate(data.data_expedicao)
+        this.validateDate(data.birth_date)
+        this.validateDate(data.issue_date)
 
         return
     }
@@ -52,10 +52,10 @@ export default class UserValidator {
     }
 
     static hasUserIdentification(data: any) {
-        if(!data.id_usuario) throw new CustomError('Não foi possível validar a identificação de usuário', 400)
+        if(!data.user_id) throw new CustomError('Não foi possível validar a identificação de usuário', 400)
     }
 
     static hasHolderIdentification(data: any) {
-        if(!data.id_titular) throw new CustomError('Não foi possível validar a identificação de titular', 400)
+        if(!data.holder_id) throw new CustomError('Não foi possível validar a identificação de titular', 400)
     }
 }

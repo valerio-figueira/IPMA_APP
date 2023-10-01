@@ -28,26 +28,26 @@ export interface IHolderAttributes {
 }
 
 export interface IHolderRequest {
-    nome: 'string';
-    sexo: 'string' | null;
-    estado_civil: 'string' | null;
-    data_nasc: 'string' | null;
-    nome_pai: 'string' | null;
-    nome_mae: 'string' | null;
-    celular_1: 'string' | null;
-    celular_2: 'string' | null;
-    tel_residencial: 'string' | null;
+    name: 'string';
+    gender: 'string' | null;
+    marital_status: 'string' | null;
+    birth_date: 'string' | null;
+    father_name: 'string' | null;
+    mother_name: 'string' | null;
+    phone_number: 'string' | null;
+    residential_phone: 'string' | null;
     email: 'string' | null;
-    endereco: 'string' | null;
-    numero: 'number' | null;
-    bairro: 'string' | null;
-    cidade: 'string' | null;
-    estado: 'string' | null;
+    address: 'string' | null;
+    number: 'number' | null;
+    neighborhood: 'string' | null;
+    city: 'string' | null;
+    zipcode: 'string' | null;
+    state: 'string' | null;
     cpf: 'string';
-    identidade: 'string';
-    data_expedicao: 'string' | null;
-    cartao_saude: 'string' | null;
+    identity: 'string';
+    issue_date: 'string' | null;
+    health_card: 'string' | null;
     status: 'string' | null;
-    matricula: 'number' | null;
+    registration_number: 'number' | null;
     [key: string]: string | number | null
 };
