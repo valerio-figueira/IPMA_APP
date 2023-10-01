@@ -6,38 +6,34 @@ import { IContact } from '../../interfaces/IUser';
 const db = new Database;
 
 class ContactModel extends Model<IContact> {
-  id_contato!: number;
-  id_usuario!: number;
-  celular_1?: string | null;
-  celular_2?: string | null;
-  tel_residencial?: string | null;
+  contact_id!: number;
+  user_id!: number;
+  phone_number?: string | null;
+  residential_phone?: string | null;
   email?: string | null;
 }
 
 ContactModel.init(
   {
-    id_contato: {
+    contact_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
-    id_usuario: {
+    user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       unique: true,
       references: {
         model: UserModel,
-        key: 'id_usuario',
+        key: 'user_id',
       },
     },
-    celular_1: {
+    phone_number: {
       type: DataTypes.STRING(11),
     },
-    celular_2: {
+    residential_phone: {
       type: DataTypes.STRING(11),
-    },
-    tel_residencial: {
-      type: DataTypes.STRING(10),
     },
     email: {
       type: DataTypes.STRING(50),
@@ -46,7 +42,7 @@ ContactModel.init(
   },
   {
     sequelize: db.sequelize,
-    tableName: 'CONTATO',
+    tableName: 'CONTACT',
     modelName: 'ContactModel',
     timestamps: false,
   }

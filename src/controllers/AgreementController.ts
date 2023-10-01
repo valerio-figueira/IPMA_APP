@@ -1,16 +1,17 @@
 import { Request, Response } from "express";
-import BillingService from "../services/BillingService";
+import AgreementService from "../services/AgreementService";
 
-export default class BillingController {
-    billingService: BillingService;
+
+export default class AgreementController {
+    agreementService: AgreementService;
 
     constructor() {
-        this.billingService = new BillingService();
+        this.agreementService = new AgreementService();
     }
 
     async Create(req: Request, res: Response) {
         try {
-            res.status(201).json(await this.billingService.Create(req.body))
+            res.status(201).json(await this.agreementService.Create(req.body))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
@@ -18,7 +19,7 @@ export default class BillingController {
 
     async ReadAll(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.billingService.ReadAll(req.query))
+            res.status(200).json(await this.agreementService.ReadAll())
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
@@ -26,7 +27,7 @@ export default class BillingController {
 
     async ReadOne(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.billingService.ReadOne(req.params.id))
+            res.status(200).json(await this.agreementService.ReadOne(req.params.id))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
@@ -34,7 +35,7 @@ export default class BillingController {
 
     async Update(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.billingService.Update())
+            res.status(200).json(await this.agreementService.Update(req.body))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
@@ -42,7 +43,7 @@ export default class BillingController {
 
     async Delete(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.billingService.Delete(req.params.id))
+            res.status(200).json(await this.agreementService.Delete(req.body))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }

@@ -1,15 +1,15 @@
 import { IHolderBase } from "../interfaces/IHolder";
 
 export class Holder implements IHolderBase {
-    id_titular?: number;
-    id_usuario?: number;
-    matricula?: number | null;
-    status: 'Ativo' | 'Aposentado' | 'LIP';
+    holder_id?: number;
+    user_id?: number;
+    registration_number?: number | null;
+    status: 'Active' | 'Retired' | 'On Leave';
 
     constructor(data: IHolderBase) {
-        this.id_titular = data.id_titular;
-        this.id_usuario = data.id_usuario;
-        this.matricula = data.matricula;
+        this.holder_id = data.holder_id;
+        this.user_id = data.user_id;
+        this.registration_number = data.registration_number;
         this.status = data.status;
     }
 }

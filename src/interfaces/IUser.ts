@@ -1,44 +1,44 @@
-import IContractRegistry from "./IContractRegistry";
+import IMember from "./IMember";
 import { IDependentBase } from "./IDependent";
 import { IHolderBase } from "./IHolder";
 
 export interface IUser {
-    id_usuario?: number;
-    nome: string;
-    sexo: 'Masculino' | 'Feminino' | 'Outro';
-    estado_civil: string | null;
-    data_nasc: Date | null;
-    nome_pai: string | null;
-    nome_mae: string | null;
-    data_cadastro?: Date;
+    user_id?: number;
+    name: string;
+    gender: 'Male' | 'Female' | 'Other';
+    marital_status: string | null;
+    birth_date: Date | null;
+    father_name: string | null;
+    mother_name: string | null;
+    registration_date?: Date;
 }
 
 export interface IContact {
-    id_contato?: number;
-    id_usuario?: number;
-    celular_1: string | null;
-    celular_2: string | null;
-    tel_residencial: string | null;
+    contact_id?: number;
+    user_id?: number;
+    phone_number: string | null;
+    residential_phone: string | null;
     email: string | null;
 }
 
 export interface ILocation {
-    id_localizacao?: number;
-    id_usuario?: number;
-    endereco: string | null;
-    numero: number | null;
-    bairro: string | null;
-    cidade: string | null;
-    estado: string | null;
+    location_id?: number;
+    user_id?: number;
+    address: string | null;
+    number: number | null;
+    neighborhood: string | null;
+    city: string | null;
+    zipcode: string | null;
+    state: string | null;
 }
 
 export interface IDocument {
-    id_documento?: number;
-    id_usuario?: number;
+    document_id?: number;
+    user_id?: number;
     cpf: string;
-    identidade: string;
-    data_expedicao: Date | null;
-    cartao_saude: string | null;
+    identity: string;
+    issue_date: Date | null;
+    health_card: string | null;
 }
 
 export interface IUserAttributes {
@@ -48,6 +48,6 @@ export interface IUserAttributes {
     location: ILocation;
     holder?: IHolderBase;
     dependent?: IDependentBase;
-    contract?: IContractRegistry
+    member?: IMember
     [key: string]: any;
 }

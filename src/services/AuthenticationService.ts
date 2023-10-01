@@ -16,19 +16,19 @@ export default class AutenticationService {
     async Create(body: any) {
         const authSchema = new AuthenticationSchema(body)
 
-        if (!authSchema.id_usuario) {
+        if (!authSchema.user_id) {
             const { user } = await this.userService.Create(body);
-            authSchema.id_usuario = user.id_usuario;
+            authSchema.user_id = user.user_id;
         }
 
         const auth = await this.authenticationRepository.Create(authSchema);
 
         if (auth) {
-            const userName = (await this.userService.ReadOne(authSchema.id_usuario))?.nome;
+            const userName = (await this.userService.ReadOne(authSchema.user_id))?.name;
             if (!userName) {
                 throw new CustomError('Usuário não foi encontrado', 400);
             }
-            return this.authenticationRepository.ReadOne(auth.id_autenticacao)
+            return this.authenticationRepository.ReadOne(auth.authentication_id)
         }
     }
 

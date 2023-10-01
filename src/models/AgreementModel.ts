@@ -1,34 +1,34 @@
 import { Model, DataTypes } from 'sequelize';
 import Database from "../db/Database";
-import IBusinessContract from '../interfaces/IBusinessContract';
+import IAgreement from '../interfaces/IAgreement';
 
 const db = new Database;
 
 
-class BusinessContractModel extends Model<IBusinessContract> {
-    id_convenio!: number;
-    nome_convenio!: string;
-    descricao?: string | null;
-    data_registro!: Date;
+class AgreementModel extends Model<IAgreement> {
+    agreement_id!: number;
+    agreement_name!: string;
+    description!: string | null;
+    registration_date!: Date;
 }
 
 
-BusinessContractModel.init(
+AgreementModel.init(
     {
-        id_convenio: {
+        agreement_id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
         },
-        nome_convenio: {
+        agreement_name: {
             type: DataTypes.STRING(20),
             allowNull: false,
         },
-        descricao: {
+        description: {
             type: DataTypes.STRING(255),
             allowNull: true,
         },
-        data_registro: {
+        registration_date: {
             type: DataTypes.DATE,
             allowNull: false,
             defaultValue: DataTypes.NOW,
@@ -36,11 +36,11 @@ BusinessContractModel.init(
     },
     {
         sequelize: db.sequelize,
-        tableName: 'CONVENIO',
-        modelName: 'BusinessContractModel',
+        tableName: 'AGREEMENT',
+        modelName: 'AgreementModel',
         timestamps: false, // Defina como true se desejar timestamps automáticos
     }
 );
 
 
-export default BusinessContractModel;
+export default AgreementModel;

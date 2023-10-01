@@ -1,17 +1,16 @@
 import { Request, Response } from "express";
-import BusinessContractService from "../services/BusinessContractService";
+import MonthlyFeeService from "../services/MonthlyFeeService";
 
-
-export default class BusinessContractController {
-    businessContractService: BusinessContractService;
+export default class MonthlyFeeController {
+    monthlyFeeService: MonthlyFeeService;
 
     constructor() {
-        this.businessContractService = new BusinessContractService();
+        this.monthlyFeeService = new MonthlyFeeService();
     }
 
     async Create(req: Request, res: Response) {
         try {
-            res.status(201).json(await this.businessContractService.Create(req.body))
+            res.status(201).json(await this.monthlyFeeService.Create(req.body))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
@@ -19,7 +18,7 @@ export default class BusinessContractController {
 
     async ReadAll(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.businessContractService.ReadAll())
+            res.status(200).json(await this.monthlyFeeService.ReadAll(req.query))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
@@ -27,7 +26,7 @@ export default class BusinessContractController {
 
     async ReadOne(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.businessContractService.ReadOne(req.params.id))
+            res.status(200).json(await this.monthlyFeeService.ReadOne(req.params.id))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
@@ -35,7 +34,7 @@ export default class BusinessContractController {
 
     async Update(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.businessContractService.Update(req.body))
+            res.status(200).json(await this.monthlyFeeService.Update())
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
@@ -43,7 +42,7 @@ export default class BusinessContractController {
 
     async Delete(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.businessContractService.Delete(req.body))
+            res.status(200).json(await this.monthlyFeeService.Delete(req.params.id))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }

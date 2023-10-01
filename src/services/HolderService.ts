@@ -1,8 +1,6 @@
-import { IHolder } from "../interfaces/IHolder";
 import HolderRepository from "../repositories/HolderRepository";
 import { UserAttributes, User, Contact, Document, Location } from "../classes/UserSchema";
 import CustomError from "../utils/CustomError";
-import { IHolderRequest } from "../interfaces/IHolder";
 import UserDataSanitizer from "../helpers/UserDataSanitizer";
 
 export default class HolderService {

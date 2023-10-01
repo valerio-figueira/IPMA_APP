@@ -1,25 +1,25 @@
 import { IDoctor } from "../interfaces/IDoctor"
 
 export default class DoctorSchema {
-    codigo_prestador: number
-    nome_medico: string
-    especialidade: string
-    localidade?: string | null
-    cep?: string | null
-    endereco?: string | null
-    bairro?: string | null
-    telefone?: string | null
-    data_registro?: string
+    provider_code: number
+    doctor_name: string
+    speciality: string
+    location?: string | null
+    zip_code?: string | null
+    address?: string | null
+    neighborhood?: string | null
+    phone_number?: string | null
+    registration_date?: string
 
     constructor(body: IDoctor) {
-        this.codigo_prestador = body.codigo_prestador
-        this.nome_medico = body.nome_medico
-        this.especialidade = body.especialidade
-        this.localidade = body.especialidade
-        this.cep = body.cep
-        this.endereco = body.endereco
-        this.bairro = body.bairro
-        this.telefone = body.telefone
-        this.data_registro = body.data_registro
+        this.provider_code = body.provider_code
+        this.doctor_name = body.doctor_name
+        this.speciality = body.speciality
+        this.location = body.location
+        this.zip_code = body.zip_code
+        this.address = body.address
+        this.neighborhood = body.neighborhood
+        this.phone_number = body.phone_number
+        this.registration_date = body.registration_date
     }
 }

@@ -7,65 +7,65 @@ import { IDependentBase } from '../interfaces/IDependent';
 const db = new Database;
 
 class DependentModel extends Model<IDependentBase> {
-  id_dependente!: number;
-  id_usuario!: number;
-  id_titular!: number;
-  grau_parentesco?: string | null;
+  dependent_id!: number;
+  user_id!: number;
+  holder_id!: number;
+  relationship_degree?: string | null;
 }
 
 DependentModel.init(
   {
-    id_dependente: {
+    dependent_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
-    id_usuario: {
+    user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       unique: true,
       references: {
         model: UserModel,
-        key: 'id_usuario',
+        key: 'user_id',
       },
     },
-    id_titular: {
+    holder_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: HolderModel,
-        key: 'id_titular',
+        key: 'holder_id',
       },
     },
-    grau_parentesco: {
+    relationship_degree: {
       type: DataTypes.STRING(11),
     },
   },
   {
     sequelize: db.sequelize,
-    tableName: 'DEPENDENTE',
+    tableName: 'DEPENDENT',
     modelName: 'DependentModel',
     timestamps: false,
   }
 );
 
 UserModel.hasOne(DependentModel, {
-  foreignKey: 'id_usuario',
+  foreignKey: 'user_id',
   as: 'dependent',
 });
 
 HolderModel.hasMany(DependentModel, {
-  foreignKey: 'id_titular',
+  foreignKey: 'holder_id',
   as: 'dependent',
 });
 
 DependentModel.belongsTo(UserModel, {
-  foreignKey: 'id_usuario',
+  foreignKey: 'user_id',
   as: 'user',
 });
 
 DependentModel.belongsTo(HolderModel, {
-  foreignKey: 'id_titular',
+  foreignKey: 'holder_id',
   as: 'holder',
 });
 

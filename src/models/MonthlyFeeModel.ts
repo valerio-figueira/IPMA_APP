@@ -1,34 +1,44 @@
 import { Model, DataTypes } from 'sequelize';
 import Database from "../db/Database";
-import IBilling from '../interfaces/IBilling';
-import ContractRegistryModel from './ContractRegistryModel';
+import IMonthlyFee from '../interfaces/IMonthlyFee';
+import MemberModel from './MemberModel';
 
 const db = new Database;
 
 
-class BillingModel extends Model<IBilling> { }
+class MonthlyFeeModel extends Model<IMonthlyFee> {
+    monthly_fee_id!: number;
+    member_id!: number;
+    amount!: number;
+    reference_month!: number;
+    reference_year!: number;
+    status!: 'Pendring' | 'Paid' | 'Cancelled';
+    reference_date!: Date;
+    payment_date?: Date;
+    registration_date!: Date;
+}
 
-BillingModel.init(
+MonthlyFeeModel.init(
     {
-        id_mensalidade: {
+        monthly_fee_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
             autoIncrement: true,
         },
-        id_conveniado: {
+        member_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: ContractRegistryModel,
-                key: 'id_conveniado',
+                model: MemberModel,
+                key: 'member_id',
             }
         },
-        valor: {
+        amount: {
             type: DataTypes.DECIMAL(10, 2),
             allowNull: false,
         },
-        mes_referencia: {
+        reference_month: {
             type: DataTypes.INTEGER,
             allowNull: false,
             validate: {
@@ -36,7 +46,7 @@ BillingModel.init(
                 max: 12,
             },
         },
-        ano_referencia: {
+        reference_year: {
             type: DataTypes.INTEGER,
             allowNull: false,
             validate: {
@@ -45,19 +55,19 @@ BillingModel.init(
             },
         },
         status: {
-            type: DataTypes.ENUM('Pendente', 'Pago', 'Anulado'),
+            type: DataTypes.ENUM('Pending', 'Paid', 'Cancelled'),
             allowNull: false,
-            defaultValue: 'Pendente',
+            defaultValue: 'Pending',
         },
-        data_referencia: {
+        reference_date: {
             type: DataTypes.DATE,
             allowNull: false,
         },
-        data_pagamento: {
+        payment_date: {
             type: DataTypes.DATE,
             allowNull: true,
         },
-        data_registro: {
+        registration_date: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
             allowNull: false,
@@ -65,21 +75,21 @@ BillingModel.init(
     },
     {
         sequelize: db.sequelize,
-        modelName: 'BillingModel',
-        tableName: 'MENSALIDADE',
+        modelName: 'MonthlyFeeModel',
+        tableName: 'MONTHLY_FEE',
         timestamps: false, // Define como false se você não quiser usar colunas de timestamp created_at e updated_at
     }
 );
 
-BillingModel.belongsTo(ContractRegistryModel, {
-    foreignKey: 'id_conveniado',
+MonthlyFeeModel.belongsTo(MemberModel, {
+    foreignKey: 'member_id',
     as: 'subscription'
 })
 
-ContractRegistryModel.hasMany(BillingModel, {
-    foreignKey: 'id_conveniado',
+MemberModel.hasMany(MonthlyFeeModel, {
+    foreignKey: 'member_id',
     as: 'billing'
 })
 
 
-export default BillingModel;
+export default MonthlyFeeModel;

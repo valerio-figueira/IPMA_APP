@@ -9,43 +9,43 @@ import HolderModel from '../HolderModel';
 const db = new Database;
 
 class UserModel extends Model<IUser> {
-    id_usuario!: number;
-    nome!: string;
-    sexo!: 'Masculino' | 'Feminino' | 'Outro';
-    estado_civil?: string;
-    data_nasc?: Date;
-    nome_pai?: string;
-    nome_mae?: string;
-    data_cadastro!: Date;
+    user_id!: number;
+    name!: string;
+    gender!: 'Male' | 'Female' | 'Other';
+    marital_status?: string;
+    birth_date?: Date;
+    father_name?: string;
+    mother_name?: string;
+    registration_date!: Date;
 }
 
 UserModel.init(
     {
-        id_usuario: {
+        user_id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
         },
-        nome: {
+        name: {
             type: DataTypes.STRING(60),
             allowNull: false,
         },
-        sexo: {
-            type: DataTypes.ENUM('Masculino', 'Feminino', 'Outro'),
+        gender: {
+            type: DataTypes.ENUM('Male', 'Female', 'Other'),
         },
-        estado_civil: {
+        marital_status: {
             type: DataTypes.STRING(10),
         },
-        data_nasc: {
+        birth_date: {
             type: DataTypes.DATE,
         },
-        nome_pai: {
+        father_name: {
             type: DataTypes.STRING(50),
         },
-        nome_mae: {
+        mother_name: {
             type: DataTypes.STRING(50),
         },
-        data_cadastro: {
+        registration_date: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
             allowNull: false,
@@ -53,40 +53,40 @@ UserModel.init(
     },
     {
         sequelize: db.sequelize,
-        tableName: 'USUARIO',
+        tableName: 'USER',
         modelName: 'UserModel',
         timestamps: false,
     }
 );
 
 UserModel.hasOne(DocumentModel, {
-    foreignKey: 'id_usuario',
+    foreignKey: 'user_id',
     as: 'document'
 })
 UserModel.hasOne(ContactModel, {
-    foreignKey: 'id_usuario',
+    foreignKey: 'user_id',
     as: 'contact'
 })
 UserModel.hasOne(LocationModel, {
-    foreignKey: 'id_usuario',
+    foreignKey: 'user_id',
     as: 'location'
 })
 UserModel.hasOne(HolderModel, {
-    foreignKey: 'id_usuario',
+    foreignKey: 'user_id',
     as: 'holder'
 })
 
 DocumentModel.belongsTo(UserModel, {
-    foreignKey: 'id_usuario'
+    foreignKey: 'user_id'
 });
 LocationModel.belongsTo(UserModel, {
-    foreignKey: 'id_usuario'
+    foreignKey: 'user_id'
 });
 ContactModel.belongsTo(UserModel, {
-    foreignKey: 'id_usuario'
+    foreignKey: 'user_id'
 });
 HolderModel.belongsTo(UserModel, {
-    foreignKey: 'id_usuario',
+    foreignKey: 'user_id',
     as: 'user'
 })
 

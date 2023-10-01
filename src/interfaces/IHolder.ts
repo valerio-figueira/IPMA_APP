@@ -5,10 +5,10 @@ import ContactModel from "../models/user/ContactModel";
 import LocationModel from "../models/user/LocationModel";
 
 export interface IHolderBase {
-    id_titular?: number;
-    id_usuario?: number;
-    matricula?: number | null;
-    status: 'Ativo' | 'Aposentado' | 'LIP';
+    holder_id?: number;
+    user_id?: number;
+    registration_number?: number | null;
+    status: 'Active' | 'Retired' | 'On Leave';
 }
 
 export interface IHolder {

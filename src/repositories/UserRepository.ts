@@ -4,8 +4,6 @@ import ContactModel from "../models/user/ContactModel";
 import DocumentModel from "../models/user/DocumentModel";
 import LocationModel from "../models/user/LocationModel";
 import { Transaction } from 'sequelize';
-import { UserAttributes } from "../classes/UserSchema";
-import CustomError from "../utils/CustomError";
 import Database from "../db/Database";
 import Queries from "../db/Queries";
 
@@ -22,7 +20,7 @@ export default class UserRepository {
         if (!transaction) transaction = await this.db.sequelize.transaction()
         const user = await UserModel.create(query.user, { transaction, raw: true });
 
-        this.insertIdValues(query, user.id_usuario);
+        this.insertIdValues(query, user.user_id);
 
         const document = await DocumentModel.create(query.document, { transaction, raw: true });
         const contact = await ContactModel.create(query.contact, { transaction, raw: true });
@@ -44,17 +42,17 @@ export default class UserRepository {
                 {
                     model: ContactModel,
                     as: 'contact',
-                    attributes: { exclude: ['id_usuario', 'id_contato'] }
+                    attributes: { exclude: ['user_id', 'contact_id'] }
                 },
                 {
                     model: DocumentModel,
                     as: 'document',
-                    attributes: { exclude: ['id_usuario', 'id_documento'] },
+                    attributes: { exclude: ['user_id', 'document_id'] },
                 },
                 {
                     model: LocationModel,
                     as: 'location',
-                    attributes: { exclude: ['id_usuario', 'id_localizacao'] }
+                    attributes: { exclude: ['user_id', 'location_id'] }
                 }
             ], plain: true, raw: true
         })
@@ -64,22 +62,22 @@ export default class UserRepository {
         if (!transaction) transaction = await this.db.sequelize.transaction()
 
         const [user] = await UserModel.update(query.user, {
-            where: { id_usuario: user_id },
+            where: { user_id },
             transaction
         })
 
         const [contact] = await ContactModel.update(query.contact, {
-            where: { id_usuario: user_id },
+            where: { user_id },
             transaction
         })
 
         const [document] = await DocumentModel.update(query.document, {
-            where: { id_usuario: user_id },
+            where: { user_id },
             transaction
         })
 
         const [location] = await LocationModel.update(query.location, {
-            where: { id_usuario: user_id },
+            where: { user_id },
             transaction
         })
 
@@ -90,25 +88,25 @@ export default class UserRepository {
         if (!transaction) transaction = await this.db.sequelize.transaction()
 
         await DocumentModel.destroy({
-            where: { id_usuario: user_id }, transaction
+            where: { user_id }, transaction
         });
 
         await LocationModel.destroy({
-            where: { id_usuario: user_id }, transaction
+            where: { user_id }, transaction
         });
 
         await ContactModel.destroy({
-            where: { id_usuario: user_id }, transaction
+            where: { user_id }, transaction
         });
 
         await UserModel.destroy({
-            where: { id_usuario: user_id }, transaction
+            where: { user_id }, transaction
         });
     }
 
     insertIdValues(data: IUserAttributes, user_id: number) {
         for (let key in data) {
-            data[key].id_usuario = user_id
+            data[key].user_id = user_id
         }
     }
 

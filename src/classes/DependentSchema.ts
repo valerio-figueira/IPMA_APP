@@ -1,15 +1,15 @@
 import { IDependentBase } from "../interfaces/IDependent";
 
 export class Dependent implements IDependentBase {
-    id_dependente?: number;
-    id_usuario?: number;
-    id_titular: number;
-    grau_parentesco: string | null;
+    dependent_id?: number;
+    user_id?: number;
+    holder_id: number;
+    relationship_degree: string | null;
 
     constructor(data: IDependentBase) {
-        this.id_dependente = data.id_dependente;
-        this.id_usuario = data.id_usuario;
-        this.id_titular = data.id_titular;
-        this.grau_parentesco = data.grau_parentesco;
+        this.dependent_id = data.dependent_id;
+        this.user_id = data.user_id;
+        this.holder_id = data.holder_id;
+        this.relationship_degree = data.relationship_degree;
     }
 }

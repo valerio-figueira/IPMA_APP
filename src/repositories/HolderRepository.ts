@@ -6,7 +6,7 @@ import CustomError from '../utils/CustomError';
 import { Transaction } from 'sequelize';
 import UserModel from "../models/user/UserModel";
 import Queries from "../db/Queries";
-import ContractRegistryModel from "../models/ContractRegistryModel";
+import ContractRegistryModel from "../models/MemberModel";
 import DependentModel from "../models/DependentModel";
 
 export default class HolderRepository {
@@ -52,22 +52,22 @@ export default class HolderRepository {
         const t: Transaction = await this.db.sequelize.transaction();
 
         try {
-            const holder = await HolderModel.findByPk(query.holder?.id_titular, { transaction: t, raw: true });
+            const holder = await HolderModel.findByPk(query.holder?.holder_id, { transaction: t, raw: true });
 
             if (!holder) throw new CustomError('Usuário não encontrado', 404)
 
-            const userResult = await this.userRepository.Update(holder.id_usuario, query, t)
+            const userResult = await this.userRepository.Update(holder.user_id, query, t)
 
             const [holderResult] = await HolderModel.update(query.holder!, {
-                where: { id_usuario: query.user.id_usuario },
+                where: { user_id: query.user.user_id },
                 transaction: t
             })
 
-            if (!userResult && !holderResult) throw new CustomError(`Nenhum dado foi alterado para ${query.user.nome}`, 400)
+            if (!userResult && !holderResult) throw new CustomError(`Nenhum dado foi alterado para ${query.user.name}`, 400)
 
             await t.commit()
 
-            return await this.ReadOne(holder.id_titular)
+            return await this.ReadOne(holder.holder_id)
         } catch (error: any) {
             await t.rollback()
             throw new CustomError(error.message || 'Não foi possível atualizar os dados do usuário', error.status || 500)
@@ -79,28 +79,28 @@ export default class HolderRepository {
 
         try {
             const holder = await HolderModel.findByPk(holder_id, { raw: true })
-            const user_id = holder!['id_usuario']
+            const user_id = holder!['user_id']
             const user = await UserModel.findByPk(user_id, { raw: true })
             const dependents = await DependentModel.findAll({
-                where: { id_titular: holder_id }
+                where: { holder_id }
             })
 
             if (dependents.length > 0) {
                 for (let dependent of dependents) {
                     await ContractRegistryModel.destroy({
-                        where: { id_titular: holder_id },
+                        where: { holder_id },
                         transaction: t,
                     })
 
                     await DependentModel.destroy({
-                        where: { id_dependente: dependent.id_dependente },
+                        where: { dependent_id: dependent.dependent_id },
                         transaction: t,
                     })
                 }
             }
 
             await HolderModel.destroy({
-                where: { id_usuario: user_id },
+                where: { user_id },
                 transaction: t,
             })
 
@@ -108,7 +108,7 @@ export default class HolderRepository {
 
             await t.commit()
 
-            return { message: `O usuário ${user?.nome} foi removido juntamente com todas as suas dependências` }
+            return { message: `O usuário ${user?.name} foi removido juntamente com todas as suas dependências` }
         } catch (error: any) {
             await t.rollback();
             throw new CustomError(`Falha ao remover titular: ${error.message}`, 500)

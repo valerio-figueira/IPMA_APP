@@ -6,50 +6,54 @@ import { ILocation } from '../../interfaces/IUser';
 const db = new Database;
 
 class LocationModel extends Model<ILocation> {
-    id_localizacao!: number;
-    id_usuario!: number;
-    endereco?: string | null;
-    numero?: number | null;
-    bairro?: string | null;
-    cidade?: string | null;
-    estado?: string | null;
+    location_id!: number;
+    user_id!: number;
+    address?: string | null;
+    number?: number | null;
+    neighborhood?: string | null;
+    city?: string | null;
+    zipcode?: string | null
+    state?: string | null;
 }
 
 LocationModel.init(
     {
-        id_localizacao: {
+        location_id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
         },
-        id_usuario: {
+        user_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             unique: true,
             references: {
                 model: UserModel,
-                key: 'id_usuario',
+                key: 'user_id',
             },
         },
-        endereco: {
+        address: {
             type: DataTypes.STRING(50),
         },
-        numero: {
+        number: {
             type: DataTypes.INTEGER,
         },
-        bairro: {
+        neighborhood: {
             type: DataTypes.STRING(30),
         },
-        cidade: {
+        city: {
             type: DataTypes.STRING(30),
         },
-        estado: {
+        zipcode: {
+            type: DataTypes.STRING(10),
+        },
+        state: {
             type: DataTypes.STRING(2),
         },
     },
     {
         sequelize: db.sequelize,
-        tableName: 'LOCALIZACAO',
+        tableName: 'LOCATION',
         modelName: 'LocationModel',
         timestamps: false,
     }

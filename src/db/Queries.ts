@@ -1,5 +1,5 @@
-import BillingModel from "../models/BillingModel";
-import BusinessContractModel from "../models/BusinessContractModel";
+import MonthlyFeeModel from "../models/MonthlyFeeModel";
+import AgreementModel from "../models/AgreementModel";
 import HolderModel from "../models/HolderModel";
 import ContactModel from "../models/user/ContactModel";
 import DocumentModel from "../models/user/DocumentModel";
@@ -10,16 +10,16 @@ import UserModel from "../models/user/UserModel";
 export default class Queries {
 
     static ContractRegistryIncludeAll = [{
-        model: BillingModel,
+        model: MonthlyFeeModel,
         as: 'billing',
-        attributes: { exclude: ['id_conveniado'] }
+        attributes: { exclude: ['member_id'] }
     }, {
-        model: BusinessContractModel,
+        model: AgreementModel,
         as: 'contract'
     }, {
         model: HolderModel,
         as: 'holder',
-        attributes: { exclude: ['id_usuario'] },
+        attributes: { exclude: ['user_id'] },
         include: [{
             model: UserModel,
             as: 'user'
@@ -29,22 +29,22 @@ export default class Queries {
     static IncludeUserData = [{
         model: UserModel,
         as: 'user',
-        attributes: { exclude: ['id_usuario'] },
+        attributes: { exclude: ['user_id'] },
         include: [
             {
                 model: ContactModel,
                 as: 'contact',
-                attributes: { exclude: ['id_usuario', 'id_contato'] }
+                attributes: { exclude: ['user_id', 'contact_id'] }
             },
             {
                 model: DocumentModel,
                 as: 'document',
-                attributes: { exclude: ['id_usuario', 'id_documento'] },
+                attributes: { exclude: ['user_id', 'document_id'] },
             },
             {
                 model: LocationModel,
                 as: 'location',
-                attributes: { exclude: ['id_usuario', 'id_localizacao'] }
+                attributes: { exclude: ['user_id', 'location_id'] }
             }
         ]
     }]

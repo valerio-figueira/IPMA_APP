@@ -1,8 +1,8 @@
 export default interface IAuthentication {
-    id_autenticacao?: number;
-    id_usuario?: number;
-    id_login: string;
-    senha_autenticacao: string;
-    foto_usuario: string;
-    grau_hierarquico: 'SUPERUSUARIO' | 'ADMINISTRADOR' | 'USUARIO_COMUM';
+    authentication_id?: number;
+    user_id?: number;
+    hierarchy_id: number;
+    username: string;
+    password: string;
+    user_photo: string;
 }

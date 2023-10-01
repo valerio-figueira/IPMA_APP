@@ -36,13 +36,13 @@ export default class DoctorService {
     }
 
     async Update(query: IDoctor) {
-        if (!query.id_medico) throw new CustomError('Insira o código de identificação', 400)
+        if (!query.doctor_id) throw new CustomError('Insira o código de identificação', 400)
 
         const [affectedCount] = await this.doctorRepository.Update(query)
 
         if (affectedCount === 0) throw new CustomError('Nenhum médico foi atualizado', 400)
 
-        const doctor: any = await this.doctorRepository.ReadOne(query.id_medico);
+        const doctor: any = await this.doctorRepository.ReadOne(query.doctor_id);
 
         if (!doctor) throw new CustomError('Nenhum médico foi encontrado', 400)
 
@@ -50,7 +50,7 @@ export default class DoctorService {
     }
 
     async Delete(id_doctor: string | number) {
-        const doctor: any = await this.doctorRepository.ReadOne(id_doctor);
+        const doctor = await this.doctorRepository.ReadOne(id_doctor);
 
         if (!doctor) throw new CustomError('Nenhum médico foi encontrado', 400)
 
@@ -58,7 +58,7 @@ export default class DoctorService {
 
         if (deletedDoctor === 0) throw new CustomError('Nenhum médico foi removido', 400)
 
-        return { message: `${doctor.nome_medico} foi removido do sistema` }
+        return { message: `${doctor.doctor_name} foi removido do sistema` }
     }
 
     async ExtractData(files: FileArray | undefined | null) {
@@ -94,16 +94,22 @@ export default class DoctorService {
                 const column = this.replaceColumnName(columns[index]);
                 if (typeof value === 'string') value = value.toUpperCase();
                 doctor[column] = value;
-                doctor['data_registro'] = new Date(Date.now());
+                doctor['registration_date'] = new Date(Date.now());
             });
             return doctor;
         });
     }
 
     replaceColumnName(column: string) {
-        if (column.match(/Código\sPrestador/gi)) return 'codigo_prestador'
-        if (column.match(/Nome\sPrestador/gi)) return 'nome_medico'
-        if (column.match(/Endereço/gi)) return 'endereco'
+        if (column.match(/Código\sPrestador/gi)) return 'provider_code'
+        if (column.match(/Nome\sPrestador/gi)) return 'doctor_name'
+        if (column.match(/Endereço/gi)) return 'address'
+        if(column.match(/Especialidade/gi)) return 'speciality'
+        if(column.match(/Localização/gi)) return 'location'
+        if(column.match(/CEP/gi)) return 'zip_code'
+        if(column.match(/Bairro/gi)) return 'neighborhood'
+        if(column.match(/Cidade/gi)) return 'city'
+        if(column.match(/Telefone/gi)) return 'phone_number'
         return column.toLowerCase()
     }
 

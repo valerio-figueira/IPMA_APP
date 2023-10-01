@@ -1,7 +1,5 @@
-import ContractRegistry from "../classes/ContractRegistrySchema";
 import { Contact, Document, Location, User, UserAttributes } from "../classes/UserSchema";
 import UserDataSanitizer from "../helpers/UserDataSanitizer";
-import { IHolder } from "../interfaces/IHolder";
 import DependentRepository from "../repositories/DependentRepository";
 import HolderRepository from "../repositories/HolderRepository";
 
@@ -35,23 +33,23 @@ export default class DependentService {
         const holderData: Record<number, any> = {}
 
         for(let dependent of dependents) {
-            const idTitular = dependent.id_titular
+            const holderID = dependent.holder_id
 
-            if(!holderData[idTitular]) {
-                const holderFinded: any = await this.holderRepository.ReadOne(idTitular)
+            if(!holderData[holderID]) {
+                const holderFinded: any = await this.holderRepository.ReadOne(holderID)
                 holderFinded['dependents'] = {}
-                holderData[idTitular] = holderFinded
+                holderData[holderID] = holderFinded
             }
 
-            const dependentName = dependent['user']['nome']
-            holderData[idTitular]['dependents'][dependentName] = { ...dependent }
+            const dependentName = dependent['user']['name']
+            holderData[holderID]['dependents'][dependentName] = { ...dependent }
         }
 
         return Object.values(holderData)
     }
 
-    async ReadOne(holder: string | number, id_dependente: string | number) {
-        return this.dependentRepository.ReadOne(holder, id_dependente);
+    async ReadOne(holder: string | number, dependent_id: string | number) {
+        return this.dependentRepository.ReadOne(holder, dependent_id);
     }
 
     async Update() { }

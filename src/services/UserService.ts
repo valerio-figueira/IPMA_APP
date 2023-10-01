@@ -39,7 +39,7 @@ export default class UserService {
         const userData = new UserAttributes({ user, document, contact, location });
 
         try {
-            return this.userRepository.Update(user.id_usuario!, userData)
+            return this.userRepository.Update(user.user_id!, userData)
         } catch (error: any) {
             throw new CustomError('Não foi possível registrar o usuário', 400)
         }

@@ -4,7 +4,7 @@ import { IUserAttributes } from "../interfaces/IUser";
 import DependentModel from "../models/DependentModel";
 import CustomError from "../utils/CustomError";
 import UserRepository from "./UserRepository";
-import ContractRegistryModel from "../models/ContractRegistryModel";
+import ContractRegistryModel from "../models/MemberModel";
 import Queries from "../db/Queries";
 
 
@@ -22,10 +22,9 @@ export default class DependentRepository {
 
         try {
             const { user, document, contact, location } = await this.userRepository.Create(query, t);
-
             const dependent = await DependentModel.create(query.dependent, { transaction: t, raw: true })
 
-            query.contract!.id_dependente = dependent.id_dependente
+            query.contract!.id_dependente = dependent.dependent_id
 
             const contract = await ContractRegistryModel.create(query.contract, { transaction: t, raw: true })
 
@@ -40,17 +39,17 @@ export default class DependentRepository {
 
     async ReadAll(holder: string) {
         return DependentModel.findAll({
-            where: { id_titular: holder },
-            attributes: { exclude: ['id_usuario'] },
+            where: { holder_id: holder },
+            attributes: { exclude: ['user_id'] },
             include: Queries.IncludeUserData,
             raw: true, nest: true
         })
     }
 
-    async ReadOne(holder: string | number, id_dependente: string | number) {
+    async ReadOne(holder: string | number, dependent_id: string | number) {
         return DependentModel.findOne({
-            where: { id_titular: holder, id_dependente },
-            attributes: { exclude: ['id_usuario'] },
+            where: { holder_id: holder, dependent_id },
+            attributes: { exclude: ['user_id'] },
             include: Queries.IncludeUserData,
             raw: true, nest: true
         })

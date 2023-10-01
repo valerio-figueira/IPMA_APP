@@ -1,35 +1,35 @@
 import { Router } from "express";
-import BillingController from "../controllers/BillingController";
+import MonthlyFeeController from "../controllers/MonthlyFeeController";
 
 
-const billingController = new BillingController();
+const monthlyFeeController = new MonthlyFeeController();
 
 const router = Router();
 
 
 // CREATE
 router.post("/", async (req, res) => {
-    billingController.Create(req, res)
+    monthlyFeeController.Create(req, res)
 });
 
 // READ ALL
 router.get("/", async (req, res) => {
-    billingController.ReadAll(req, res)
+    monthlyFeeController.ReadAll(req, res)
 });
 
 // READ ONE
 router.get("/:id", async (req, res) => {
-    billingController.ReadOne(req, res)
+    monthlyFeeController.ReadOne(req, res)
 });
 
 // UPDATE
 router.put("/:id", async (req, res) => {
-    billingController.Update(req, res)
+    monthlyFeeController.Update(req, res)
 })
 
 // DELETE
 router.delete("/:id", async (req, res) => {
-    billingController.Delete(req, res)
+    monthlyFeeController.Delete(req, res)
 })
 
 

@@ -12,10 +12,9 @@ import Session from "./config/Session";
 // ROUTES
 import HolderRoutes from './routes/HolderRoutes';
 import DependentRoutes from './routes/DependentRoutes';
-import LoginRoutes from './routes/LoginRoutes';
-import ContractRegistryRoutes from './routes/ContractRegistryModelRoutes'
-import BusinessContractRoutes from './routes/BusinessContractRoutes'
-import BillingRoutes from './routes/BillingRoutes'
+import MemberRoutes from './routes/MemberRoutes'
+import AgreementRoutes from './routes/AgreementRoutes'
+import MonthlyFeeRoutes from './routes/MonthlyFeeRoutes'
 import DoctorRoutes from './routes/DoctorRoutes'
 import AuthenticationRoutes from './routes/AuthenticationRoutes'
 import JWT from "./authentication/JWT";
@@ -58,13 +57,12 @@ export default class Server {
     }
 
     private setupRoutes() {
-        this.APP.use('/login', LoginRoutes)
         this.APP.get('/', this.rootHandler)
         this.APP.use('/api/v1/holders', HolderRoutes)
         this.APP.use('/api/v1/dependents', DependentRoutes)
-        this.APP.use('/api/v1/contract-registry', ContractRegistryRoutes)
-        this.APP.use('/api/v1/business-contract', BusinessContractRoutes)
-        this.APP.use('/api/v1/billings', BillingRoutes)
+        this.APP.use('/api/v1/members', MemberRoutes)
+        this.APP.use('/api/v1/agreements', AgreementRoutes)
+        this.APP.use('/api/v1/monthly-fee', MonthlyFeeRoutes)
         this.APP.use('/api/v1/doctors', DoctorRoutes)
         this.APP.use('/api/v1/authentications', AuthenticationRoutes)
     }

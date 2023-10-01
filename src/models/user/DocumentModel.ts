@@ -6,29 +6,29 @@ import { IDocument } from '../../interfaces/IUser';
 const db = new Database;
 
 class DocumentModel extends Model<IDocument> {
-    id_documento!: number;
-    id_usuario!: number;
+    document_id!: number;
+    user_id!: number;
     cpf!: string;
-    identidade!: string;
-    data_expedicao?: Date | null;
-    cartao_saude?: string | null;
+    identity!: string;
+    issue_date?: Date | null;
+    health_card?: string | null;
 }
 
 
 DocumentModel.init(
     {
-        id_documento: {
+        document_id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
         },
-        id_usuario: {
+        user_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             unique: true,
             references: {
                 model: UserModel,
-                key: 'id_usuario',
+                key: 'user_id',
             },
         },
         cpf: {
@@ -36,21 +36,21 @@ DocumentModel.init(
             allowNull: false,
             unique: true,
         },
-        identidade: {
+        identity: {
             type: DataTypes.STRING(10),
             allowNull: false,
             unique: true,
         },
-        data_expedicao: {
+        issue_date: {
             type: DataTypes.DATE,
         },
-        cartao_saude: {
+        health_card: {
             type: DataTypes.STRING(15),
         },
     },
     {
         sequelize: db.sequelize,
-        tableName: 'DOCUMENTO',
+        tableName: 'DOCUMENT',
         modelName: 'DocumentModel',
         timestamps: false,
     }

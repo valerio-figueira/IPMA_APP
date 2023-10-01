@@ -16,8 +16,8 @@ export default class DoctorRepository {
     async ReadAll(query: any) {
         const whereClause: any = {}
 
-        if (query.especialidade) {
-            whereClause['especialidade'] = query.especialidade
+        if (query.speciality) {
+            whereClause['speciality'] = query.speciality
         }
 
         return DoctorModel.findAll({
@@ -27,20 +27,20 @@ export default class DoctorRepository {
 
     async ReadOne(id_doctor: string | number) {
         return DoctorModel.findOne({
-            where: { id_medico: id_doctor },
+            where: { doctor_id: id_doctor },
             raw: true
         })
     }
 
     async Update(query: IDoctor) {
         return DoctorModel.update(query, {
-            where: { id_medico: query.id_medico }
+            where: { doctor_id: query.doctor_id }
         })
     }
 
     async Delete(id_doctor: string | number) {
         return DoctorModel.destroy({
-            where: { id_medico: id_doctor }
+            where: { doctor_id: id_doctor }
         })
     }
 

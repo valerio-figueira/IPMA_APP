@@ -7,40 +7,40 @@ const db = new Database;
 
 
 class HolderModel extends Model<IHolderBase> {
-    id_titular!: number;
-    id_usuario!: number;
-    matricula!: number | null;
-    status!: 'Ativo' | 'Aposentado' | 'LIP';
+    holder_id!: number;
+    user_id!: number;
+    registration_number?: number | null;
+    status!: 'Active' | 'Retired' | 'On Leave';
 }
 
 
 HolderModel.init(
     {
-        id_titular: {
+        holder_id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
         },
-        id_usuario: {
+        user_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             unique: true,
             references: {
                 model: UserModel,
-                key: 'id_usuario',
+                key: 'user_id',
             },
         },
-        matricula: {
+        registration_number: {
             type: DataTypes.INTEGER,
             allowNull: true,
         },
         status: {
-            type: DataTypes.ENUM('Ativo', 'Aposentado', 'LIP'),
+            type: DataTypes.ENUM('Active', 'Retired', 'On Leave'),
         },
     },
     {
         sequelize: db.sequelize,
-        tableName: 'TITULAR',
+        tableName: 'HOLDER',
         modelName: 'HolderModel',
         timestamps: false,
     }

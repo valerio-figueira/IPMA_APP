@@ -18,9 +18,9 @@ export default class AuthenticationRepository {
         })
     }
 
-    async ReadOne(auth_id: string | number) {
+    async ReadOne(authentication_id: string | number) {
         return AuthenticationModel.findOne({
-            where: { id_autenticacao: auth_id },
+            where: { authentication_id },
             include: Queries.IncludeUserData,
             raw: true, nest: true
         })
@@ -28,13 +28,13 @@ export default class AuthenticationRepository {
 
     async Update(query: IAuthentication) {
         return AuthenticationModel.update(query, {
-            where: { id_autenticacao: query.id_autenticacao }
+            where: { authentication_id: query.authentication_id }
         })
     }
 
-    async Delete(auth_id: string | number) {
+    async Delete(authentication_id: string | number) {
         return AuthenticationModel.destroy({
-            where: { id_autenticacao: auth_id }
+            where: { authentication_id }
         })
     }
 
