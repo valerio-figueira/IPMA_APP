@@ -5,7 +5,7 @@ export default class ContractRegistry {
     holder_id: number;
     dependent_id?: number | null;
     agreement_id: number;
-    card_id: string;
+    agreement_card: string;
     active: boolean;
     exclusion_date?: Date | null;
 
@@ -14,7 +14,7 @@ export default class ContractRegistry {
         this.holder_id = body.holder_id;
         this.dependent_id = body.dependent_id;
         this.agreement_id = body.agreement_id;
-        this.card_id = body.card_id;
+        this.agreement_card = body.agreement_card;
         this.active = body.active;
         this.exclusion_date = body.exclusion_date;
     }
