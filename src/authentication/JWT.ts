@@ -51,11 +51,11 @@ export default class JWT {
 
         const userFound = await this.findUserInDatabase(username, password)
 
-        if (username === userFound?.id_login && password === userFound?.senha_autenticacao) {
+        if (username === userFound?.username && password === userFound?.password) {
             const user = {
-                user_id: userFound!.id_usuario,
-                username: userFound!.id_login,
-                role: userFound!.grau_hierarquico
+                user_id: userFound!.user_id,
+                username: userFound!.username,
+                role: userFound!.hierarchy_id
             };
             const token = jwt.sign({ user }, this.SECRET_KEY, { expiresIn: '1h' });
 
@@ -68,8 +68,8 @@ export default class JWT {
     static async findUserInDatabase(username: string, password: string) {
         return AuthenticationModel.findOne({
             where: {
-                id_login: username,
-                senha_autenticacao: password
+                username,
+                password
             }, raw: true
         })
     }
