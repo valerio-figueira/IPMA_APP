@@ -43,9 +43,11 @@ DocumentModel.init(
         },
         issue_date: {
             type: DataTypes.DATE,
+            defaultValue: null
         },
         health_card: {
             type: DataTypes.STRING(15),
+            defaultValue: null
         },
     },
     {

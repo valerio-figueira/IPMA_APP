@@ -34,21 +34,27 @@ LocationModel.init(
         },
         address: {
             type: DataTypes.STRING(50),
+            defaultValue: null
         },
         number: {
             type: DataTypes.INTEGER,
+            defaultValue: null
         },
         neighborhood: {
             type: DataTypes.STRING(30),
+            defaultValue: null
         },
         city: {
             type: DataTypes.STRING(30),
+            defaultValue: null
         },
         zipcode: {
             type: DataTypes.STRING(10),
+            defaultValue: null
         },
         state: {
             type: DataTypes.STRING(2),
+            defaultValue: null
         },
     },
     {

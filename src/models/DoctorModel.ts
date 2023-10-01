@@ -38,23 +38,23 @@ DoctorModel.init(
         },
         location: {
             type: DataTypes.STRING(40),
-            allowNull: true,
+            allowNull: false,
         },
         zip_code: {
             type: DataTypes.STRING(10),
-            allowNull: true,
+            allowNull: false,
         },
         address: {
             type: DataTypes.STRING(60),
-            allowNull: true,
+            allowNull: false,
         },
         neighborhood: {
             type: DataTypes.STRING(30),
-            allowNull: true,
+            allowNull: false,
         },
         phone_number: {
             type: DataTypes.STRING(40),
-            allowNull: true,
+            allowNull: false,
         },
         registration_date: {
             type: DataTypes.DATE,

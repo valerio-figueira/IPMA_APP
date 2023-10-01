@@ -27,6 +27,7 @@ AgreementModel.init(
         description: {
             type: DataTypes.STRING(255),
             allowNull: true,
+            defaultValue: null
         },
         registration_date: {
             type: DataTypes.DATE,

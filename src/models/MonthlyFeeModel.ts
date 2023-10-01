@@ -12,7 +12,7 @@ class MonthlyFeeModel extends Model<IMonthlyFee> {
     amount!: number;
     reference_month!: number;
     reference_year!: number;
-    status!: 'Pendring' | 'Paid' | 'Cancelled';
+    status!: 'Pendente' | 'Pago' | 'Anulado';
     reference_date!: Date;
     payment_date?: Date;
     registration_date!: Date;
@@ -55,9 +55,9 @@ MonthlyFeeModel.init(
             },
         },
         status: {
-            type: DataTypes.ENUM('Pending', 'Paid', 'Cancelled'),
+            type: DataTypes.ENUM('Pendente', 'Pago', 'Anulado'),
             allowNull: false,
-            defaultValue: 'Pending',
+            defaultValue: 'Pendente',
         },
         reference_date: {
             type: DataTypes.DATE,
@@ -66,6 +66,7 @@ MonthlyFeeModel.init(
         payment_date: {
             type: DataTypes.DATE,
             allowNull: true,
+            defaultValue: null
         },
         registration_date: {
             type: DataTypes.DATE,

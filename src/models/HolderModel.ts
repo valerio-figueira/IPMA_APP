@@ -33,9 +33,10 @@ HolderModel.init(
         registration_number: {
             type: DataTypes.INTEGER,
             allowNull: true,
+            defaultValue: null
         },
         status: {
-            type: DataTypes.ENUM('Active', 'Retired', 'On Leave'),
+            type: DataTypes.ENUM('Ativo', 'Aposentado', 'Licença'),
         },
     },
     {

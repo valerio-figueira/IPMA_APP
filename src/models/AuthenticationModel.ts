@@ -46,6 +46,7 @@ AuthenticationModel.init(
         },
         user_photo: {
             type: DataTypes.STRING(50),
+            defaultValue: null
         }
     },
     {

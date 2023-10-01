@@ -13,7 +13,7 @@ class MemberModel extends Model<IMember> {
     holder_id!: number;
     dependent_id?: number | null;
     agreement_id!: number;
-    card_id?: number | null;
+    agreement_card?: number | null;
     active!: boolean;
     registration_date!: Date;
     exclusion_date?: Date | null;
@@ -37,6 +37,7 @@ MemberModel.init(
         },
         dependent_id: {
             type: DataTypes.INTEGER,
+            defaultValue: null
         },
         agreement_id: {
             type: DataTypes.INTEGER,
@@ -46,8 +47,9 @@ MemberModel.init(
                 key: 'agreement_id',
             }
         },
-        card_id: {
+        agreement_card: {
             type: DataTypes.INTEGER,
+            defaultValue: null
         },
         active: {
             type: DataTypes.BOOLEAN,
@@ -60,7 +62,8 @@ MemberModel.init(
             allowNull: false,
         },
         exclusion_date: {
-            type: DataTypes.DATE
+            type: DataTypes.DATE,
+            defaultValue: null
         },
     },
     {

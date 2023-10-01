@@ -39,6 +39,7 @@ DependentModel.init(
     },
     relationship_degree: {
       type: DataTypes.STRING(11),
+      defaultValue: null
     },
   },
   {

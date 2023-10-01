@@ -31,13 +31,16 @@ ContactModel.init(
     },
     phone_number: {
       type: DataTypes.STRING(11),
+      defaultValue: null
     },
     residential_phone: {
       type: DataTypes.STRING(11),
+      defaultValue: null
     },
     email: {
       type: DataTypes.STRING(50),
       unique: true,
+      defaultValue: null
     },
   },
   {

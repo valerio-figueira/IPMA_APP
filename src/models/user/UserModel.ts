@@ -11,11 +11,11 @@ const db = new Database;
 class UserModel extends Model<IUser> {
     user_id!: number;
     name!: string;
-    gender!: 'Male' | 'Female' | 'Other';
-    marital_status?: string;
-    birth_date?: Date;
-    father_name?: string;
-    mother_name?: string;
+    gender!: 'Masculino' | 'Feminino' | 'Outro';
+    marital_status?: string | null;
+    birth_date?: Date | null;
+    father_name?: string | null;
+    mother_name?: string | null;
     registration_date!: Date;
 }
 
@@ -31,19 +31,23 @@ UserModel.init(
             allowNull: false,
         },
         gender: {
-            type: DataTypes.ENUM('Male', 'Female', 'Other'),
+            type: DataTypes.ENUM('Masculino', 'Feminino', 'Outro'),
         },
         marital_status: {
             type: DataTypes.STRING(10),
+            defaultValue: null
         },
         birth_date: {
             type: DataTypes.DATE,
+            defaultValue: null
         },
         father_name: {
             type: DataTypes.STRING(50),
+            defaultValue: null
         },
         mother_name: {
             type: DataTypes.STRING(50),
+            defaultValue: null
         },
         registration_date: {
             type: DataTypes.DATE,
