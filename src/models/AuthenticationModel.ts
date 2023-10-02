@@ -2,6 +2,7 @@ import { Model, DataTypes } from 'sequelize';
 import Database from "../db/Database";
 import IAuthentication from '../interfaces/IAuthentication';
 import UserModel from './user/UserModel';
+import AccessHierarchyModel from './AccessHierarchyModel';
 
 const db = new Database;
 
@@ -66,5 +67,10 @@ AuthenticationModel.belongsTo(UserModel, {
     foreignKey: 'user_id',
     as: 'user'
 })
+
+AuthenticationModel.belongsTo(AccessHierarchyModel, {
+    foreignKey: 'hierarchy_id',
+    as: 'accessHierarchy',
+});
 
 export default AuthenticationModel
