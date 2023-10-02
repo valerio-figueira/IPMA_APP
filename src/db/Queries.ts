@@ -5,6 +5,8 @@ import ContactModel from "../models/user/ContactModel";
 import DocumentModel from "../models/user/DocumentModel";
 import LocationModel from "../models/user/LocationModel";
 import UserModel from "../models/user/UserModel";
+import AccessHierarchyModel from "../models/AccessHierarchyModel";
+import AuthenticationModel from "../models/AuthenticationModel";
 
 
 export default class Queries {
@@ -32,6 +34,15 @@ export default class Queries {
         attributes: { exclude: ['user_id'] },
         include: [
             {
+                model: AuthenticationModel,
+                as: 'authentication',
+                attributes: { exclude: ['user_id', 'password'] },
+                include: [{
+                    model: AccessHierarchyModel,
+                    as: 'hierarchy'
+                }]
+            },
+            {
                 model: ContactModel,
                 as: 'contact',
                 attributes: { exclude: ['user_id', 'contact_id'] }
@@ -47,6 +58,15 @@ export default class Queries {
                 attributes: { exclude: ['user_id', 'location_id'] }
             }
         ]
+    }]
+
+    static IncludeHierarchyAndUser = [{
+        model: AccessHierarchyModel,
+        as: 'hierarchy'
+    },
+    {
+        model: UserModel,
+        as: 'user'
     }]
 
 }
