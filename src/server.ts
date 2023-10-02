@@ -17,6 +17,8 @@ import AgreementRoutes from './routes/AgreementRoutes'
 import MonthlyFeeRoutes from './routes/MonthlyFeeRoutes'
 import DoctorRoutes from './routes/DoctorRoutes'
 import AuthenticationRoutes from './routes/AuthenticationRoutes'
+import AccessHierarchyRoutes from './routes/AccessHierarchyRoutes'
+
 import JWT from "./authentication/JWT";
 
 declare module 'express-session' {
@@ -65,6 +67,7 @@ export default class Server {
         this.APP.use('/api/v1/monthly-fee', MonthlyFeeRoutes)
         this.APP.use('/api/v1/doctors', DoctorRoutes)
         this.APP.use('/api/v1/authentications', AuthenticationRoutes)
+        this.APP.use('/api/v1/access-hierarchy', AccessHierarchyRoutes)
     }
 
     private rootHandler(req: Request, res: Response) {
