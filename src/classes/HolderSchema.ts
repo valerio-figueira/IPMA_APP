@@ -4,7 +4,7 @@ export class Holder implements IHolderBase {
     holder_id?: number;
     user_id?: number;
     registration_number?: number | null;
-    status: 'Active' | 'Retired' | 'On Leave';
+    status: 'Ativo' | 'Aposentado' | 'Licença';
 
     constructor(data: IHolderBase) {
         this.holder_id = data.holder_id;
