@@ -21,6 +21,8 @@ export default class UserDataSanitizer {
     }
 
     static sanitizeNestedObject(data: any) {
+        if (typeof data !== 'object') return
+
         for (const key in data) {
             if (typeof data[key] === 'string') data[key] = StringSanitizer.convertToUpperCase(key, data[key])
             if (key.match('birth_date')) data[key] = this.filterDate(data[key])
@@ -38,7 +40,6 @@ export default class UserDataSanitizer {
 
     static sanitizeFields(key: string, data: any) {
         if (!data) return null
-        if (key.match('status')) this.filterStatus(data[key])
         if (key.match('cpf')) return data.replace(/\D/g, '');
         if (key.match('identity')) return data.replace(/\W/g, '');
         if (key.match('phone_number')) return data.replace(/\D/g, '');
@@ -64,13 +65,6 @@ export default class UserDataSanitizer {
         if (obj.document_id) delete obj.document_id
         if (obj.contact_id) delete obj.contact_id
         if (obj.location_id) delete obj.location_id
-    }
-
-    static filterStatus(obj: any) {
-        if (obj === 'Retired') return
-        if (obj === 'Active') return
-
-        return null
     }
 
     static filterDate(obj: any) {
