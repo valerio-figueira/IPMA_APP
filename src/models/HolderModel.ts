@@ -10,7 +10,7 @@ class HolderModel extends Model<IHolderBase> {
     holder_id!: number;
     user_id!: number;
     registration_number?: number | null;
-    status!: 'Active' | 'Retired' | 'On Leave';
+    status!: 'Ativo' | 'Aposentado' | 'Licença';
 }
 
 
@@ -37,6 +37,7 @@ HolderModel.init(
         },
         status: {
             type: DataTypes.ENUM('Ativo', 'Aposentado', 'Licença'),
+            allowNull: false,
         },
     },
     {
