@@ -8,7 +8,7 @@ export interface IHolderBase {
     holder_id?: number;
     user_id?: number;
     registration_number?: number | null;
-    status: 'Active' | 'Retired' | 'On Leave';
+    status: 'Ativo' | 'Aposentado' | 'Licença';
 }
 
 export interface IHolder {
@@ -47,7 +47,7 @@ export interface IHolderRequest {
     identity: 'string';
     issue_date: 'string' | null;
     health_card: 'string' | null;
-    status: 'string' | null;
+    status: 'Ativo' | 'Aposentado' | 'Licença';
     registration_number: 'number' | null;
     [key: string]: string | number | null
 };
