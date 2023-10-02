@@ -41,7 +41,13 @@ export default class AutenticationService {
     }
 
     async Update(query: IAuthentication) {
-        return this.authenticationRepository.Update(query)
+        if (!query.authentication_id) throw new CustomError('É necessário a identificação', 400)
+
+        const [affectedCount] = await this.authenticationRepository.Update(query)
+
+        if (affectedCount === 0) throw new CustomError('Nenhum dado foi alterado', 400)
+
+        return this.ReadOne(query.authentication_id)
     }
 
     async Delete(auth_id: string | number) {

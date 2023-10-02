@@ -35,6 +35,10 @@ AuthenticationModel.init(
         hierarchy_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            references: {
+                model: AccessHierarchyModel,
+                key: 'hierarchy_id'
+            }
         },
         username: {
             type: DataTypes.STRING(30),
@@ -58,6 +62,11 @@ AuthenticationModel.init(
     }
 );
 
+AccessHierarchyModel.hasOne(AuthenticationModel, {
+    foreignKey: 'hierarchy_id',
+    as: 'hierarchy'
+})
+
 UserModel.hasOne(AuthenticationModel, {
     foreignKey: 'user_id',
     as: 'authentication'
@@ -70,7 +79,7 @@ AuthenticationModel.belongsTo(UserModel, {
 
 AuthenticationModel.belongsTo(AccessHierarchyModel, {
     foreignKey: 'hierarchy_id',
-    as: 'accessHierarchy',
+    as: 'hierarchy',
 });
 
 export default AuthenticationModel

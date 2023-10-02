@@ -24,7 +24,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // UPDATE
-router.put("/:id", async (req, res) => {
+router.put("/", async (req, res) => {
     authenticationController.Update(req, res)
 })
 

@@ -1,5 +1,6 @@
 import Queries from "../db/Queries";
 import IAuthentication from "../interfaces/IAuthentication";
+import AccessHierarchyModel from "../models/AccessHierarchyModel";
 import AuthenticationModel from "../models/AuthenticationModel";
 
 
@@ -13,7 +14,7 @@ export default class AuthenticationRepository {
 
     async ReadAll(query: any) {
         return AuthenticationModel.findAll({
-            include: Queries.IncludeUserData,
+            include: Queries.IncludeHierarchyAndUser,
             raw: true, nest: true
         })
     }
@@ -21,7 +22,7 @@ export default class AuthenticationRepository {
     async ReadOne(authentication_id: string | number) {
         return AuthenticationModel.findOne({
             where: { authentication_id },
-            include: Queries.IncludeUserData,
+            include: Queries.IncludeHierarchyAndUser,
             raw: true, nest: true
         })
     }
