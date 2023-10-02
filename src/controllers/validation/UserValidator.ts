@@ -9,6 +9,7 @@ export default class UserValidator {
             throw new CustomError('Verifique os campos obrigatórios', 400)
         }
 
+        this.validateStatus(data.status)
         this.validateStringOrNumber(data)
         this.validateDate(data.birth_date)
         this.validateDate(data.issue_date)
@@ -49,6 +50,14 @@ export default class UserValidator {
 
     static isValidDate(dateStr: string): boolean {
         return true
+    }
+
+    static validateStatus(value: any) {
+        if (value === 'Ativo') return
+        if (value === 'Aposentado') return
+        if (value === 'Licença') return
+
+        throw new CustomError('Status inválido', 400)
     }
 
     static hasUserIdentification(data: any) {
