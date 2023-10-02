@@ -3,6 +3,7 @@ import Database from "../db/Database";
 import IAuthentication from '../interfaces/IAuthentication';
 import UserModel from './user/UserModel';
 import AccessHierarchyModel from './AccessHierarchyModel';
+import IAccessHierarchy from '../interfaces/IAccessHierarchy';
 
 const db = new Database;
 
@@ -13,6 +14,7 @@ class AuthenticationModel extends Model<IAuthentication> {
     username!: string;
     password!: string;
     user_photo?: string | null;
+    hierarchy?: IAccessHierarchy
 }
 
 AuthenticationModel.init(
