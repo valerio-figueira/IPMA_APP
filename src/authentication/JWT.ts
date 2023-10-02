@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import AuthenticationModel from "../models/AuthenticationModel";
+import AccessHierarchyModel from "../models/AccessHierarchyModel";
 require("dotenv").config();
 
 type TUser = { user_id: number; username: string; role: string; };
@@ -55,7 +56,7 @@ export default class JWT {
             const user = {
                 user_id: userFound!.user_id,
                 username: userFound!.username,
-                role: userFound!.hierarchy_id
+                role: userFound!.hierarchy?.level_name
             };
             const token = jwt.sign({ user }, this.SECRET_KEY, { expiresIn: '1h' });
 
@@ -70,7 +71,12 @@ export default class JWT {
             where: {
                 username,
                 password
-            }, raw: true
+            },
+            include: [{
+                model: AccessHierarchyModel,
+                as: 'hierarchy'
+            }],
+            raw: true, nest: true
         })
     }
 
