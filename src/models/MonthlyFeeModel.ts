@@ -15,7 +15,7 @@ class MonthlyFeeModel extends Model<IMonthlyFee> {
     status!: 'Pendente' | 'Pago' | 'Anulado';
     reference_date!: Date;
     payment_date?: Date;
-    registration_date!: Date;
+    created_at!: Date;
 }
 
 MonthlyFeeModel.init(
@@ -68,7 +68,7 @@ MonthlyFeeModel.init(
             allowNull: true,
             defaultValue: null
         },
-        registration_date: {
+        created_at: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
             allowNull: false,

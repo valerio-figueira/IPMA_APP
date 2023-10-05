@@ -8,5 +8,5 @@ export interface IDoctor {
     address: string;
     neighborhood: string;
     phone_number: string;
-    registration_date: string
+    created_at?: Date;
 }

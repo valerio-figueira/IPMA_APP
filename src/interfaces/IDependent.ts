@@ -5,6 +5,7 @@ export interface IDependentBase {
     user_id?: number;
     holder_id: number;
     relationship_degree: string | null;
+    created_at?: Date;
 }
 
 export interface IDependent {

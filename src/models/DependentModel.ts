@@ -11,6 +11,7 @@ class DependentModel extends Model<IDependentBase> {
   user_id!: number;
   holder_id!: number;
   relationship_degree?: string | null;
+  created_at!: Date;
 }
 
 DependentModel.init(
@@ -41,6 +42,11 @@ DependentModel.init(
       type: DataTypes.STRING(11),
       defaultValue: null
     },
+    created_at: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+      allowNull: false,
+    }
   },
   {
     sequelize: db.sequelize,

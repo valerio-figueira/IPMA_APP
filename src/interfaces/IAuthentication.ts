@@ -5,4 +5,5 @@ export default interface IAuthentication {
     username: string;
     password: string;
     user_photo: string;
+    created_at?: Date;
 }

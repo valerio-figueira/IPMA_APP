@@ -16,7 +16,7 @@ class UserModel extends Model<IUser> {
     birth_date?: Date | null;
     father_name?: string | null;
     mother_name?: string | null;
-    registration_date!: Date;
+    created_at!: Date;
 }
 
 UserModel.init(
@@ -49,7 +49,7 @@ UserModel.init(
             type: DataTypes.STRING(50),
             defaultValue: null
         },
-        registration_date: {
+        created_at: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
             allowNull: false,

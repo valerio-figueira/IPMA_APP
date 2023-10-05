@@ -7,7 +7,8 @@ const db = new Database;
 class AccessHierarchyModel extends Model<IAccessHierarchy> {
   hierarchy_id!: number;
   level_name!: string;
-  parent_level_id?: number | null
+  parent_level_id?: number | null;
+  created_at!: Date;
 }
 
 AccessHierarchyModel.init(
@@ -26,6 +27,11 @@ AccessHierarchyModel.init(
       type: DataTypes.INTEGER,
       defaultValue: null,
     },
+    created_at: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+      allowNull: false,
+    }
   },
   {
     sequelize: db.sequelize,

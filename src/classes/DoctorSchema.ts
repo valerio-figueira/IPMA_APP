@@ -9,7 +9,7 @@ export default class DoctorSchema {
     address?: string | null
     neighborhood?: string | null
     phone_number?: string | null
-    registration_date?: string
+    created_at?: Date
 
     constructor(body: IDoctor) {
         this.provider_code = body.provider_code
@@ -20,6 +20,6 @@ export default class DoctorSchema {
         this.address = body.address
         this.neighborhood = body.neighborhood
         this.phone_number = body.phone_number
-        this.registration_date = body.registration_date
+        this.created_at = body.created_at
     }
 }

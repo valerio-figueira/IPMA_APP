@@ -14,6 +14,7 @@ class LocationModel extends Model<ILocation> {
     city?: string | null;
     zipcode?: string | null
     state?: string | null;
+    created_at!: Date;
 }
 
 LocationModel.init(
@@ -56,6 +57,11 @@ LocationModel.init(
             type: DataTypes.STRING(2),
             defaultValue: null
         },
+        created_at: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
+            allowNull: false,
+        }
     },
     {
         sequelize: db.sequelize,

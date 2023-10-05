@@ -5,12 +5,12 @@ import { IHolderBase } from "./IHolder";
 export interface IUser {
     user_id?: number;
     name: string;
-    gender: 'Male' | 'Female' | 'Other';
+    gender: 'MASCULINO' | 'FEMININO' | 'OUTRO';
     marital_status: string | null;
     birth_date: Date | null;
     father_name: string | null;
     mother_name: string | null;
-    registration_date?: Date;
+    created_at?: Date;
 }
 
 export interface IContact {
@@ -19,6 +19,7 @@ export interface IContact {
     phone_number: string | null;
     residential_phone: string | null;
     email: string | null;
+    created_at?: Date;
 }
 
 export interface ILocation {
@@ -30,6 +31,7 @@ export interface ILocation {
     city: string | null;
     zipcode: string | null;
     state: string | null;
+    created_at?: Date;
 }
 
 export interface IDocument {
@@ -39,6 +41,7 @@ export interface IDocument {
     identity: string;
     issue_date: Date | null;
     health_card: string | null;
+    created_at?: Date;
 }
 
 export interface IUserAttributes {
@@ -50,4 +53,5 @@ export interface IUserAttributes {
     dependent?: IDependentBase;
     member?: IMember
     [key: string]: any;
+    created_at?: Date;
 }

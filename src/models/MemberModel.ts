@@ -15,7 +15,7 @@ class MemberModel extends Model<IMember> {
     agreement_id!: number;
     agreement_card?: number | null;
     active!: boolean;
-    registration_date!: Date;
+    created_at!: Date;
     exclusion_date?: Date | null;
 }
 
@@ -56,7 +56,7 @@ MemberModel.init(
             allowNull: false,
             defaultValue: true,
         },
-        registration_date: {
+        created_at: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
             allowNull: false,

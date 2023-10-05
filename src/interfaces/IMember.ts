@@ -5,7 +5,7 @@ interface IMember {
     agreement_id: number;
     agreement_card: string;
     active: boolean;
-    registration_date?: Date;
+    created_at?: Date;
     exclusion_date?: Date | null;
 }
 

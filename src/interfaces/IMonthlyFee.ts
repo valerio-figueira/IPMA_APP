@@ -4,8 +4,8 @@ export default interface IMonthlyFee {
     amount: number;
     reference_month: number;
     reference_year: number;
-    status: 'Pending' | 'Paid' | 'Cancelled';
+    status: 'PENDENTE' | 'PAGO' | 'ANULADO';
     reference_date: Date;
     payment_date: Date | null;
-    registration_date?: Date;
+    created_at?: Date;
 }

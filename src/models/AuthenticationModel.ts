@@ -14,7 +14,8 @@ class AuthenticationModel extends Model<IAuthentication> {
     username!: string;
     password!: string;
     user_photo?: string | null;
-    hierarchy?: IAccessHierarchy
+    hierarchy?: IAccessHierarchy;
+    created_at!: Date;
 }
 
 AuthenticationModel.init(
@@ -54,6 +55,11 @@ AuthenticationModel.init(
         user_photo: {
             type: DataTypes.STRING(50),
             defaultValue: null
+        },
+        created_at: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
+            allowNull: false,
         }
     },
     {

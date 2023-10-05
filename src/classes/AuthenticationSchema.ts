@@ -7,6 +7,7 @@ export class AuthenticationSchema {
     password: string;
     user_photo: string;
     hierarchy_id: number;
+    created_at?: Date;
 
     constructor(body: IAuthentication) {
         this.authentication_id = body.authentication_id;
@@ -15,5 +16,6 @@ export class AuthenticationSchema {
         this.password = body.password;
         this.user_photo = body.user_photo;
         this.hierarchy_id = body.hierarchy_id;
+        this.created_at = body.created_at;
     }
 }

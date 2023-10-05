@@ -53,9 +53,9 @@ export default class UserValidator {
     }
 
     static validateStatus(value: any) {
-        if (value === 'Ativo') return
-        if (value === 'Aposentado') return
-        if (value === 'Licença') return
+        if (value === 'ATIVO(A)') return
+        if (value === 'APOSENTADO(A)') return
+        if (value === 'LICENÇA') return
 
         throw new CustomError('Status inválido', 400)
     }

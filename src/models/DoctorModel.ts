@@ -14,7 +14,7 @@ class DoctorModel extends Model<IDoctor> {
     address!: string;
     neighborhood!: string;
     phone_number!: string;
-    registration_date!: string;
+    created_at!: Date;
 }
 
 DoctorModel.init(
@@ -56,7 +56,7 @@ DoctorModel.init(
             type: DataTypes.STRING(40),
             allowNull: false,
         },
-        registration_date: {
+        created_at: {
             type: DataTypes.DATE,
             allowNull: false,
             defaultValue: DataTypes.NOW,

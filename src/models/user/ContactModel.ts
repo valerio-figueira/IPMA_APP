@@ -11,6 +11,7 @@ class ContactModel extends Model<IContact> {
   phone_number?: string | null;
   residential_phone?: string | null;
   email?: string | null;
+  created_at!: Date;
 }
 
 ContactModel.init(
@@ -42,6 +43,11 @@ ContactModel.init(
       unique: true,
       defaultValue: null
     },
+    created_at: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+      allowNull: false,
+    }
   },
   {
     sequelize: db.sequelize,

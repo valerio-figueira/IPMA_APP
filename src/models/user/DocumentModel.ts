@@ -12,6 +12,7 @@ class DocumentModel extends Model<IDocument> {
     identity!: string;
     issue_date?: Date | null;
     health_card?: string | null;
+    created_at!: Date;
 }
 
 
@@ -49,6 +50,11 @@ DocumentModel.init(
             type: DataTypes.STRING(15),
             defaultValue: null
         },
+        created_at: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
+            allowNull: false,
+        }
     },
     {
         sequelize: db.sequelize,

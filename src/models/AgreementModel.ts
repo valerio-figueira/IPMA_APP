@@ -29,11 +29,11 @@ AgreementModel.init(
             allowNull: true,
             defaultValue: null
         },
-        registration_date: {
+        created_at: {
             type: DataTypes.DATE,
             allowNull: false,
             defaultValue: DataTypes.NOW,
-        },
+        }
     },
     {
         sequelize: db.sequelize,

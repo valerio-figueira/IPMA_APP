@@ -44,12 +44,12 @@ export class UserAttributes {
 export class User {
     user_id?: number;
     name: string;
-    gender: 'Male' | 'Female' | 'Other';
+    gender: 'MASCULINO' | 'FEMININO' | 'OUTRO';
     marital_status: string | null;
     birth_date: Date | null;
     father_name: string | null;
     mother_name: string | null;
-    data_cadastro?: Date;
+    created_at?: Date;
 
     constructor(user: IUser) {
         this.user_id = user.user_id;
@@ -59,6 +59,7 @@ export class User {
         this.birth_date = user.birth_date;
         this.father_name = user.father_name;
         this.mother_name = user.mother_name;
+        this.created_at = user.created_at;
     }
 }
 
@@ -68,6 +69,7 @@ export class Contact {
     phone_number: string | null;
     residential_phone: string | null;
     email: string | null;
+    created_at?: Date;
 
     constructor(contact: IContact) {
         this.contact_id = contact.contact_id
@@ -75,6 +77,7 @@ export class Contact {
         this.phone_number = contact.phone_number;
         this.residential_phone = contact.residential_phone;
         this.email = contact.email;
+        this.created_at = contact.created_at;
     }
 }
 
@@ -85,6 +88,7 @@ export class Document {
     identity: string;
     issue_date: Date | null;
     health_card: string | null;
+    created_at?: Date;
 
     constructor(document: IDocument) {
         this.user_id = document.user_id;
@@ -92,6 +96,7 @@ export class Document {
         this.identity = document.identity;
         this.issue_date = document.issue_date;
         this.health_card = document.health_card;
+        this.created_at = document.created_at;
     }
 }
 
@@ -104,6 +109,7 @@ export class Location {
     city: string | null;
     zipcode: string | null;
     state: string | null;
+    created_at?: Date;
 
     constructor(location: ILocation) {
         this.location_id = location.location_id
@@ -114,6 +120,7 @@ export class Location {
         this.city = location.city;
         this.zipcode = location.zipcode;
         this.state = location.state;
+        this.created_at = location.created_at;
     }
 }
 

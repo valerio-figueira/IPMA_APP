@@ -9,8 +9,9 @@ const db = new Database;
 class HolderModel extends Model<IHolderBase> {
     holder_id!: number;
     user_id!: number;
-    registration_number?: number | null;
+    subscription_number?: number | null;
     status!: 'Ativo' | 'Aposentado' | 'Licença';
+    created_at!: Date;
 }
 
 
@@ -30,7 +31,7 @@ HolderModel.init(
                 key: 'user_id',
             },
         },
-        registration_number: {
+        subscription_number: {
             type: DataTypes.INTEGER,
             allowNull: true,
             defaultValue: null
@@ -39,6 +40,11 @@ HolderModel.init(
             type: DataTypes.ENUM('Ativo', 'Aposentado', 'Licença'),
             allowNull: false,
         },
+        created_at: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
+            allowNull: false,
+        }
     },
     {
         sequelize: db.sequelize,

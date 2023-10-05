@@ -8,6 +8,7 @@ export default class ContractRegistry {
     agreement_card: string;
     active: boolean;
     exclusion_date?: Date | null;
+    created_at?: Date;
 
     constructor(body: IMember) {
         this.member_id = body.member_id;
@@ -17,5 +18,6 @@ export default class ContractRegistry {
         this.agreement_card = body.agreement_card;
         this.active = body.active;
         this.exclusion_date = body.exclusion_date;
+        this.created_at = body.created_at;
     }
 }

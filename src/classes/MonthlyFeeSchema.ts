@@ -6,10 +6,10 @@ export default class MonthlyFeeSchema {
     amount: number;
     reference_month: number;
     reference_year: number;
-    status: 'Pending' | 'Paid' | 'Cancelled';
+    status: 'PENDENTE' | 'PAGO' | 'ANULADO';
     reference_date: Date;
     payment_date: Date | null;
-    registration_date?: Date;
+    created_at?: Date;
 
     constructor(body: IMonthlyFee) {
         this.monthly_fee_id = body.monthly_fee_id;
@@ -20,6 +20,6 @@ export default class MonthlyFeeSchema {
         this.status = body.status;
         this.reference_date = body.reference_date;
         this.payment_date = body.payment_date;
-        this.registration_date = body.registration_date;
+        this.created_at = body.created_at;
     }
 }
