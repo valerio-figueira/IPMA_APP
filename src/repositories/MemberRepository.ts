@@ -4,10 +4,15 @@ import HolderModel from "../models/HolderModel";
 import UserModel from "../models/user/UserModel";
 import AgreementModel from "../models/AgreementModel";
 import CustomError from "../utils/CustomError";
+import Database from "../db/Database";
+import DependentModel from "../models/DependentModel";
 
 export default class MemberRepository {
+    db: Database
 
-    constructor() { }
+    constructor() {
+        this.db = new Database()
+    }
 
     async Create(query: IMember) {
         return MemberModel.create(query, { raw: true })
@@ -78,5 +83,33 @@ export default class MemberRepository {
             }
         })
     }
+
+    async updateExclusionOfDependents(query: IMember) {
+        const transaction = await this.db.sequelize.transaction()
+        const dependents = await DependentModel.findAll({ where: { holder_id: query.holder_id } })
+
+        if (dependents.length === 0) return
+
+        let affectedCount = 0
+        for (let dependent of dependents) {
+            let [count] = await MemberModel.update({ active: false }, {
+                where: {
+                    holder_id: query.holder_id,
+                    dependent_id: dependent.dependent_id
+                }, transaction
+            })
+            affectedCount += count
+        }
+
+        let [count] = await MemberModel.update({ active: false }, {
+            where: { holder_id: query.holder_id },
+            transaction
+        })
+
+        transaction.commit()
+        affectedCount += count
+        return affectedCount
+    }
+
 
 }
