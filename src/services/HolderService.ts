@@ -20,10 +20,7 @@ export default class HolderService {
         const userData = new UserAttributes({ user, document, contact, location });
         userData.addHolder(body)
 
-        const rawData = await this.holderRepository.Create(userData);
-        let sanitizedData = UserDataSanitizer.sanitizeModel(rawData)
-
-        return sanitizedData
+        return this.holderRepository.Create(userData)
     }
 
     async ReadAll() {
