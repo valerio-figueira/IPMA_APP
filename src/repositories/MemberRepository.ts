@@ -69,12 +69,12 @@ export default class MemberRepository {
         })
     }
 
-    async ifMemberExists(query: IMember) {
+    async ifMemberExists(query: IMember, dependent_id: number | null = null) {
         return MemberModel.findOne({
             where: {
                 holder_id: query.holder_id,
                 agreement_id: query.agreement_id,
-                dependent_id: null
+                dependent_id: dependent_id
             }
         })
     }

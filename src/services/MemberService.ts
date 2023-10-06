@@ -28,8 +28,8 @@ export default class MemberService {
     }
 
     async Create(body: IMember & IMonthlyFee) {
-        await this.checkIfExists(body)
         const dependent = await this.findDependent(body)
+        await this.checkIfExists(body, dependent)
         const holder = await this.findHolder(body)
         const agreement = await this.findAgreement(body)
         const subscription = await this.memberRepository.Create(body);
@@ -49,6 +49,7 @@ export default class MemberService {
         if (!subscriptions || subscriptions.length === 0) throw new CustomError('Nenhum registro encontrado!', 400)
 
         const holders: Record<number, any> = {}
+        let index = 1
 
         for (let subscription of subscriptions) {
             const holderID = subscription.holder_id
@@ -60,7 +61,8 @@ export default class MemberService {
             }
 
             const agreementName = subscription['agreement']['agreement_name']
-            holders[holderID]['subscriptions'][agreementName] = { ...subscription }
+            holders[holderID]['subscriptions'][`${agreementName} ${index}`] = { ...subscription }
+            index++
         }
 
         return Object.values(holders)
@@ -124,9 +126,15 @@ export default class MemberService {
         return agreement;
     }
 
-    async checkIfExists(body: IMember) {
+    async checkIfExists(body: IMember, dependent: DependentModel | undefined) {
+        if (dependent) {
+            const dependentExists = await this.memberRepository.ifMemberExists(body, dependent.dependent_id)
+            if (dependentExists) throw new CustomError(`O dependente já existe na base de dados`, 400)
+            return
+        }
+
         const member = await this.memberRepository.ifMemberExists(body)
-        if(member) throw new CustomError(`já existe na base de dados`, 400)
+        if (member) throw new CustomError(`O titular já existe na base de dados`, 400)
     }
 
 }
