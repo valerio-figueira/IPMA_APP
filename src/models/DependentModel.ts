@@ -3,6 +3,7 @@ import Database from "../db/Database";
 import UserModel from './user/UserModel';
 import HolderModel from './HolderModel';
 import { IDependentBase } from '../interfaces/IDependent';
+import { IUser } from '../interfaces/IUser';
 
 const db = new Database;
 
@@ -12,6 +13,7 @@ class DependentModel extends Model<IDependentBase> {
   holder_id!: number;
   relationship_degree?: string | null;
   created_at!: Date;
+  user?: IUser
 }
 
 DependentModel.init(

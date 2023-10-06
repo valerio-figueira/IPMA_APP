@@ -17,6 +17,7 @@ class MemberModel extends Model<IMember> {
     active!: boolean;
     created_at!: Date;
     exclusion_date?: Date | null;
+    agreement?: AgreementModel
 }
 
 
@@ -86,7 +87,7 @@ MemberModel.belongsTo(DependentModel, {
 
 MemberModel.belongsTo(AgreementModel, {
     foreignKey: 'agreement_id',
-    as: 'contract'
+    as: 'agreement'
 });
 
 HolderModel.hasMany(MemberModel, {
@@ -100,7 +101,7 @@ DependentModel.hasMany(MemberModel, {
 
 AgreementModel.hasMany(MemberModel, {
     foreignKey: 'agreement_id',
-    as: 'contract'
+    as: 'subscription'
 })
 
 export default MemberModel;

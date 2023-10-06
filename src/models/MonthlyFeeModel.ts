@@ -12,7 +12,7 @@ class MonthlyFeeModel extends Model<IMonthlyFee> {
     amount!: number;
     reference_month!: number;
     reference_year!: number;
-    status!: 'Pendente' | 'Pago' | 'Anulado';
+    status!: 'PENDENTE' | 'PAGO' | 'ANULADO';
     reference_date!: Date;
     payment_date?: Date;
     created_at!: Date;

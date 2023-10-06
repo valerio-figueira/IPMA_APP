@@ -2,6 +2,7 @@ import { Model, DataTypes } from 'sequelize';
 import Database from "../db/Database";
 import UserModel from './user/UserModel';
 import { IHolderBase } from '../interfaces/IHolder';
+import { IUser } from '../interfaces/IUser';
 
 const db = new Database;
 
@@ -10,8 +11,9 @@ class HolderModel extends Model<IHolderBase> {
     holder_id!: number;
     user_id!: number;
     subscription_number?: number | null;
-    status!: 'Ativo' | 'Aposentado' | 'Licença';
+    status!: 'ATIVO(A)' | 'APOSENTADO(A)' | 'LICENÇA';
     created_at!: Date;
+    user?: IUser
 }
 
 
