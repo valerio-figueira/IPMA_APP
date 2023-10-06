@@ -3,6 +3,7 @@ import IMember from "../interfaces/IMember";
 import HolderModel from "../models/HolderModel";
 import UserModel from "../models/user/UserModel";
 import AgreementModel from "../models/AgreementModel";
+import CustomError from "../utils/CustomError";
 
 export default class MemberRepository {
 
@@ -16,7 +17,7 @@ export default class MemberRepository {
         const whereClause: any = { active: query.active || true }
         const includeClause: any = [{
             model: AgreementModel,
-            as: 'contract',
+            as: 'agreement',
             attributes: { exclude: ['agreement_id'] }
         }]
 
@@ -41,11 +42,11 @@ export default class MemberRepository {
             }, {
                 model: MemberModel,
                 as: 'subscription',
-                where: { id_conveniado: subscription_id },
-                attributes: { exclude: ['holder_id', 'agreement_id'] },
+                where: { member_id: subscription_id },
+                attributes: { exclude: ['holder_id'] },
                 include: [{
                     model: AgreementModel,
-                    as: 'contract',
+                    as: 'agreement',
                     attributes: { exclude: ['agreement_id'] }
                 }]
             }], raw: true, nest: true,
@@ -64,6 +65,16 @@ export default class MemberRepository {
                 member_id: body.member_id,
                 agreement_id: body.agreement_id,
                 holder_id: body.holder_id
+            }
+        })
+    }
+
+    async ifMemberExists(query: IMember) {
+        return MemberModel.findOne({
+            where: {
+                holder_id: query.holder_id,
+                agreement_id: query.agreement_id,
+                dependent_id: null
             }
         })
     }
