@@ -27,7 +27,7 @@ export default class HolderRepository {
             const holder = await HolderModel.create(query.holder, { transaction: t, raw: true })
 
             await t.commit();
-            return { user, document, contact, location, holder };
+            return this.createNestedObj([holder, user, document, contact, location])
         } catch (error: any) {
             await t.rollback();
             throw new CustomError(`Erro ao criar o titular: ${error}`, 500)
@@ -112,6 +112,20 @@ export default class HolderRepository {
         } catch (error: any) {
             await t.rollback();
             throw new CustomError(`Falha ao remover titular: ${error.message}`, 500)
+        }
+    }
+
+    createNestedObj(data: any[]) {
+        return {
+            holder: {
+                ...data[0].toJSON(),
+                user: {
+                    ...data[1].toJSON(),
+                    document: data[2].toJSON(),
+                    contact: data[3].toJSON(),
+                    location: data[4].toJSON(),
+                }
+            }
         }
     }
 
