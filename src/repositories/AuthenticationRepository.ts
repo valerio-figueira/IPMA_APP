@@ -22,6 +22,7 @@ export default class AuthenticationRepository {
     async ReadOne(authentication_id: string | number) {
         return AuthenticationModel.findOne({
             where: { authentication_id },
+            attributes: { exclude: ['password'] },
             include: Queries.IncludeHierarchyAndUser,
             raw: true, nest: true
         })
