@@ -24,12 +24,12 @@ export default class MonthlyFeeRepository {
         }
 
         if (query.agreement_name) {
-            whereClause['$contract.agreement_name$'] = query.agreement_name
+            whereClause['$agreement.agreement_name$'] = query.agreement_name
         }
 
         return MemberModel.findAll({
             where: whereClause,
-            include: Queries.ContractRegistryIncludeAll,
+            include: Queries.MemberIncludeAll,
             raw: true, nest: true
         })
     }
@@ -43,7 +43,7 @@ export default class MonthlyFeeRepository {
                 attributes: { exclude: ['member_id'] }
             }, {
                 model: AgreementModel,
-                as: 'contract'
+                as: 'agreement'
             }, {
                 model: HolderModel,
                 as: 'holder',
