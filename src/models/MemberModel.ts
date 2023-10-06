@@ -17,7 +17,7 @@ class MemberModel extends Model<IMember> {
     active!: boolean;
     created_at!: Date;
     exclusion_date?: Date | null;
-    agreement?: AgreementModel
+    agreement?: AgreementModel;
 }
 
 
