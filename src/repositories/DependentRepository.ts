@@ -4,7 +4,7 @@ import { IUserAttributes } from "../interfaces/IUser";
 import DependentModel from "../models/DependentModel";
 import CustomError from "../utils/CustomError";
 import UserRepository from "./UserRepository";
-import ContractRegistryModel from "../models/MemberModel";
+import MemberModel from "../models/MemberModel";
 import Queries from "../db/Queries";
 
 
@@ -24,9 +24,9 @@ export default class DependentRepository {
             const { user, document, contact, location } = await this.userRepository.Create(query, t);
             const dependent = await DependentModel.create(query.dependent, { transaction: t, raw: true })
 
-            query.contract!.id_dependente = dependent.dependent_id
+            query.contract!.dependent_id = dependent.dependent_id
 
-            const contract = await ContractRegistryModel.create(query.contract, { transaction: t, raw: true })
+            const contract = await MemberModel.create(query.contract, { transaction: t, raw: true })
 
             await t.commit();
 
@@ -41,7 +41,7 @@ export default class DependentRepository {
         return DependentModel.findAll({
             where: { holder_id: holder },
             attributes: { exclude: ['user_id'] },
-            include: Queries.IncludeUserData,
+            include: Queries.IncludeDependentUserData,
             raw: true, nest: true
         })
     }
@@ -50,7 +50,7 @@ export default class DependentRepository {
         return DependentModel.findOne({
             where: { holder_id: holder, dependent_id },
             attributes: { exclude: ['user_id'] },
-            include: Queries.IncludeUserData,
+            include: Queries.IncludeDependentUserData,
             raw: true, nest: true
         })
     }
