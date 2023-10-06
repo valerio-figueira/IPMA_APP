@@ -10,6 +10,7 @@ import IMonthlyFee from "../interfaces/IMonthlyFee";
 import DependentService from "./DependentService";
 import HolderModel from "../models/HolderModel";
 import DependentModel from "../models/DependentModel";
+import MemberModel from "../models/MemberModel";
 
 
 export default class MemberService {
@@ -32,6 +33,13 @@ export default class MemberService {
         await this.checkIfExists(body, dependent)
         const holder = await this.findHolder(body)
         const agreement = await this.findAgreement(body)
+
+        if (agreement.agreement_name.match('ODONTO COMPANY')) {
+            if (!body.amount || typeof body.amount !== 'number') {
+                throw new CustomError('Verifique o valor da mensalidade', 400)
+            }
+        }
+
         const subscription = await this.memberRepository.Create(body);
 
         if (!subscription) throw new CustomError('Não foi possível registrar o usuário no convênio', 500)
@@ -44,7 +52,7 @@ export default class MemberService {
     }
 
     async ReadAll(query: any) {
-        const subscriptions: any[] = await this.memberRepository.ReadAll(query);
+        const subscriptions: MemberModel[] = await this.memberRepository.ReadAll(query);
 
         if (!subscriptions || subscriptions.length === 0) throw new CustomError('Nenhum registro encontrado!', 400)
 
@@ -53,15 +61,17 @@ export default class MemberService {
 
         for (let subscription of subscriptions) {
             const holderID = subscription.holder_id
+            const dependentID = subscription.dependent_id
 
             if (!holders[holderID]) {
                 const holder = await this.holderService.ReadOne(holderID)
                 holder['subscriptions'] = {}
                 holders[holderID] = holder
+                index = 1
             }
-
-            const agreementName = subscription['agreement']['agreement_name']
-            holders[holderID]['subscriptions'][`${agreementName} ${index}`] = { ...subscription }
+            const dependent = dependentID ? await this.dependentService.ReadOne(holderID, dependentID) : null
+            const agreementName = subscription['agreement']!['agreement_name']
+            holders[holderID]['subscriptions'][`${agreementName} ${index}`] = { ...subscription, dependent }
             index++
         }
 
@@ -80,14 +90,27 @@ export default class MemberService {
         const subscription = new MemberSchema(body)
 
         if (!subscription.member_id) throw new CustomError('Verifique a identificação do conveniado', 400)
+
+        await this.checkIfMemberExists(body)
+
         if (!subscription.active && !subscription.exclusion_date) subscription.exclusion_date = new Date(Date.now())
         if (subscription.active && subscription.exclusion_date) subscription.exclusion_date = null
 
-        const [AffectedCount] = await this.memberRepository.Update(subscription);
+        if (!subscription.active) {
+            if (subscription.holder_id && !subscription.dependent_id) {
+                const affectedCount = await this.memberRepository.updateExclusionOfDependents(body)
+                if (affectedCount === 0) throw new CustomError('Nenhum dado foi alterado', 400)
+                if (affectedCount && affectedCount > 1) {
+                    return { message: `Houve ${affectedCount} exclus${affectedCount > 1 ? + 'ões' : 'ão'}` }
+                }
+            }
+        } else {
+            const [affectedCount] = await this.memberRepository.Update(subscription);
 
-        if (AffectedCount === 0) throw new CustomError('Nenhum dado foi alterado', 400)
+            if (affectedCount === 0) throw new CustomError('Nenhum dado foi alterado', 400)
 
-        return UserDataSanitizer.sanitizeQuery(await this.ReadOne(subscription.member_id));
+            return { message: `Houve ${affectedCount} alteração` }
+        }
     }
 
     async Delete(body: IMember) {
@@ -100,7 +123,7 @@ export default class MemberService {
         return { message: `${holder.user!.name} foi removido(a) do convênio ${agreement.agreement_name}` }
     }
 
-    async findDependent(body: IMember) {
+    private async findDependent(body: IMember) {
         if (!body.dependent_id) return
 
         const dependent: DependentModel | null = await this.dependentService.ReadOne(body.holder_id, body.dependent_id)
@@ -110,7 +133,7 @@ export default class MemberService {
         return dependent
     }
 
-    async findHolder(body: IMember) {
+    private async findHolder(body: IMember) {
         const holder: HolderModel = await this.holderService.ReadOne(body.holder_id)
 
         if (!holder) throw new CustomError('Não foi possível localizar os dados do titular', 400)
@@ -118,7 +141,7 @@ export default class MemberService {
         return holder
     }
 
-    async findAgreement(body: IMember) {
+    private async findAgreement(body: IMember) {
         const agreement = await this.agreementService.ReadOne(body.agreement_id);
 
         if (!agreement) throw new CustomError('Não foi possível localizar os dados do convênio', 400)
@@ -126,7 +149,7 @@ export default class MemberService {
         return agreement;
     }
 
-    async checkIfExists(body: IMember, dependent: DependentModel | undefined) {
+    private async checkIfExists(body: IMember, dependent: DependentModel | undefined) {
         if (dependent) {
             const dependentExists = await this.memberRepository.ifMemberExists(body, dependent.dependent_id)
             if (dependentExists) throw new CustomError(`O dependente já existe na base de dados`, 400)
@@ -135,6 +158,12 @@ export default class MemberService {
 
         const member = await this.memberRepository.ifMemberExists(body)
         if (member) throw new CustomError(`O titular já existe na base de dados`, 400)
+    }
+
+    private async checkIfMemberExists(body: IMember) {
+        const member = await this.memberRepository.ReadOne(body.member_id!)
+
+        if (!member) throw new CustomError(`O conveniado não existe`, 400)
     }
 
 }
