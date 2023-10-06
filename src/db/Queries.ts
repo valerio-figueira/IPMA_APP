@@ -11,13 +11,13 @@ import AuthenticationModel from "../models/AuthenticationModel";
 
 export default class Queries {
 
-    static ContractRegistryIncludeAll = [{
+    static MemberIncludeAll = [{
         model: MonthlyFeeModel,
         as: 'billing',
         attributes: { exclude: ['member_id'] }
     }, {
         model: AgreementModel,
-        as: 'contract'
+        as: 'agreement'
     }, {
         model: HolderModel,
         as: 'holder',
@@ -42,6 +42,29 @@ export default class Queries {
                     as: 'hierarchy'
                 }]
             },
+            {
+                model: ContactModel,
+                as: 'contact',
+                attributes: { exclude: ['user_id', 'contact_id'] }
+            },
+            {
+                model: DocumentModel,
+                as: 'document',
+                attributes: { exclude: ['user_id', 'document_id'] },
+            },
+            {
+                model: LocationModel,
+                as: 'location',
+                attributes: { exclude: ['user_id', 'location_id'] }
+            }
+        ]
+    }]
+
+    static IncludeDependentUserData = [{
+        model: UserModel,
+        as: 'user',
+        attributes: { exclude: ['user_id'] },
+        include: [
             {
                 model: ContactModel,
                 as: 'contact',
