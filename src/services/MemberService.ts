@@ -8,6 +8,8 @@ import UserDataSanitizer from "../helpers/UserDataSanitizer";
 import MonthlyFeeService from "./MonthlyFeeService";
 import IMonthlyFee from "../interfaces/IMonthlyFee";
 import DependentService from "./DependentService";
+import HolderModel from "../models/HolderModel";
+import DependentModel from "../models/DependentModel";
 
 
 export default class MemberService {
@@ -26,18 +28,19 @@ export default class MemberService {
     }
 
     async Create(body: IMember & IMonthlyFee) {
-        const dependent: any = await this.findDependent(body)
+        await this.checkIfExists(body)
+        const dependent = await this.findDependent(body)
         const holder = await this.findHolder(body)
-        const businessContract = await this.findBusinessContract(body)
-        const contractRegistry = await this.memberRepository.Create(body);
+        const agreement = await this.findAgreement(body)
+        const subscription = await this.memberRepository.Create(body);
 
+        if (!subscription) throw new CustomError('Não foi possível registrar o usuário no convênio', 500)
+        body.member_id = subscription.member_id
         await this.monthlyFeeService.Create(body)
 
-        if (!contractRegistry) throw new CustomError('Não foi possível registrar o usuário no convênio', 500)
+        const name = dependent?.user?.name || holder.user!.name
 
-        const name = dependent.user.name || holder.user.name
-
-        return { message: `${name} agora é conveniado(a) da ${businessContract.agreement_name}` }
+        return { message: `${name} agora é conveniado(a) da ${agreement.agreement_name}` }
     }
 
     async ReadAll(query: any) {
@@ -87,18 +90,18 @@ export default class MemberService {
 
     async Delete(body: IMember) {
         const holder = await this.findHolder(body)
-        const businessContract = await this.findBusinessContract(body)
+        const agreement = await this.findAgreement(body)
         const deletedRegistry = await this.memberRepository.Delete(body);
 
-        if (!deletedRegistry) throw new CustomError('Registro do conveniado não foi deletado', 400)
+        if (!deletedRegistry) throw new CustomError('Não houve alterações', 400)
 
-        return { message: `${holder.user.nome} foi removido do convênio ${businessContract.agreement_name}` }
+        return { message: `${holder.user!.name} foi removido(a) do convênio ${agreement.agreement_name}` }
     }
 
     async findDependent(body: IMember) {
         if (!body.dependent_id) return
 
-        const dependent = await this.dependentService.ReadOne(body.holder_id, body.dependent_id)
+        const dependent: DependentModel | null = await this.dependentService.ReadOne(body.holder_id, body.dependent_id)
 
         if (!dependent) throw new CustomError('Não foi possível localizar os dados do dependente', 400)
 
@@ -106,19 +109,24 @@ export default class MemberService {
     }
 
     async findHolder(body: IMember) {
-        const holder = await this.holderService.ReadOne(body.holder_id)
+        const holder: HolderModel = await this.holderService.ReadOne(body.holder_id)
 
         if (!holder) throw new CustomError('Não foi possível localizar os dados do titular', 400)
 
         return holder
     }
 
-    async findBusinessContract(body: IMember) {
-        const businessContract = await this.agreementService.ReadOne(body.agreement_id);
+    async findAgreement(body: IMember) {
+        const agreement = await this.agreementService.ReadOne(body.agreement_id);
 
-        if (!businessContract) throw new CustomError('Não foi possível localizar os dados do convênio', 400)
+        if (!agreement) throw new CustomError('Não foi possível localizar os dados do convênio', 400)
 
-        return businessContract;
+        return agreement;
+    }
+
+    async checkIfExists(body: IMember) {
+        const member = await this.memberRepository.ifMemberExists(body)
+        if(member) throw new CustomError(`já existe na base de dados`, 400)
     }
 
 }
