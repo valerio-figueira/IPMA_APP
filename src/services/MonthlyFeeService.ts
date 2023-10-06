@@ -38,7 +38,11 @@ export default class MonthlyFeeService {
     }
 
     async Delete(billing_id: string | number) {
-        return this.monthlyFeeRepository.Delete(billing_id);
+        const affectedCount = await this.monthlyFeeRepository.Delete(billing_id)
+
+        if(affectedCount === 0) throw new CustomError('Não houve alterações', 400)
+        if(affectedCount === 1) return { message: `Houve ${affectedCount} alteração.` }
+        if(affectedCount > 1) return { message: `Houve ${affectedCount} alterações.` }
     }
 
     verifyDate(billing: IMonthlyFee) {
