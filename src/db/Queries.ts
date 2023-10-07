@@ -60,6 +60,23 @@ export default class Queries {
         ]
     }]
 
+    static IncludeUserDataSummary = [{
+        model: UserModel,
+        as: 'user',
+        attributes: { exclude: ['user_id'] },
+        include: [
+            {
+                model: AuthenticationModel,
+                as: 'authentication',
+                attributes: { exclude: ['user_id', 'password'] },
+                include: [{
+                    model: AccessHierarchyModel,
+                    as: 'hierarchy'
+                }]
+            }
+        ]
+    }]
+
     static IncludeDependentUserData = [{
         model: UserModel,
         as: 'user',
@@ -81,6 +98,12 @@ export default class Queries {
                 attributes: { exclude: ['user_id', 'location_id'] }
             }
         ]
+    }]
+
+    static IncludeDependentSummary = [{
+        model: UserModel,
+        as: 'user',
+        attributes: { exclude: ['user_id'] }
     }]
 
     static IncludeHierarchyAndUser = [{
