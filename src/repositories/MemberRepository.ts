@@ -88,27 +88,32 @@ export default class MemberRepository {
         const transaction = await this.db.sequelize.transaction()
         const dependents = await DependentModel.findAll({ where: { holder_id: query.holder_id } })
 
-        if (dependents.length === 0) return
+        try {
+            if (dependents.length === 0) return
 
-        let affectedCount = 0
-        for (let dependent of dependents) {
+            let affectedCount = 0
+            for (let dependent of dependents) {
+                let [count] = await MemberModel.update({ active: false }, {
+                    where: {
+                        holder_id: query.holder_id,
+                        dependent_id: dependent.dependent_id
+                    }, transaction
+                })
+                affectedCount += count
+            }
+
             let [count] = await MemberModel.update({ active: false }, {
-                where: {
-                    holder_id: query.holder_id,
-                    dependent_id: dependent.dependent_id
-                }, transaction
+                where: { holder_id: query.holder_id },
+                transaction
             })
+
+            transaction.commit()
             affectedCount += count
+            return affectedCount
+        } catch (error: any) {
+            await transaction.rollback()
+            throw new CustomError(error.message || 'Não foi possível remover os dependentes ou titular', error.status || 500)
         }
-
-        let [count] = await MemberModel.update({ active: false }, {
-            where: { holder_id: query.holder_id },
-            transaction
-        })
-
-        transaction.commit()
-        affectedCount += count
-        return affectedCount
     }
 
 
