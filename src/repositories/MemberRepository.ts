@@ -19,6 +19,10 @@ export default class MemberRepository {
     }
 
     async ReadAll(query: any) {
+        const page = query.page || 1;
+        const pageSize = query.pageSize || 10;
+        const offset = (page - 1) * pageSize;
+
         const whereClause: any = { active: query.active || true }
         const includeClause: any = [{
             model: AgreementModel,
@@ -33,6 +37,8 @@ export default class MemberRepository {
         }
 
         return MemberModel.findAll({
+            offset,
+            limit: pageSize,
             where: whereClause,
             include: includeClause,
             raw: true, nest: true

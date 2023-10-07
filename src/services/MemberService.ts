@@ -56,26 +56,19 @@ export default class MemberService {
 
         if (!subscriptions || subscriptions.length === 0) throw new CustomError('Nenhum registro encontrado!', 400)
 
-        const holders: Record<number, any> = {}
-        let index = 1
+        const holders: Record<number, any> = await this.addUsersToResponse(subscriptions)
 
-        for (let subscription of subscriptions) {
-            const holderID = subscription.holder_id
-            const dependentID = subscription.dependent_id
+        const totalCount = subscriptions.length
+        const totalPages = Math.ceil(totalCount / query.pageSize || 10)
+        const response = Object.values(holders)
+        response.push({
+            currentPage: query.page || 1,
+            pageSize: query.pageSize || 10,
+            totalCount: totalCount,
+            totalPages: totalPages
+        })
 
-            if (!holders[holderID]) {
-                const holder = await this.holderService.ReadOne(holderID)
-                holder['subscriptions'] = {}
-                holders[holderID] = holder
-                index = 1
-            }
-            const dependent = dependentID ? await this.dependentService.ReadOne(holderID, dependentID) : null
-            const agreementName = subscription['agreement']!['agreement_name']
-            holders[holderID]['subscriptions'][`${agreementName} ${index}`] = { ...subscription, dependent }
-            index++
-        }
-
-        return Object.values(holders)
+        return response
     }
 
     async ReadOne(subscription_id: string | number) {
@@ -164,6 +157,29 @@ export default class MemberService {
         const member = await this.memberRepository.ReadOne(body.member_id!)
 
         if (!member) throw new CustomError(`O conveniado não existe`, 400)
+    }
+
+    private async addUsersToResponse(subscriptions: MemberModel[]) {
+        const holders: Record<number, any> = {}
+        let index = 1
+
+        for (let subscription of subscriptions) {
+            const holderID = subscription.holder_id
+            const dependentID = subscription.dependent_id
+
+            if (!holders[holderID]) {
+                const holder = await this.holderService.ReadOneSummary(holderID)
+                holder['subscriptions'] = {}
+                holders[holderID] = holder
+                index = 1
+            }
+            const dependent = dependentID ? await this.dependentService.ReadOneSummary(holderID, dependentID) : null
+            const agreementName = subscription['agreement']!['agreement_name']
+            holders[holderID]['subscriptions'][`${agreementName} ${index}`] = { ...subscription, dependent }
+            index++
+        }
+
+        return holders
     }
 
 }
