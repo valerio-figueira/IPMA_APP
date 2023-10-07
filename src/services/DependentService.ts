@@ -32,10 +32,10 @@ export default class DependentService {
 
         const holderData: Record<number, any> = {}
 
-        for(let dependent of dependents) {
+        for (let dependent of dependents) {
             const holderID = dependent.holder_id
 
-            if(!holderData[holderID]) {
+            if (!holderData[holderID]) {
                 const holderFinded: any = await this.holderRepository.ReadOne(holderID)
                 holderFinded['dependents'] = {}
                 holderData[holderID] = holderFinded
@@ -50,6 +50,10 @@ export default class DependentService {
 
     async ReadOne(holder: string | number, dependent_id: string | number) {
         return this.dependentRepository.ReadOne(holder, dependent_id);
+    }
+
+    async ReadOneSummary(holder: string | number, dependent_id: string | number) {
+        return this.dependentRepository.ReadOneSummary(holder, dependent_id);
     }
 
     async Update() { }

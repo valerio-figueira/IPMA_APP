@@ -55,6 +55,15 @@ export default class DependentRepository {
         })
     }
 
+    async ReadOneSummary(holder: string | number, dependent_id: string | number) {
+        return DependentModel.findOne({
+            where: { holder_id: holder, dependent_id },
+            attributes: { exclude: ['user_id'] },
+            include: Queries.IncludeDependentSummary,
+            raw: true, nest: true
+        })
+    }
+
     async Update() { }
 
     async Delete() { }

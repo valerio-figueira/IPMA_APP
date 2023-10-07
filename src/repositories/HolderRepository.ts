@@ -48,6 +48,13 @@ export default class HolderRepository {
         })
     }
 
+    async ReadOneSummary(holder_id: string | number) {
+        return HolderModel.findByPk(holder_id, {
+            include: Queries.IncludeUserDataSummary,
+            raw: true, nest: true
+        })
+    }
+
     async Update(query: IUserAttributes) {
         const t: Transaction = await this.db.sequelize.transaction();
 
