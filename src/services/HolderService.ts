@@ -40,7 +40,7 @@ export default class HolderService {
     }
 
     async ReadOneSummary(holder_id: string | number) {
-        const rawData = await this.holderRepository.ReadOne(holder_id);
+        const rawData = await this.holderRepository.ReadOneSummary(holder_id);
 
         if(!rawData) throw new CustomError('Nenhum registro encontrado!', 400)
 
