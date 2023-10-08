@@ -4,20 +4,14 @@ import cors from 'cors';
 import BodyParser, { json } from 'body-parser';
 import session from "express-session";
 import fileUpload from "express-fileupload";
+import 'reflect-metadata'
 
 // CONFIG
 import Cors from "./config/Cors";
 import Session from "./config/Session";
 
 // ROUTES
-import HolderRoutes from './routes/HolderRoutes';
-import DependentRoutes from './routes/DependentRoutes';
-import MemberRoutes from './routes/MemberRoutes'
-import AgreementRoutes from './routes/AgreementRoutes'
-import MonthlyFeeRoutes from './routes/MonthlyFeeRoutes'
-import DoctorRoutes from './routes/DoctorRoutes'
-import AuthenticationRoutes from './routes/AuthenticationRoutes'
-import AccessHierarchyRoutes from './routes/AccessHierarchyRoutes'
+import RegisterRoutes from "./config/RegisterRoutes";
 
 import JWT from "./authentication/JWT";
 
@@ -60,14 +54,7 @@ export default class Server {
 
     private setupRoutes() {
         this.APP.get('/', this.rootHandler)
-        this.APP.use('/api/v1/holders', HolderRoutes)
-        this.APP.use('/api/v1/dependents', DependentRoutes)
-        this.APP.use('/api/v1/members', MemberRoutes)
-        this.APP.use('/api/v1/agreements', AgreementRoutes)
-        this.APP.use('/api/v1/monthly-fee', MonthlyFeeRoutes)
-        this.APP.use('/api/v1/doctors', DoctorRoutes)
-        this.APP.use('/api/v1/authentications', AuthenticationRoutes)
-        this.APP.use('/api/v1/access-hierarchy', AccessHierarchyRoutes)
+        RegisterRoutes(this.APP)
     }
 
     private rootHandler(req: Request, res: Response) {
