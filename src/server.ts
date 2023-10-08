@@ -11,7 +11,7 @@ import Cors from "./config/Cors";
 import Session from "./config/Session";
 
 // ROUTES
-import RegisterRoutes from "./config/RegisterRoutes";
+import RegisterRoutes from "./utils/RegisterRoutes";
 
 import JWT from "./authentication/JWT";
 
