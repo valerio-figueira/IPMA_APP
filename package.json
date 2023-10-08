@@ -20,6 +20,7 @@
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.3.3",
     "pdf-parse": "^1.1.1",
+    "reflect-metadata": "^0.1.13",
     "sequelize": "^6.33.0",
     "sequelize-cli": "^6.6.1",
     "typescript": "^5.0.4",
@@ -34,6 +35,7 @@
     "@types/express-session": "^1.17.7",
     "@types/jsonwebtoken": "^9.0.3",
     "@types/mysql2": "github:types/mysql2",
+    "@types/reflect-metadata": "^0.1.0",
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1"
   }
