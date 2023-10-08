@@ -56,4 +56,13 @@ HolderModel.init(
     }
 );
 
+UserModel.hasOne(HolderModel, {
+    foreignKey: 'user_id',
+    as: 'holder'
+})
+HolderModel.belongsTo(UserModel, {
+    foreignKey: 'user_id',
+    as: 'user'
+})
+
 export default HolderModel;

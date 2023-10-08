@@ -75,11 +75,6 @@ UserModel.hasOne(LocationModel, {
     foreignKey: 'user_id',
     as: 'location'
 })
-UserModel.hasOne(HolderModel, {
-    foreignKey: 'user_id',
-    as: 'holder'
-})
-
 DocumentModel.belongsTo(UserModel, {
     foreignKey: 'user_id'
 });
@@ -89,9 +84,6 @@ LocationModel.belongsTo(UserModel, {
 ContactModel.belongsTo(UserModel, {
     foreignKey: 'user_id'
 });
-HolderModel.belongsTo(UserModel, {
-    foreignKey: 'user_id',
-    as: 'user'
-})
+
 
 export default UserModel
