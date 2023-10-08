@@ -1,14 +1,18 @@
 import { Request, Response } from "express";
 import DoctorService from "../services/DoctorService";
+import Controller from "../utils/decorators/ControllerDecorator";
+import { Delete, Get, Post, Put } from "../utils/decorators/HandlersDecorator";
 
 
-export default class DoctorController {
+@Controller('/api/v1/doctors')
+class DoctorController {
     doctorService: DoctorService;
 
     constructor() {
         this.doctorService = new DoctorService();
     }
 
+    @Post('/')
     async Create(req: Request, res: Response) {
         try {
             res.status(201).json(await this.doctorService.Create(req.body))
@@ -17,6 +21,7 @@ export default class DoctorController {
         }
     }
 
+    @Post('/bulk-create')
     async BulkCreate(req: Request, res: Response) {
         try {
             res.status(201).json(await this.doctorService.BulkCreate())
@@ -25,6 +30,7 @@ export default class DoctorController {
         }
     }
 
+    @Get('/')
     async ReadAll(req: Request, res: Response) {
         try {
             res.status(200).json(await this.doctorService.ReadAll(req.query))
@@ -33,6 +39,7 @@ export default class DoctorController {
         }
     }
 
+    @Get('/:id')
     async ReadOne(req: Request, res: Response) {
         try {
             res.status(200).json(await this.doctorService.ReadOne(req.params.id))
@@ -41,6 +48,7 @@ export default class DoctorController {
         }
     }
 
+    @Put('/')
     async Update(req: Request, res: Response) {
         try {
             res.status(200).json(await this.doctorService.Update(req.body))
@@ -49,6 +57,7 @@ export default class DoctorController {
         }
     }
 
+    @Delete('/:id')
     async Delete(req: Request, res: Response) {
         try {
             res.status(200).json(await this.doctorService.Delete(req.params.id))
@@ -57,6 +66,7 @@ export default class DoctorController {
         }
     }
 
+    @Post('/extract-data')
     async ExtractData(req: Request, res: Response) {
         try {
             res.status(200).json(await this.doctorService.ExtractData(req.files))
@@ -66,3 +76,5 @@ export default class DoctorController {
     }
 
 }
+
+export default DoctorController

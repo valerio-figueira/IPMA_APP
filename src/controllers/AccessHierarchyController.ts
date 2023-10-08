@@ -1,14 +1,17 @@
 import { Request, Response } from "express";
 import AccessHierarchyService from "../services/AccessHierarchyService";
+import Controller from "../utils/decorators/ControllerDecorator";
+import { Delete, Get, Post, Put } from "../utils/decorators/HandlersDecorator";
 
-
-export default class AccessHierarchyController {
+@Controller('/api/v1/access-hierarchy')
+class AccessHierarchyController {
     accessHierarchyService: AccessHierarchyService;
 
     constructor() {
         this.accessHierarchyService = new AccessHierarchyService();
     }
 
+    @Post('/')
     async Create(req: Request, res: Response) {
         try {
             res.status(201).json(await this.accessHierarchyService.Create(req.body))
@@ -17,6 +20,7 @@ export default class AccessHierarchyController {
         }
     }
 
+    @Get('/')
     async ReadAll(req: Request, res: Response) {
         try {
             res.status(200).json(await this.accessHierarchyService.ReadAll())
@@ -25,6 +29,7 @@ export default class AccessHierarchyController {
         }
     }
 
+    @Get('/:id')
     async ReadOne(req: Request, res: Response) {
         try {
             res.status(200).json(await this.accessHierarchyService.ReadOne(req.params.id))
@@ -33,6 +38,7 @@ export default class AccessHierarchyController {
         }
     }
 
+    @Put('/')
     async Update(req: Request, res: Response) {
         try {
             res.status(200).json(await this.accessHierarchyService.Update(req.body))
@@ -41,6 +47,7 @@ export default class AccessHierarchyController {
         }
     }
 
+    @Delete('/:id')
     async Delete(req: Request, res: Response) {
         try {
             res.status(200).json(await this.accessHierarchyService.Delete(req.params.id))
@@ -50,3 +57,5 @@ export default class AccessHierarchyController {
     }
 
 }
+
+export default AccessHierarchyController

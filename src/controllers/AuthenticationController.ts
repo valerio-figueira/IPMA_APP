@@ -1,13 +1,19 @@
 import { Request, Response } from "express";
 import AuthenticationService from "../services/AuthenticationService";
+import Controller from "../utils/decorators/ControllerDecorator";
+import { Delete, Get, Post, Put } from "../utils/decorators/HandlersDecorator";
+import JWT from "../authentication/JWT";
 
-export default class AuthenticationController {
+
+@Controller('/api/v1/authentications')
+class AuthenticationController {
     authenticationService: AuthenticationService;
 
     constructor() {
         this.authenticationService = new AuthenticationService();
     }
 
+    @Post('/')
     async Create(req: Request, res: Response) {
         try {
             res.status(201).json(await this.authenticationService.Create(req.body))
@@ -16,6 +22,7 @@ export default class AuthenticationController {
         }
     }
 
+    @Get('/')
     async ReadAll(req: Request, res: Response) {
         try {
             res.status(200).json(await this.authenticationService.ReadAll(req.query))
@@ -24,6 +31,7 @@ export default class AuthenticationController {
         }
     }
 
+    @Get('/:id')
     async ReadOne(req: Request, res: Response) {
         try {
             res.status(200).json(await this.authenticationService.ReadOne(req.params.id))
@@ -32,6 +40,7 @@ export default class AuthenticationController {
         }
     }
 
+    @Put('/')
     async Update(req: Request, res: Response) {
         try {
             res.status(200).json(await this.authenticationService.Update(req.body))
@@ -40,6 +49,7 @@ export default class AuthenticationController {
         }
     }
 
+    @Delete('/:id')
     async Delete(req: Request, res: Response) {
         try {
             res.status(200).json(await this.authenticationService.Delete(req.params.id))
@@ -48,4 +58,11 @@ export default class AuthenticationController {
         }
     }
 
+    @Post('/login')
+    async Login(req: Request, res: Response) {
+        JWT.Login(req, res)
+    }
+
 }
+
+export default AuthenticationController

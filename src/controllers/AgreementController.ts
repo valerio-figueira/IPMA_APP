@@ -1,14 +1,18 @@
 import { Request, Response } from "express";
 import AgreementService from "../services/AgreementService";
+import Controller from "../utils/decorators/ControllerDecorator";
+import { Delete, Get, Post, Put } from "../utils/decorators/HandlersDecorator";
 
 
-export default class AgreementController {
+@Controller('/api/v1/agreements')
+class AgreementController {
     agreementService: AgreementService;
 
     constructor() {
         this.agreementService = new AgreementService();
     }
 
+    @Post('/')
     async Create(req: Request, res: Response) {
         try {
             res.status(201).json(await this.agreementService.Create(req.body))
@@ -17,6 +21,7 @@ export default class AgreementController {
         }
     }
 
+    @Get('/')
     async ReadAll(req: Request, res: Response) {
         try {
             res.status(200).json(await this.agreementService.ReadAll())
@@ -25,6 +30,7 @@ export default class AgreementController {
         }
     }
 
+    @Get('/:id')
     async ReadOne(req: Request, res: Response) {
         try {
             res.status(200).json(await this.agreementService.ReadOne(req.params.id))
@@ -33,6 +39,7 @@ export default class AgreementController {
         }
     }
 
+    @Put('/')
     async Update(req: Request, res: Response) {
         try {
             res.status(200).json(await this.agreementService.Update(req.body))
@@ -41,6 +48,7 @@ export default class AgreementController {
         }
     }
 
+    @Delete('/')
     async Delete(req: Request, res: Response) {
         try {
             res.status(200).json(await this.agreementService.Delete(req.body))
@@ -50,3 +58,5 @@ export default class AgreementController {
     }
 
 }
+
+export default AgreementController

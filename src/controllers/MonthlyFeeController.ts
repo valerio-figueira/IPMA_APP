@@ -1,13 +1,18 @@
 import { Request, Response } from "express";
 import MonthlyFeeService from "../services/MonthlyFeeService";
+import Controller from "../utils/decorators/ControllerDecorator";
+import { Delete, Get, Post, Put } from "../utils/decorators/HandlersDecorator";
 
-export default class MonthlyFeeController {
+
+@Controller('/api/v1/monthly-fee')
+class MonthlyFeeController {
     monthlyFeeService: MonthlyFeeService;
 
     constructor() {
         this.monthlyFeeService = new MonthlyFeeService();
     }
 
+    @Post('/')
     async Create(req: Request, res: Response) {
         try {
             res.status(201).json(await this.monthlyFeeService.Create(req.body))
@@ -16,6 +21,7 @@ export default class MonthlyFeeController {
         }
     }
 
+    @Get('/')
     async ReadAll(req: Request, res: Response) {
         try {
             res.status(200).json(await this.monthlyFeeService.ReadAll(req.query))
@@ -24,6 +30,7 @@ export default class MonthlyFeeController {
         }
     }
 
+    @Get('/:id')
     async ReadOne(req: Request, res: Response) {
         try {
             res.status(200).json(await this.monthlyFeeService.ReadOne(req.params.id))
@@ -32,6 +39,7 @@ export default class MonthlyFeeController {
         }
     }
 
+    @Put('/')
     async Update(req: Request, res: Response) {
         try {
             res.status(200).json(await this.monthlyFeeService.Update())
@@ -40,6 +48,7 @@ export default class MonthlyFeeController {
         }
     }
 
+    @Delete('/:id')
     async Delete(req: Request, res: Response) {
         try {
             res.status(200).json(await this.monthlyFeeService.Delete(req.params.id))
@@ -49,3 +58,6 @@ export default class MonthlyFeeController {
     }
 
 }
+
+
+export default MonthlyFeeController

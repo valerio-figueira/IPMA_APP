@@ -1,14 +1,18 @@
 import { Request, Response } from "express";
 import DependentService from "../services/DependentService";
+import Controller from "../utils/decorators/ControllerDecorator";
+import { Delete, Get, Post, Put } from "../utils/decorators/HandlersDecorator";
 
 
-export default class DependentController {
+@Controller('/api/vi/dependents')
+class DependentController {
     dependentService: DependentService;
 
     constructor() {
         this.dependentService = new DependentService();
     }
 
+    @Post('/:holder')
     async Create(req: Request, res: Response) {
         try {
             res.status(201).json(await this.dependentService.Create(req.body))
@@ -17,6 +21,7 @@ export default class DependentController {
         }
     }
 
+    @Get('/:holder')
     async ReadAll(req: Request, res: Response) {
         try {
             res.status(200).json(await this.dependentService.ReadAll(req.params.holder))
@@ -25,6 +30,7 @@ export default class DependentController {
         }
     }
 
+    @Get('/:holder/:dependent')
     async ReadOne(req: Request, res: Response) {
         try {
             res.status(200).json(await this.dependentService.ReadOne(req.params.holder, req.params.dependent))
@@ -33,8 +39,13 @@ export default class DependentController {
         }
     }
 
+    @Put('/:holder')
     async Update(req: Request, res: Response) { }
 
+    @Delete('/:holder/:dependent')
     async Delete(req: Request, res: Response) { }
 
 }
+
+
+export default DependentController
