@@ -22,7 +22,7 @@ export default class HolderRepository {
         const t: Transaction = await this.db.sequelize.transaction();
 
         try {
-            const { user, document, contact, location } = await this.userRepository.Create(query, t);
+            const { user, document, contact, location } = await this.userRepository.CreateWithTransaction(query, t);
 
             const holder = await HolderModel.create(query.holder, { transaction: t, raw: true })
 
@@ -63,7 +63,7 @@ export default class HolderRepository {
 
             if (!holder) throw new CustomError('Usuário não encontrado', 404)
 
-            const userResult = await this.userRepository.Update(holder.user_id, query, t)
+            const userResult = await this.userRepository.UpdateWithTransaction(holder.user_id, query, t)
 
             const [holderResult] = await HolderModel.update(query.holder!, {
                 where: { user_id: query.user.user_id },
@@ -111,7 +111,7 @@ export default class HolderRepository {
                 transaction: t,
             })
 
-            await this.userRepository.Delete((user_id as number), t)
+            await this.userRepository.DeleteWithTransaction((user_id as number), t)
 
             await t.commit()
 

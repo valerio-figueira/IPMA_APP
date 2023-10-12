@@ -21,7 +21,7 @@ export default class DependentRepository {
         const t: Transaction = await this.db.sequelize.transaction();
 
         try {
-            const { user, document, contact, location } = await this.userRepository.Create(query, t);
+            const { user, document, contact, location } = await this.userRepository.CreateWithTransaction(query, t);
             const dependent = await DependentModel.create(query.dependent, { transaction: t, raw: true })
 
             query.contract!.dependent_id = dependent.dependent_id
