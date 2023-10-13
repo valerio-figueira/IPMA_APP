@@ -21,7 +21,7 @@ export default class UserRepository {
         const transaction = await this.db.sequelize.transaction()
 
         try {
-            return this.CreateUserData(query, transaction)
+            return this.CreateWithTransaction(query, transaction)
         } catch (error: any) {
             transaction.rollback()
             throw new CustomError('Falha ao registrar dados do usuário', 500)
@@ -61,7 +61,7 @@ export default class UserRepository {
         const transaction = await this.db.sequelize.transaction()
 
         try {
-            return this.UpdateUserData(user_id, query, transaction)
+            return this.UpdateWithTransaction(user_id, query, transaction)
         } catch (error: any) {
             transaction.rollback()
             throw new CustomError('Não foi possível atualizar os dados do usuário', 500)
@@ -72,7 +72,7 @@ export default class UserRepository {
         const transaction = await this.db.sequelize.transaction()
 
         try {
-            await this.DeleteUserData(user_id, transaction)
+            await this.DeleteWithTransaction(user_id, transaction)
         } catch (error) {
             transaction.rollback()
             throw new CustomError('Não foi possível remover os dados do usuário', 500)
@@ -80,18 +80,6 @@ export default class UserRepository {
     }
 
     async CreateWithTransaction(query: IUserAttributes, transaction: Transaction) {
-        return this.CreateUserData(query, transaction)
-    }
-
-    async UpdateWithTransaction(user_id: number, query: IUserAttributes, transaction: Transaction) {
-        return this.UpdateUserData(user_id, query, transaction)
-    }
-
-    async DeleteWithTransaction(user_id: number | string, transaction: OptionalTransaction) {
-        await this.DeleteUserData(user_id, transaction)
-    }
-
-    private async CreateUserData(query: IUserAttributes, transaction: Transaction) {
         const user = await UserModel.create(query.user, { transaction, raw: true });
 
         this.insertIdValues(query, user.user_id);
@@ -103,7 +91,7 @@ export default class UserRepository {
         return { user, document, contact, location }
     }
 
-    private async UpdateUserData(user_id: number, query: IUserAttributes, transaction: Transaction) {
+    async UpdateWithTransaction(user_id: number, query: IUserAttributes, transaction: Transaction) {
         const [user] = await UserModel.update(query.user, {
             where: { user_id },
             transaction
@@ -124,7 +112,7 @@ export default class UserRepository {
         return this.checkAffectedCount({ user, contact, document, location })
     }
 
-    private async DeleteUserData(user_id: number | string, transaction: OptionalTransaction) {
+    async DeleteWithTransaction(user_id: number | string, transaction: OptionalTransaction) {
         await DocumentModel.destroy({
             where: { user_id }, transaction
         });
