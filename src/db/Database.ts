@@ -1,17 +1,25 @@
 import { Sequelize } from "sequelize";
+import DB_Config from "./DatabaseConfig";
 import dotenv from "dotenv";
 dotenv.config();
+
+type envProps = 'test' | 'production'
 
 export default class Database {
     sequelize: Sequelize
 
     constructor() {
+        const envTest = process.env.NODE_ENV as undefined | 'test'
+        const environment: envProps = envTest || 'production'
+        const config = DB_Config[environment]
+
         this.sequelize = new Sequelize(
-            process.env.DB_DATABASE || 'database', 
-            process.env.DB_USERNAME || 'username', 
-            process.env.DB_PASSWORD || 'password', {
-            host: process.env.DB_HOST || 'localhost',
-            dialect: 'mysql',
+            config.username,
+            config.password,
+            config.database, {
+            host: config.host,
+            dialect: config.dialect,
+            storage: null || config.storage
         });
     }
 
