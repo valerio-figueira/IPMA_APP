@@ -26,8 +26,7 @@ const DB_Config: DB_ConfigProps = {
         password: 'root',
         database: 'SOCIAL_SECURITY',
         host: '172.17.0.2',
-        dialect: 'sqlite',
-        storage: ':memory:',
+        dialect: 'mysql'
     },
 };
 
