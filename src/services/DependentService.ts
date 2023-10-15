@@ -1,4 +1,4 @@
-import { Contact, Document, Location, User, UserAttributes } from "../classes/UserSchema";
+import { Contact, Document, Location, User, UserAttributes } from "../entities/UserEntity";
 import UserDataSanitizer from "../helpers/UserDataSanitizer";
 import DependentRepository from "../repositories/DependentRepository";
 import HolderRepository from "../repositories/HolderRepository";

@@ -1,6 +1,6 @@
 import UserRepository from "../repositories/UserRepository";
 import CustomError from "../utils/CustomError";
-import { Contact, Document, Location, User, UserAttributes } from "../classes/UserSchema";
+import { Contact, Document, Location, User, UserAttributes } from "../entities/UserEntity";
 
 export default class UserService {
     userRepository: UserRepository;

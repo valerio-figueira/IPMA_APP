@@ -1,5 +1,5 @@
 import MonthlyFeeRepository from "../repositories/MonthlyFeeRepository";
-import MonthlyFeeSchema from "../classes/MonthlyFeeSchema";
+import MonthlyFeeSchema from "../entities/MonthlyFeeEntity";
 import IMonthlyFee from "../interfaces/IMonthlyFee";
 import CustomError from "../utils/CustomError";
 import MonthlyFeeModel from "../models/MonthlyFeeModel";

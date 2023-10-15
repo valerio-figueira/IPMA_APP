@@ -1,6 +1,6 @@
 import AuthenticationRepository from "../repositories/AuthenticationRepository";
 import CustomError from "../utils/CustomError";
-import { AuthenticationSchema } from "../classes/AuthenticationSchema";
+import { AuthenticationSchema } from "../entities/AuthenticationEntity";
 import UserService from "./UserService";
 import IAuthentication from "../interfaces/IAuthentication";
 

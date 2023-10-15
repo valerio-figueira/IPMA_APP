@@ -1,5 +1,5 @@
 import AgreementRepository from "../repositories/AgreementRepository";
-import AgreementSchema from "../classes/AgreementSchema";
+import AgreementSchema from "../entities/AgreementEntity";
 import IAgreement from "../interfaces/IAgreement";
 import CustomError from "../utils/CustomError";
 import AgreementModel from "../models/AgreementModel";

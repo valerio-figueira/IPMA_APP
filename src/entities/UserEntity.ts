@@ -1,10 +1,10 @@
 import { IUser, IContact, IDocument, ILocation, IUserAttributes } from "../interfaces/IUser";
 import { IHolderBase } from "../interfaces/IHolder";
-import { Holder } from "./HolderSchema";
+import { Holder } from "./HolderEntity";
 import { IDependentBase } from "../interfaces/IDependent";
-import { Dependent } from "./DependentSchema";
+import { Dependent } from "./DependentEntity";
 import IMember from "../interfaces/IMember";
-import MemberSchema from "./MemberSchema";
+import MemberSchema from "./MemberEntity";
 import IAuthentication from "../interfaces/IAuthentication";
 
 export class UserAttributes {

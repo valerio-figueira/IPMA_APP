@@ -3,7 +3,7 @@ import IMember from "../interfaces/IMember";
 import CustomError from "../utils/CustomError";
 import HolderService from "./HolderService";
 import AgreementService from "./AgreementService";
-import MemberSchema from "../classes/MemberSchema";
+import MemberSchema from "../entities/MemberEntity";
 import UserDataSanitizer from "../helpers/UserDataSanitizer";
 import MonthlyFeeService from "./MonthlyFeeService";
 import IMonthlyFee from "../interfaces/IMonthlyFee";

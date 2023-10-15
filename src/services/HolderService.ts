@@ -1,5 +1,5 @@
 import HolderRepository from "../repositories/HolderRepository";
-import { UserAttributes, User, Contact, Document, Location } from "../classes/UserSchema";
+import { UserAttributes, User, Contact, Document, Location } from "../entities/UserEntity";
 import CustomError from "../utils/CustomError";
 import UserDataSanitizer from "../helpers/UserDataSanitizer";
 
