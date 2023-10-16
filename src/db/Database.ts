@@ -3,23 +3,23 @@ import DB_Config from "./DatabaseConfig";
 import dotenv from "dotenv";
 dotenv.config();
 
-type envProps = 'test' | 'production'
+type envProps = 'development' | 'test' | 'production'
 
 export default class Database {
     sequelize: Sequelize
 
     constructor() {
-        const envTest = process.env.NODE_ENV as undefined | 'test'
+        const envTest = process.env.NODE_ENV as undefined | 'test' | 'development'
         const environment: envProps = envTest || 'production'
         const config = DB_Config[environment]
 
         this.sequelize = new Sequelize(
+            config.database,
             config.username,
-            config.password,
-            config.database, {
+            config.password, {
             host: config.host,
-            dialect: config.dialect,
-            storage: null || config.storage
+            port: null || config.port,
+            dialect: config.dialect
         });
     }
 
