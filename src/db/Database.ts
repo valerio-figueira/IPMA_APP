@@ -34,9 +34,24 @@ export default class Database {
 
     async syncModels() {
         try {
+            await this.authenticate();
+            await this.sequelize.sync();
             console.log('Modelos sincronizados com o banco de dados.');
         } catch (error) {
             console.error('Erro ao sincronizar modelos com o banco de dados:', error);
+        }
+    }
+
+    async clearDatabase() {
+        try {
+            await this.authenticate()
+            await this.sequelize.drop()
+            console.log(this.sequelize.models)
+            console.log('Banco de dados limpo com sucesso.');
+        } catch (error) {
+            console.error('Erro ao limpar o banco de dados:', error);
+        } finally {
+            await this.sequelize.close();
         }
     }
 }
