@@ -1,6 +1,6 @@
 import { IHolderBase } from "../interfaces/IHolder";
 
-export class Holder implements IHolderBase {
+class HolderEntity implements IHolderBase {
     holder_id?: number;
     user_id?: number;
     subscription_number?: number | null;
@@ -15,3 +15,5 @@ export class Holder implements IHolderBase {
         this.created_at = data.created_at;
     }
 }
+
+export default HolderEntity

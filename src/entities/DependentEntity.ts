@@ -1,6 +1,6 @@
 import { IDependentBase } from "../interfaces/IDependent";
 
-export class Dependent implements IDependentBase {
+export class DependentEntity implements IDependentBase {
     dependent_id?: number;
     user_id?: number;
     holder_id: number;
@@ -15,3 +15,5 @@ export class Dependent implements IDependentBase {
         this.created_at = data.created_at;
     }
 }
+
+export default DependentEntity

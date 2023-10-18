@@ -1,6 +1,6 @@
 import IAuthentication from "../interfaces/IAuthentication";
 
-export class AuthenticationSchema {
+class AuthenticationEntity {
     authentication_id?: number;
     user_id?: number;
     username: string;
@@ -19,3 +19,5 @@ export class AuthenticationSchema {
         this.created_at = body.created_at;
     }
 }
+
+export default AuthenticationEntity

@@ -1,6 +1,6 @@
 import IMember from "../interfaces/IMember";
 
-export default class ContractRegistry {
+class MemberEntity {
     member_id?: number;
     holder_id: number;
     dependent_id?: number | null;
@@ -21,3 +21,5 @@ export default class ContractRegistry {
         this.created_at = body.created_at;
     }
 }
+
+export default MemberEntity
