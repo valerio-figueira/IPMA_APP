@@ -28,7 +28,7 @@ export default class AgreementService {
     async ReadOne(agreement_id: string | number) {
         const contract = await this.agreementRepository.ReadOne(agreement_id);
 
-        if(!contract) throw new CustomError('O Convênio não foi alterado ou localizado', 404)
+        if (!contract) throw new CustomError('O Convênio não foi alterado ou localizado', 404)
 
         return contract
     }
@@ -40,7 +40,7 @@ export default class AgreementService {
 
         const [affectedCount] = await this.agreementRepository.Update(agreement);
 
-        if(!affectedCount) throw new CustomError('O Convênio não foi alterado ou localizado', 404)
+        if (!affectedCount) throw new CustomError('O Convênio não foi alterado ou localizado', 404)
 
         return await AgreementModel.findByPk(agreement.agreement_id)
     }
