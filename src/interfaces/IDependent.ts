@@ -1,3 +1,5 @@
+import IAuthentication from "./IAuthentication";
+import IMember from "./IMember";
 import { IContact, IDocument, ILocation, IUser } from "./IUser";
 
 export interface IDependentBase {
@@ -14,4 +16,14 @@ export interface IDependent {
     location: ILocation;
     document: IDocument;
     dependent: IDependentBase;
+}
+
+export interface IDependentProps {
+    authentication?: IAuthentication;
+    user: IUser;
+    contact: IContact;
+    location: ILocation;
+    document: IDocument;
+    dependent: IDependentBase;
+    member: IMember;
 }

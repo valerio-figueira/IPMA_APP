@@ -1,6 +1,7 @@
 import IMember from "./IMember";
 import { IDependentBase } from "./IDependent";
 import { IHolderBase } from "./IHolder";
+import ISocialSecurityTeam from "./ISocialSecurityTeam";
 
 export interface IUser {
     user_id?: number;
@@ -49,9 +50,9 @@ export interface IUserAttributes {
     document: IDocument;
     contact: IContact;
     location: ILocation;
+    sstEntity?: ISocialSecurityTeam;
     holder?: IHolderBase;
     dependent?: IDependentBase;
     member?: IMember
     [key: string]: any;
-    created_at?: Date;
 }
