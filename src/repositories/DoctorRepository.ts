@@ -1,18 +1,22 @@
 import DoctorModel from "../models/DoctorModel"
 import { IDoctor } from "../interfaces/IDoctor"
 import Doctors from '../json/doctors.json'
-export default class DoctorRepository {
 
-    constructor() { }
+export default class DoctorRepository {
+    private model
+
+    constructor() {
+        this.model = DoctorModel
+    }
 
     async Create(query: IDoctor) {
-        return await DoctorModel.create(query, { raw: true })
+        return await this.model.create(query, { raw: true })
     }
 
     async BulkCreate() {
         const doctors: IDoctor[] | null = Doctors
 
-        if (doctors) return await DoctorModel.bulkCreate(doctors)
+        if (doctors) return await this.model.bulkCreate(doctors)
         else return null
     }
 
@@ -23,26 +27,26 @@ export default class DoctorRepository {
             whereClause['speciality'] = query.speciality
         }
 
-        return DoctorModel.findAll({
+        return this.model.findAll({
             where: whereClause, raw: true
         })
     }
 
     async ReadOne(id_doctor: string | number) {
-        return DoctorModel.findOne({
+        return this.model.findOne({
             where: { doctor_id: id_doctor },
             raw: true
         })
     }
 
     async Update(query: IDoctor) {
-        return DoctorModel.update(query, {
+        return this.model.update(query, {
             where: { doctor_id: query.doctor_id }
         })
     }
 
     async Delete(id_doctor: string | number) {
-        return DoctorModel.destroy({
+        return this.model.destroy({
             where: { doctor_id: id_doctor }
         })
     }

@@ -1,20 +1,22 @@
 import { Transaction } from "sequelize";
 import Database from "../db/Database";
 import { IUserAttributes } from "../interfaces/IUser";
-import DependentModel from "../models/DependentModel";
 import CustomError from "../utils/CustomError";
 import UserRepository from "./UserRepository";
 import MemberModel from "../models/MemberModel";
 import Queries from "../db/Queries";
+import DependentModel from "../models/DependentModel";
 
 
 export default class DependentRepository {
-    db: Database;
-    userRepository: UserRepository;
+    private db: Database;
+    private userRepository: UserRepository;
+    private model
 
     constructor() {
         this.userRepository = new UserRepository();
         this.db = new Database();
+        this.model = DependentModel
     }
 
     async Create(query: IUserAttributes) {
@@ -22,7 +24,7 @@ export default class DependentRepository {
 
         try {
             const { user, document, contact, location } = await this.userRepository.CreateWithTransaction(query, t);
-            const dependent = await DependentModel.create(query.dependent, { transaction: t, raw: true })
+            const dependent = await this.model.create(query.dependent, { transaction: t, raw: true })
 
             query.contract!.dependent_id = dependent.dependent_id
 
@@ -38,7 +40,7 @@ export default class DependentRepository {
     }
 
     async ReadAll(holder: string) {
-        return DependentModel.findAll({
+        return this.model.findAll({
             where: { holder_id: holder },
             attributes: { exclude: ['user_id'] },
             include: Queries.IncludeDependentUserData,
@@ -47,7 +49,7 @@ export default class DependentRepository {
     }
 
     async ReadOne(holder: string | number, dependent_id: string | number) {
-        return DependentModel.findOne({
+        return this.model.findOne({
             where: { holder_id: holder, dependent_id },
             attributes: { exclude: ['user_id'] },
             include: Queries.IncludeDependentUserData,
@@ -56,7 +58,7 @@ export default class DependentRepository {
     }
 
     async ReadOneSummary(holder: string | number, dependent_id: string | number) {
-        return DependentModel.findOne({
+        return this.model.findOne({
             where: { holder_id: holder, dependent_id },
             attributes: { exclude: ['user_id'] },
             include: Queries.IncludeDependentSummary,

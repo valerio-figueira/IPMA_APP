@@ -2,17 +2,21 @@ import IMonthlyFee from "../interfaces/IMonthlyFee";
 import MonthlyFeeModel from "../models/MonthlyFeeModel";
 import HolderModel from "../models/HolderModel";
 import UserModel from "../models/user/UserModel";
-import MemberModel from "../models/MemberModel";
 import AgreementModel from "../models/AgreementModel";
 import { Op } from "sequelize";
 import Queries from "../db/Queries";
+import MemberModel from "../models/MemberModel";
 
 export default class MonthlyFeeRepository {
+    private models
 
-    constructor() { }
+    constructor() {
+        this.models = { MonthlyFeeModel, MemberModel }
+    }
 
     async Create(query: IMonthlyFee) {
-        return MonthlyFeeModel.create(query, { raw: true })
+        return this.models.MonthlyFeeModel
+            .create(query, { raw: true })
     }
 
     async ReadAll(query: any) {
@@ -27,7 +31,7 @@ export default class MonthlyFeeRepository {
             whereClause['$agreement.agreement_name$'] = query.agreement_name
         }
 
-        return MemberModel.findAll({
+        return this.models.MemberModel.findAll({
             where: whereClause,
             include: Queries.MemberIncludeAll,
             raw: true, nest: true
@@ -35,7 +39,7 @@ export default class MonthlyFeeRepository {
     }
 
     async ReadOne(monthly_fee_id: string | number) {
-        return MemberModel.findOne({
+        return this.models.MemberModel.findOne({
             include: [{
                 model: MonthlyFeeModel,
                 as: 'billing',
@@ -60,9 +64,10 @@ export default class MonthlyFeeRepository {
     async Update() { }
 
     async Delete(monthly_fee_id: string | number) {
-        return MonthlyFeeModel.destroy({
-            where: { monthly_fee_id }
-        })
+        return this.models.MonthlyFeeModel
+            .destroy({
+                where: { monthly_fee_id }
+            })
     }
 
 }

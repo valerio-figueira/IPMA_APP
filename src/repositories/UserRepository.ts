@@ -1,5 +1,4 @@
 import { IUserAttributes } from "../interfaces/IUser";
-import UserModel from "../models/user/UserModel";
 import ContactModel from "../models/user/ContactModel";
 import DocumentModel from "../models/user/DocumentModel";
 import LocationModel from "../models/user/LocationModel";
@@ -7,14 +6,17 @@ import { Transaction } from 'sequelize';
 import Database from "../db/Database";
 import Queries from "../db/Queries";
 import CustomError from "../utils/CustomError";
+import UserModel from "../models/user/UserModel";
 
 type OptionalTransaction = Transaction | undefined;
 
 export default class UserRepository {
-    db: Database
+    private db: Database
+    private models
 
     constructor() {
         this.db = new Database();
+        this.models = { UserModel, DocumentModel, LocationModel, ContactModel }
     }
 
     async Create(query: IUserAttributes) {
@@ -29,14 +31,14 @@ export default class UserRepository {
     }
 
     async ReadAll() {
-        return UserModel.findAll({
+        return this.models.UserModel.findAll({
             include: Queries.IncludeUserData,
             raw: true
         })
     }
 
     async ReadOne(user_id: number | string) {
-        return UserModel.findByPk(user_id, {
+        return this.models.UserModel.findByPk(user_id, {
             include: [
                 {
                     model: ContactModel,
@@ -80,32 +82,40 @@ export default class UserRepository {
     }
 
     async CreateWithTransaction(query: IUserAttributes, transaction: Transaction) {
-        const user = await UserModel.create(query.user, { transaction, raw: true });
+        const user = await this.models.UserModel
+        .create(query.user, { transaction, raw: true });
 
         this.insertIdValues(query, user.user_id);
 
-        const document = await DocumentModel.create(query.document, { transaction, raw: true });
-        const contact = await ContactModel.create(query.contact, { transaction, raw: true });
-        const location = await LocationModel.create(query.location, { transaction, raw: true });
+        const document = await this.models.DocumentModel
+        .create(query.document, { transaction, raw: true });
+        const contact = await this.models.ContactModel
+        .create(query.contact, { transaction, raw: true });
+        const location = await this.models.LocationModel
+        .create(query.location, { transaction, raw: true });
 
         return { user, document, contact, location }
     }
 
     async UpdateWithTransaction(user_id: number, query: IUserAttributes, transaction: Transaction) {
-        const [user] = await UserModel.update(query.user, {
+        const [user] = await this.models.UserModel
+        .update(query.user, {
             where: { user_id },
             transaction
         })
 
-        const [contact] = await ContactModel.update(query.contact, {
+        const [contact] = await this.models.ContactModel
+        .update(query.contact, {
             where: { user_id }, transaction
         })
 
-        const [document] = await DocumentModel.update(query.document, {
+        const [document] = await this.models.DocumentModel
+        .update(query.document, {
             where: { user_id }, transaction
         })
 
-        const [location] = await LocationModel.update(query.location, {
+        const [location] = await this.models.LocationModel
+        .update(query.location, {
             where: { user_id }, transaction
         })
 
@@ -113,19 +123,19 @@ export default class UserRepository {
     }
 
     async DeleteWithTransaction(user_id: number | string, transaction: OptionalTransaction) {
-        await DocumentModel.destroy({
+        await this.models.DocumentModel.destroy({
             where: { user_id }, transaction
         });
 
-        await LocationModel.destroy({
+        await this.models.LocationModel.destroy({
             where: { user_id }, transaction
         });
 
-        await ContactModel.destroy({
+        await this.models.ContactModel.destroy({
             where: { user_id }, transaction
         });
 
-        await UserModel.destroy({
+        await this.models.UserModel.destroy({
             where: { user_id }, transaction
         });
     }

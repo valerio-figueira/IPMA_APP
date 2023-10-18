@@ -10,12 +10,14 @@ import ContractRegistryModel from "../models/MemberModel";
 import DependentModel from "../models/DependentModel";
 
 export default class HolderRepository {
-    db: Database;
-    userRepository: UserRepository;
+    private db: Database;
+    private userRepository: UserRepository;
+    private model
 
     constructor() {
         this.userRepository = new UserRepository();
         this.db = new Database();
+        this.model = HolderModel
     }
 
     async Create(query: IUserAttributes) {
@@ -24,7 +26,7 @@ export default class HolderRepository {
         try {
             const { user, document, contact, location } = await this.userRepository.CreateWithTransaction(query, t);
 
-            const holder = await HolderModel.create(query.holder, { transaction: t, raw: true })
+            const holder = await this.model.create(query.holder, { transaction: t, raw: true })
 
             await t.commit();
             return this.createNestedObj([holder, user, document, contact, location])
@@ -35,21 +37,21 @@ export default class HolderRepository {
     }
 
     async ReadAll() {
-        return HolderModel.findAll({
+        return this.model.findAll({
             include: Queries.IncludeUserData,
             raw: true, nest: true
         })
     }
 
     async ReadOne(holder_id: string | number) {
-        return HolderModel.findByPk(holder_id, {
+        return this.model.findByPk(holder_id, {
             include: Queries.IncludeUserData,
             raw: true, nest: true
         })
     }
 
     async ReadOneSummary(holder_id: string | number) {
-        return HolderModel.findByPk(holder_id, {
+        return this.model.findByPk(holder_id, {
             include: Queries.IncludeUserDataSummary,
             raw: true, nest: true
         })
@@ -59,13 +61,13 @@ export default class HolderRepository {
         const t: Transaction = await this.db.sequelize.transaction();
 
         try {
-            const holder = await HolderModel.findByPk(query.holder?.holder_id, { transaction: t, raw: true });
+            const holder = await this.model.findByPk(query.holder?.holder_id, { transaction: t, raw: true });
 
             if (!holder) throw new CustomError('Usuário não encontrado', 404)
 
             const userResult = await this.userRepository.UpdateWithTransaction(holder.user_id, query, t)
 
-            const [holderResult] = await HolderModel.update(query.holder!, {
+            const [holderResult] = await this.model.update(query.holder!, {
                 where: { user_id: query.user.user_id },
                 transaction: t
             })
@@ -85,7 +87,7 @@ export default class HolderRepository {
         const t: Transaction = await this.db.sequelize.transaction();
 
         try {
-            const holder = await HolderModel.findByPk(holder_id, { raw: true })
+            const holder = await this.model.findByPk(holder_id, { raw: true })
             const user_id = holder!['user_id']
             const user = await UserModel.findByPk(user_id, { raw: true })
             const dependents = await DependentModel.findAll({
@@ -106,7 +108,7 @@ export default class HolderRepository {
                 }
             }
 
-            await HolderModel.destroy({
+            await this.model.destroy({
                 where: { user_id },
                 transaction: t,
             })
@@ -122,7 +124,7 @@ export default class HolderRepository {
         }
     }
 
-    createNestedObj(data: any[]) {
+    private createNestedObj(data: any[]) {
         return {
             holder: {
                 ...data[0].toJSON(),

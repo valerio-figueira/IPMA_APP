@@ -1,26 +1,29 @@
+import Database from "../db/Database";
 import Queries from "../db/Queries";
 import IAuthentication from "../interfaces/IAuthentication";
-import AccessHierarchyModel from "../models/AccessHierarchyModel";
 import AuthenticationModel from "../models/AuthenticationModel";
 
 
 export default class AuthenticationRepository {
+    private model
 
-    constructor() { }
+    constructor() {
+        this.model = AuthenticationModel
+    }
 
     async Create(query: IAuthentication) {
-        return AuthenticationModel.create(query, { raw: true })
+        return this.model.create(query, { raw: true })
     }
 
     async ReadAll(query: any) {
-        return AuthenticationModel.findAll({
+        return this.model.findAll({
             include: Queries.IncludeHierarchyAndUser,
             raw: true, nest: true
         })
     }
 
     async ReadOne(authentication_id: string | number) {
-        return AuthenticationModel.findOne({
+        return this.model.findOne({
             where: { authentication_id },
             attributes: { exclude: ['password'] },
             include: Queries.IncludeHierarchyAndUser,
@@ -29,13 +32,13 @@ export default class AuthenticationRepository {
     }
 
     async Update(query: IAuthentication) {
-        return AuthenticationModel.update(query, {
+        return this.model.update(query, {
             where: { authentication_id: query.authentication_id }
         })
     }
 
     async Delete(authentication_id: string | number) {
-        return AuthenticationModel.destroy({
+        return this.model.destroy({
             where: { authentication_id }
         })
     }
