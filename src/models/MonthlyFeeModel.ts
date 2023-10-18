@@ -1,96 +1,101 @@
 import { Model, DataTypes } from 'sequelize';
-import Database from "../db/Database";
 import IMonthlyFee from '../interfaces/IMonthlyFee';
 import MemberModel from './MemberModel';
-
-const db = new Database;
+import { TMonthlyFeeModel } from '../types/TModels';
 
 
 class MonthlyFeeModel extends Model<IMonthlyFee> {
-    monthly_fee_id!: number;
-    member_id!: number;
-    amount!: number;
-    reference_month!: number;
-    reference_year!: number;
-    status!: 'PENDENTE' | 'PAGO' | 'ANULADO';
-    reference_date!: Date;
-    payment_date?: Date;
-    created_at!: Date;
-}
+    declare monthly_fee_id: number;
+    declare member_id: number;
+    declare amount: number;
+    declare reference_month: number;
+    declare reference_year: number;
+    declare status: 'PENDENTE' | 'PAGO' | 'ANULADO';
+    declare reference_date: Date;
+    declare payment_date?: Date;
+    declare created_at: Date;
 
-MonthlyFeeModel.init(
-    {
-        monthly_fee_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            primaryKey: true,
-            autoIncrement: true,
-        },
-        member_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: MemberModel,
-                key: 'member_id',
-            }
-        },
-        amount: {
-            type: DataTypes.DECIMAL(10, 2),
-            allowNull: false,
-        },
-        reference_month: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            validate: {
-                min: 1,
-                max: 12,
+    static init(sequelize: any) {
+        super.init({
+            monthly_fee_id: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                primaryKey: true,
+                autoIncrement: true,
             },
-        },
-        reference_year: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            validate: {
-                min: 2015,
-                max: 2100,
+            member_id: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                references: {
+                    model: MemberModel,
+                    key: 'member_id',
+                }
             },
-        },
-        status: {
-            type: DataTypes.ENUM('Pendente', 'Pago', 'Anulado'),
-            allowNull: false,
-            defaultValue: 'Pendente',
-        },
-        reference_date: {
-            type: DataTypes.DATE,
-            allowNull: false,
-        },
-        payment_date: {
-            type: DataTypes.DATE,
-            allowNull: true,
-            defaultValue: null
-        },
-        created_at: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW,
-            allowNull: false,
-        },
-    },
-    {
-        sequelize: db.sequelize,
-        modelName: 'MonthlyFeeModel',
-        tableName: 'MONTHLY_FEE',
-        timestamps: false, // Define como false se você não quiser usar colunas de timestamp created_at e updated_at
+            amount: {
+                type: DataTypes.DECIMAL(10, 2),
+                allowNull: false,
+            },
+            reference_month: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                validate: {
+                    min: 1,
+                    max: 12,
+                },
+            },
+            reference_year: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                validate: {
+                    min: 2015,
+                    max: 2100,
+                },
+            },
+            status: {
+                type: DataTypes.ENUM('Pendente', 'Pago', 'Anulado'),
+                allowNull: false,
+                defaultValue: 'Pendente',
+            },
+            reference_date: {
+                type: DataTypes.DATE,
+                allowNull: false,
+            },
+            payment_date: {
+                type: DataTypes.DATE,
+                allowNull: true,
+                defaultValue: null
+            },
+            created_at: {
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
+                allowNull: false,
+            },
+        }, {
+            sequelize,
+            modelName: 'MonthlyFeeModel',
+            tableName: 'MONTHLY_FEE',
+            timestamps: false, // Define como false se você não quiser usar colunas de timestamp created_at e updated_at
+        })
+
+        const monthlyFeeModel = sequelize.models.MonthlyFeeModel
+
+        this.createAssociations(monthlyFeeModel)
+
+        return monthlyFeeModel
     }
-);
 
-MonthlyFeeModel.belongsTo(MemberModel, {
-    foreignKey: 'member_id',
-    as: 'subscription'
-})
+    static createAssociations(MonthlyFeeModel: TMonthlyFeeModel) {
+        MonthlyFeeModel.belongsTo(MemberModel, {
+            foreignKey: 'member_id',
+            as: 'subscription'
+        })
 
-MemberModel.hasMany(MonthlyFeeModel, {
-    foreignKey: 'member_id',
-    as: 'billing'
-})
+        MemberModel.hasMany(MonthlyFeeModel, {
+            foreignKey: 'member_id',
+            as: 'billing'
+        })
+    }
+}
 
 
 export default MonthlyFeeModel;

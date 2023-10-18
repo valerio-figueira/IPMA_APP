@@ -1,67 +1,80 @@
 import { Model, DataTypes } from 'sequelize';
-import Database from "../../db/Database";
 import UserModel from './UserModel';
 import { IDocument } from '../../interfaces/IUser';
+import { TDocumentModel } from '../../types/TModels';
 
-const db = new Database;
 
 class DocumentModel extends Model<IDocument> {
-    document_id!: number;
-    user_id!: number;
-    cpf!: string;
-    identity!: string;
-    issue_date?: Date | null;
-    health_card?: string | null;
-    created_at!: Date;
+    declare document_id: number;
+    declare user_id: number;
+    declare cpf: string;
+    declare identity: string;
+    declare issue_date?: Date | null;
+    declare health_card?: string | null;
+    declare created_at: Date;
+
+    static init(sequelize: any) {
+        super.init({
+            document_id: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true,
+            },
+            user_id: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                unique: true,
+                references: {
+                    model: UserModel,
+                    key: 'user_id',
+                },
+            },
+            cpf: {
+                type: DataTypes.STRING(11),
+                allowNull: false,
+                unique: true,
+            },
+            identity: {
+                type: DataTypes.STRING(10),
+                allowNull: false,
+                unique: true,
+            },
+            issue_date: {
+                type: DataTypes.DATE,
+                defaultValue: null
+            },
+            health_card: {
+                type: DataTypes.STRING(15),
+                defaultValue: null
+            },
+            created_at: {
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
+                allowNull: false,
+            }
+        }, {
+            sequelize,
+            tableName: 'DOCUMENT',
+            modelName: 'DocumentModel',
+            timestamps: false,
+        })
+
+        const documentModel = sequelize.models.DocumentModel
+        this.createAssociations(documentModel)
+
+        return documentModel
+    }
+
+    private static createAssociations(DocumentModel: TDocumentModel) {
+        UserModel.hasOne(DocumentModel, {
+            foreignKey: 'user_id',
+            as: 'document'
+        })
+        DocumentModel.belongsTo(UserModel, {
+            foreignKey: 'user_id'
+        });
+    }
 }
 
-
-DocumentModel.init(
-    {
-        document_id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
-            primaryKey: true,
-        },
-        user_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            unique: true,
-            references: {
-                model: UserModel,
-                key: 'user_id',
-            },
-        },
-        cpf: {
-            type: DataTypes.STRING(11),
-            allowNull: false,
-            unique: true,
-        },
-        identity: {
-            type: DataTypes.STRING(10),
-            allowNull: false,
-            unique: true,
-        },
-        issue_date: {
-            type: DataTypes.DATE,
-            defaultValue: null
-        },
-        health_card: {
-            type: DataTypes.STRING(15),
-            defaultValue: null
-        },
-        created_at: {
-            type: DataTypes.DATE,
-            defaultValue: DataTypes.NOW,
-            allowNull: false,
-        }
-    },
-    {
-        sequelize: db.sequelize,
-        tableName: 'DOCUMENT',
-        modelName: 'DocumentModel',
-        timestamps: false,
-    }
-);
 
 export default DocumentModel;

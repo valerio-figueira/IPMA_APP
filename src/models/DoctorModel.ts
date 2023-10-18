@@ -1,76 +1,75 @@
 import { Model, DataTypes } from 'sequelize';
-import Database from "../db/Database";
 import { IDoctor } from '../interfaces/IDoctor';
 
-const db = new Database;
 
 class DoctorModel extends Model<IDoctor> {
-    doctor_id!: number;
-    provider_code!: number;
-    doctor_name!: string;
-    speciality!: string;
-    location!: string;
-    zip_code!: string;
-    address!: string;
-    neighborhood!: string;
-    phone_number!: string;
-    created_at!: Date;
-}
+    declare doctor_id: number;
+    declare provider_code: number;
+    declare doctor_name: string;
+    declare speciality: string;
+    declare location: string;
+    declare zip_code: string;
+    declare address: string;
+    declare neighborhood: string;
+    declare phone_number: string;
+    declare created_at: Date;
 
-DoctorModel.init(
-    {
-        doctor_id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true,
-        },
-        provider_code: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        doctor_name: {
-            type: DataTypes.STRING(60),
-            allowNull: false,
-        },
-        speciality: {
-            type: DataTypes.STRING(60),
-            allowNull: false,
-        },
-        location: {
-            type: DataTypes.STRING(40),
-            allowNull: false,
-        },
-        zip_code: {
-            type: DataTypes.STRING(10),
-            allowNull: false,
-        },
-        address: {
-            type: DataTypes.STRING(60),
-            allowNull: false,
-        },
-        neighborhood: {
-            type: DataTypes.STRING(30),
-            allowNull: false,
-        },
-        phone_number: {
-            type: DataTypes.STRING(40),
-            allowNull: false,
-        },
-        created_at: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW,
-        },
-    },
-    {
-        sequelize: db.sequelize,
-        modelName: 'DoctorModel',
-        tableName: 'DOCTOR',
-        charset: 'utf8',
-        collate: 'utf8_unicode_ci',
-        timestamps: false,
+    static init(sequelize: any) {
+        super.init({
+            doctor_id: {
+                type: DataTypes.INTEGER,
+                primaryKey: true,
+                autoIncrement: true,
+            },
+            provider_code: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+            doctor_name: {
+                type: DataTypes.STRING(60),
+                allowNull: false,
+            },
+            speciality: {
+                type: DataTypes.STRING(60),
+                allowNull: false,
+            },
+            location: {
+                type: DataTypes.STRING(40),
+                allowNull: false,
+            },
+            zip_code: {
+                type: DataTypes.STRING(10),
+                allowNull: false,
+            },
+            address: {
+                type: DataTypes.STRING(60),
+                allowNull: false,
+            },
+            neighborhood: {
+                type: DataTypes.STRING(30),
+                allowNull: false,
+            },
+            phone_number: {
+                type: DataTypes.STRING(40),
+                allowNull: false,
+            },
+            created_at: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: DataTypes.NOW,
+            },
+        }, {
+            sequelize,
+            modelName: 'DoctorModel',
+            tableName: 'DOCTOR',
+            charset: 'utf8',
+            collate: 'utf8_unicode_ci',
+            timestamps: false,
+        })
+
+        return sequelize.models.DoctorModel
     }
-);
+}
 
 
 export default DoctorModel
