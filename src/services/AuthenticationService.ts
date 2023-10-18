@@ -1,6 +1,6 @@
 import AuthenticationRepository from "../repositories/AuthenticationRepository";
 import CustomError from "../utils/CustomError";
-import { AuthenticationSchema } from "../entities/AuthenticationEntity";
+import AuthenticationEntity from "../entities/AuthenticationEntity";
 import UserService from "./UserService";
 import IAuthentication from "../interfaces/IAuthentication";
 
@@ -14,7 +14,7 @@ export default class AutenticationService {
     }
 
     async Create(body: any) {
-        const authSchema = new AuthenticationSchema(body)
+        const authSchema = new AuthenticationEntity(body)
 
         if (!authSchema.user_id) {
             const { user } = await this.userService.Create(body);

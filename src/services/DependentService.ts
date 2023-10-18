@@ -1,8 +1,15 @@
-import { Contact, Document, Location, User, UserAttributes } from "../entities/UserEntity";
 import UserDataSanitizer from "../helpers/UserDataSanitizer";
 import DependentRepository from "../repositories/DependentRepository";
 import HolderRepository from "../repositories/HolderRepository";
+import UserEntity from "../entities/UserEntity";
+import DocumentEntity from "../entities/DocumentEntity";
+import LocationEntity from "../entities/LocationEntity";
+import ContactEntity from "../entities/ContactEntity";
+import DependentBundleEntities from "../entities/DependentBundleEntities";
+import DependentEntity from "../entities/DependentEntity";
+import MemberEntity from "../entities/MemberEntity";
 
+type ID = number | string
 
 export default class DependentService {
     dependentRepository: DependentRepository;
@@ -15,20 +22,18 @@ export default class DependentService {
 
     async Create(body: any) {
         UserDataSanitizer.sanitizeBody(body)
-        const user = new User(body)
-        const document = new Document(body)
-        const contact = new Contact(body)
-        const location = new Location(body)
+        const dependentData = this.bundleEntities(body)
 
-        const userData = new UserAttributes({ user, document, contact, location });
-        userData.addDependent(body)
-        userData.addContract(body)
+        if (body.username && body.password) {
+            dependentData.setAuthentication(body)
+        }
 
-        return await this.dependentRepository.Create(userData)
+        return await this.dependentRepository.Create(dependentData)
     }
 
     async ReadAll(holder: string) {
-        const dependents: any[] = await this.dependentRepository.ReadAll(holder);
+        const dependents: any[] = await this.dependentRepository
+            .ReadAll(holder);
 
         const holderData: Record<number, any> = {}
 
@@ -36,7 +41,8 @@ export default class DependentService {
             const holderID = dependent.holder_id
 
             if (!holderData[holderID]) {
-                const holderFinded: any = await this.holderRepository.ReadOne(holderID)
+                const holderFinded: any = await this.holderRepository
+                    .ReadOne(holderID)
                 holderFinded['dependents'] = {}
                 holderData[holderID] = holderFinded
             }
@@ -48,16 +54,29 @@ export default class DependentService {
         return Object.values(holderData)
     }
 
-    async ReadOne(holder: string | number, dependent_id: string | number) {
-        return this.dependentRepository.ReadOne(holder, dependent_id);
+    async ReadOne(holder: ID, dependent_id: ID) {
+        return this.dependentRepository
+            .ReadOne(holder, dependent_id);
     }
 
-    async ReadOneSummary(holder: string | number, dependent_id: string | number) {
-        return this.dependentRepository.ReadOneSummary(holder, dependent_id);
+    async ReadOneSummary(holder: ID, dependent_id: ID) {
+        return this.dependentRepository
+            .ReadOneSummary(holder, dependent_id);
     }
 
     async Update() { }
 
     async Delete() { }
+
+    private bundleEntities(body: any) {
+        return new DependentBundleEntities({
+            dependent: new DependentEntity(body),
+            user: new UserEntity(body),
+            document: new DocumentEntity(body),
+            contact: new ContactEntity(body),
+            location: new LocationEntity(body),
+            member: new MemberEntity(body)
+        })
+    }
 
 }

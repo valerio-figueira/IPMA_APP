@@ -1,6 +1,10 @@
 import UserRepository from "../repositories/UserRepository";
 import CustomError from "../utils/CustomError";
-import { Contact, Document, Location, User, UserAttributes } from "../entities/UserEntity";
+import UserEntity from "../entities/UserEntity";
+import DocumentEntity from "../entities/DocumentEntity";
+import ContactEntity from "../entities/ContactEntity";
+import LocationEntity from "../entities/LocationEntity";
+import UserAttributes from "../entities/UserAttributes";
 
 export default class UserService {
     userRepository: UserRepository;
@@ -10,10 +14,10 @@ export default class UserService {
     }
 
     async Create(body: any) {
-        const user = new User(body)
-        const document = new Document(body)
-        const contact = new Contact(body)
-        const location = new Location(body)
+        const user = new UserEntity(body)
+        const document = new DocumentEntity(body)
+        const contact = new ContactEntity(body)
+        const location = new LocationEntity(body)
         const userData = new UserAttributes({ user, document, contact, location });
 
         try {
@@ -32,10 +36,10 @@ export default class UserService {
     }
 
     async Update(body: any) {
-        const user = new User(body)
-        const document = new Document(body)
-        const contact = new Contact(body)
-        const location = new Location(body)
+        const user = new UserEntity(body)
+        const document = new DocumentEntity(body)
+        const contact = new ContactEntity(body)
+        const location = new LocationEntity(body)
         const userData = new UserAttributes({ user, document, contact, location });
 
         try {
