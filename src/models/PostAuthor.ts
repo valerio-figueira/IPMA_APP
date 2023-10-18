@@ -40,8 +40,8 @@ class PostAuthorModel extends Model<IPostAuthor> {
             }
         }, {
             sequelize,
-            modelName: 'SSTModel',
-            tableName: 'SOCIAL_SECURITY_TEAM',
+            modelName: 'PostAuthorModel',
+            tableName: 'POST_AUTHORS',
             timestamps: false, // Se não precisa de colunas 'createdAt' e 'updatedAt'
         })
 
@@ -54,22 +54,22 @@ class PostAuthorModel extends Model<IPostAuthor> {
     static createAssociations(PostAuthorModel: any) {
         SSTModel.hasMany(PostAuthorModel, {
             foreignKey: 'sst_author_id',
-            as: 'PostAuthorModel'
+            as: 'authors'
         })
 
         PostAuthorModel.belongsTo(SSTModel, {
             foreignKey: 'sst_member_id',
-            as: 'SSTModel'
+            as: 'socialTeam'
         })
 
         BlogPostModel.hasMany(PostAuthorModel, {
-            foreignKey: 'sst_author_id',
-            as: 'PostAuthorModel'
+            foreignKey: 'post_id',
+            as: 'authors'
         })
 
         PostAuthorModel.belongsTo(BlogPostModel, {
-            foreignKey: 'author_id',
-            as: 'BlogPostModel'
+            foreignKey: 'post_id',
+            as: 'post'
         })
     }
 }

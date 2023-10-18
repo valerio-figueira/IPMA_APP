@@ -1,6 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
-import PostAuthorModel from './PostAuthor';
 import IBlogPost from '../interfaces/IBlogPost';
+import SSTModel from './SocialSecurityTeamModel';
 
 class BlogPostModel extends Model<IBlogPost> {
     declare post_id: number;
@@ -19,14 +19,6 @@ class BlogPostModel extends Model<IBlogPost> {
                 primaryKey: true,
                 autoIncrement: true,
                 allowNull: false,
-            },
-            author_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: PostAuthorModel,
-                    key: 'sst_author_id'
-                }
             },
             title: {
                 type: DataTypes.STRING(70),
@@ -56,8 +48,8 @@ class BlogPostModel extends Model<IBlogPost> {
                 type: DataTypes.INTEGER,
                 defaultValue: null,
                 references: {
-                    model: PostAuthorModel,
-                    key: 'sst_author_id'
+                    model: SSTModel,
+                    key: 'sst_member_id'
                 }
             },
             created_at: {
@@ -74,16 +66,15 @@ class BlogPostModel extends Model<IBlogPost> {
 
         const BlogPostModel = sequelize.models.BlogPostModel
 
-        PostAuthorModel.hasOne(BlogPostModel, {
-            foreignKey: '',
-            as: ''
+        SSTModel.hasMany(BlogPostModel, {
+            foreignKey: 'last_editor_id',
+            as: 'post'
         })
 
-        BlogPostModel.belongsTo(PostAuthorModel, {
-            foreignKey: '',
-            as: ''
-        })
-
+        BlogPostModel.belongsTo(SSTModel, {
+            foreignKey: 'sst_member_id',
+            as: 'socialTeam'
+        })        
 
         return BlogPostModel
     }

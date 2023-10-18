@@ -52,9 +52,9 @@ class MonthlyFeeModel extends Model<IMonthlyFee> {
                 },
             },
             status: {
-                type: DataTypes.ENUM('Pendente', 'Pago', 'Anulado'),
+                type: DataTypes.ENUM('PENDENTE', 'PAGO', 'ANULADO'),
                 allowNull: false,
-                defaultValue: 'Pendente',
+                defaultValue: 'PENDENTE',
             },
             reference_date: {
                 type: DataTypes.DATE,

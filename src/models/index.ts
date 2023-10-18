@@ -11,6 +11,9 @@ import UserModel from "./user/UserModel";
 import DocumentModel from "./user/DocumentModel";
 import LocationModel from "./user/LocationModel";
 import ContactModel from "./user/ContactModel";
+import SSTModel from "./SocialSecurityTeamModel";
+import BlogPostModel from "./BlogPostModel";
+import PostAuthorModel from "./PostAuthor";
 import * as ModelTypes from "../types/TModels";
 
 
@@ -27,6 +30,9 @@ class Models {
     DocumentModel: ModelTypes.TDocumentModel
     LocationModel: ModelTypes.TLocationModel
     ContactModel: ModelTypes.TContactModel
+    SSTModel: ModelTypes.TSSTModel
+    BlogPostModel: ModelTypes.TBlogPostModel
+    PostAuthorModel: ModelTypes.TPostAuthorModel
 
     constructor(sequelize: Sequelize) {
         this.UserModel = UserModel.init(sequelize)
@@ -41,6 +47,9 @@ class Models {
         this.MemberModel = MemberModel.init(sequelize)
         this.MonthlyFeeModel = MonthlyFeeModel.init(sequelize)
         this.DoctorModel = DoctorModel.init(sequelize)
+        this.SSTModel = SSTModel.init(sequelize)
+        this.BlogPostModel = BlogPostModel.init(sequelize)
+        this.PostAuthorModel = PostAuthorModel.init(sequelize)
     }
 
 

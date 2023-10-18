@@ -45,7 +45,7 @@ class SSTModel extends Model<ISocialSecurityTeam> {
 
         UserModel.hasOne(SSTModel, {
             foreignKey: 'user_id',
-            as: 'SSTModel'
+            as: 'socialTeam'
         });
 
         SSTModel.belongsTo(UserModel, {
