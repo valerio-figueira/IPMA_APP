@@ -22,7 +22,7 @@ const DB_Config: DB_ConfigProps = {
     development: {
         username: 'root',
         password: 'root',
-        database: 'SOCIAL_SECURITY',
+        database: 'SOCIAL_SECURITY_DEV',
         host: '172.17.0.2',
         dialect: 'mysql',
         port: 3306

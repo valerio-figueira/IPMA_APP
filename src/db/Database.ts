@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
 import DB_Config from "./DatabaseConfig";
 import dotenv from "dotenv";
+import Models from "../models";
 dotenv.config();
 
 type envProps = 'development' | 'test' | 'production'
@@ -9,7 +10,7 @@ export default class Database {
     sequelize: Sequelize
 
     constructor() {
-        const envTest = process.env.NODE_ENV as undefined | 'test' | 'development'
+        const envTest = process.env.NODE_ENV as envProps
         const environment: envProps = envTest || 'production'
         const config = DB_Config[environment]
 
@@ -19,8 +20,13 @@ export default class Database {
             config.password, {
             host: config.host,
             port: null || config.port,
-            dialect: config.dialect
-        });
+            dialect: config.dialect,
+            define: {
+                charset: 'utf8',
+                collate: 'utf8_general_ci',
+                timestamps: true
+            }
+        })
     }
 
     async authenticate() {
@@ -34,9 +40,7 @@ export default class Database {
 
     async syncModels() {
         try {
-            await this.authenticate();
-            await this.sequelize.sync();
-            console.log('Modelos sincronizados com o banco de dados.');
+            return new Models(this.sequelize)
         } catch (error) {
             console.error('Erro ao sincronizar modelos com o banco de dados:', error);
         }
@@ -45,13 +49,10 @@ export default class Database {
     async clearDatabase() {
         try {
             await this.authenticate()
-            await this.sequelize.drop()
-            console.log(this.sequelize.models)
+            await this.sequelize.sync({ force: true })
             console.log('Banco de dados limpo com sucesso.');
         } catch (error) {
             console.error('Erro ao limpar o banco de dados:', error);
-        } finally {
-            await this.sequelize.close();
         }
     }
 }
