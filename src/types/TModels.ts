@@ -11,6 +11,9 @@ import ContactModel from "../models/user/ContactModel"
 import DocumentModel from "../models/user/DocumentModel"
 import LocationModel from "../models/user/LocationModel"
 import UserModel from "../models/user/UserModel"
+import SSTModel from "../models/SocialSecurityTeamModel"
+import PostAuthorModel from "../models/PostAuthor"
+import BlogPostModel from "../models/BlogPostModel"
 
 export type TAccessHierarchyModel = ModelStatic<AccessHierarchyModel>
 export type TAuthenticationModel = ModelStatic<AuthenticationModel>
@@ -24,3 +27,6 @@ export type TUserModel = ModelStatic<UserModel>
 export type TDocumentModel = ModelStatic<DocumentModel>
 export type TLocationModel = ModelStatic<LocationModel>
 export type TContactModel = ModelStatic<ContactModel>
+export type TSSTModel = ModelStatic<SSTModel>
+export type TPostAuthorModel = ModelStatic<PostAuthorModel>
+export type TBlogPostModel = ModelStatic<BlogPostModel>
