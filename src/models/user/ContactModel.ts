@@ -1,4 +1,4 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, ModelStatic } from 'sequelize';
 import UserModel from './UserModel';
 import { IContact } from '../../interfaces/IUser';
 import { TContactModel } from '../../types/TModels';
@@ -12,7 +12,8 @@ class ContactModel extends Model<IContact> {
   declare email?: string | null;
   declare created_at: Date;
 
-  static init(sequelize: any) {
+  static INIT(sequelize: any)
+  : ModelStatic<ContactModel> {
     super.init({
       contact_id: {
         type: DataTypes.INTEGER,

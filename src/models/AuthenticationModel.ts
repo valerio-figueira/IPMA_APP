@@ -1,4 +1,4 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, ModelStatic } from 'sequelize';
 import IAuthentication from '../interfaces/IAuthentication';
 import UserModel from './user/UserModel';
 import AccessHierarchyModel from './AccessHierarchyModel';
@@ -15,7 +15,8 @@ class AuthenticationModel extends Model<IAuthentication> {
     declare hierarchy: IAccessHierarchy;
     declare created_at: Date;
 
-    static init(sequelize: any) {
+    static INIT(sequelize: any)
+    : ModelStatic<AuthenticationModel> {
         super.init({
             authentication_id: {
                 type: DataTypes.INTEGER,

@@ -1,4 +1,4 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, ModelStatic } from 'sequelize';
 import UserModel from './UserModel';
 import { ILocation } from '../../interfaces/IUser';
 import { TLocationModel } from '../../types/TModels';
@@ -15,7 +15,8 @@ class LocationModel extends Model<ILocation> {
     declare state?: string | null;
     declare created_at: Date;
 
-    static init(sequelize: any) {
+    static INIT(sequelize: any)
+    : ModelStatic<LocationModel> {
         super.init({
             location_id: {
                 type: DataTypes.INTEGER,

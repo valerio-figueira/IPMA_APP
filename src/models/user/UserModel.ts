@@ -1,4 +1,4 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, ModelStatic } from 'sequelize';
 import { IUser } from '../../interfaces/IUser';
 
 
@@ -12,7 +12,8 @@ class UserModel extends Model<IUser> {
     declare mother_name?: string | null;
     declare created_at: Date;
 
-    static init(sequelize: any) {
+    static INIT(sequelize: any)
+    : ModelStatic<UserModel> {
         super.init({
             user_id: {
                 type: DataTypes.INTEGER,

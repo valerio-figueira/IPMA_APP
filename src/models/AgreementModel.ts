@@ -1,4 +1,4 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, ModelStatic } from 'sequelize';
 import IAgreement from '../interfaces/IAgreement';
 
 
@@ -8,7 +8,8 @@ class AgreementModel extends Model<IAgreement> {
     declare description: string | null;
     declare registration_date: Date;
 
-    static init(sequelize: any) {
+    static INIT(sequelize: any)
+    : ModelStatic<AgreementModel> {
         super.init({
             agreement_id: {
                 type: DataTypes.INTEGER,

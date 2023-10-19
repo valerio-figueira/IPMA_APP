@@ -1,4 +1,4 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, ModelStatic } from 'sequelize';
 import UserModel from './user/UserModel';
 import ISocialSecurityTeam from '../interfaces/ISocialSecurityTeam';
 
@@ -9,7 +9,7 @@ class SSTModel extends Model<ISocialSecurityTeam> {
     declare role: string;
     declare created_at: Date;
 
-    static init(sequelize: any) {
+    static INIT(sequelize: any): ModelStatic<SSTModel> {
         super.init({
             sst_member_id: {
                 type: DataTypes.INTEGER,
@@ -20,6 +20,7 @@ class SSTModel extends Model<ISocialSecurityTeam> {
             user_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
+                unique: true,
                 references: {
                     model: UserModel,
                     key: 'user_id'

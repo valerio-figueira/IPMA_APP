@@ -1,4 +1,4 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, ModelStatic } from 'sequelize';
 import UserModel from './user/UserModel';
 import { IHolderBase } from '../interfaces/IHolder';
 import { IUser } from '../interfaces/IUser';
@@ -13,7 +13,7 @@ class HolderModel extends Model<IHolderBase> {
     declare created_at: Date;
     user?: IUser
 
-    static init(sequelize: any) {
+    static INIT(sequelize: any): ModelStatic<HolderModel> {
         super.init({
             holder_id: {
                 type: DataTypes.INTEGER,

@@ -18,38 +18,38 @@ import * as ModelTypes from "../types/TModels";
 
 
 class Models {
-    AccessHierarchyModel: ModelTypes.TAccessHierarchyModel
-    AgreementModel: ModelTypes.TAgreementModel
-    AuthenticationModel: ModelTypes.TAuthenticationModel
-    DependentModel: ModelTypes.TDependentModel
-    HolderModel: ModelTypes.THolderModel
-    MemberModel: ModelTypes.TMemberModel
-    MonthlyFeeModel: ModelTypes.TMonthlyFeeModel
-    DoctorModel: ModelTypes.TDoctorModel
-    UserModel: ModelTypes.TUserModel
-    DocumentModel: ModelTypes.TDocumentModel
-    LocationModel: ModelTypes.TLocationModel
-    ContactModel: ModelTypes.TContactModel
-    SSTModel: ModelTypes.TSSTModel
-    BlogPostModel: ModelTypes.TBlogPostModel
-    PostAuthorModel: ModelTypes.TPostAuthorModel
+    AccessHierarchy: ModelTypes.TAccessHierarchyModel
+    Agreement: ModelTypes.TAgreementModel
+    Authentication: ModelTypes.TAuthenticationModel
+    Dependent: ModelTypes.TDependentModel
+    Holder: ModelTypes.THolderModel
+    Member: ModelTypes.TMemberModel
+    MonthlyFee: ModelTypes.TMonthlyFeeModel
+    Doctor: ModelTypes.TDoctorModel
+    User: ModelTypes.TUserModel
+    Document: ModelTypes.TDocumentModel
+    Location: ModelTypes.TLocationModel
+    Contact: ModelTypes.TContactModel
+    SocialSecurityTeam: ModelTypes.TSSTModel
+    BlogPost: ModelTypes.TBlogPostModel
+    PostAuthor: ModelTypes.TPostAuthorModel
 
     constructor(sequelize: Sequelize) {
-        this.UserModel = UserModel.init(sequelize)
-        this.DocumentModel = DocumentModel.init(sequelize)
-        this.LocationModel = LocationModel.init(sequelize)
-        this.ContactModel = ContactModel.init(sequelize)
-        this.AccessHierarchyModel = AccessHierarchyModel.init(sequelize)
-        this.AgreementModel = AgreementModel.init(sequelize)
-        this.AuthenticationModel = AuthenticationModel.init(sequelize)
-        this.HolderModel = HolderModel.init(sequelize)
-        this.DependentModel = DependentModel.init(sequelize)
-        this.MemberModel = MemberModel.init(sequelize)
-        this.MonthlyFeeModel = MonthlyFeeModel.init(sequelize)
-        this.DoctorModel = DoctorModel.init(sequelize)
-        this.SSTModel = SSTModel.init(sequelize)
-        this.BlogPostModel = BlogPostModel.init(sequelize)
-        this.PostAuthorModel = PostAuthorModel.init(sequelize)
+        this.User = UserModel.INIT(sequelize)
+        this.Document = DocumentModel.INIT(sequelize)
+        this.Location = LocationModel.INIT(sequelize)
+        this.Contact = ContactModel.INIT(sequelize)
+        this.AccessHierarchy = AccessHierarchyModel.INIT(sequelize)
+        this.Agreement = AgreementModel.INIT(sequelize)
+        this.Authentication = AuthenticationModel.INIT(sequelize)
+        this.Holder = HolderModel.INIT(sequelize)
+        this.Dependent = DependentModel.INIT(sequelize)
+        this.Member = MemberModel.INIT(sequelize)
+        this.MonthlyFee = MonthlyFeeModel.INIT(sequelize)
+        this.Doctor = DoctorModel.INIT(sequelize)
+        this.SocialSecurityTeam = SSTModel.INIT(sequelize)
+        this.BlogPost = BlogPostModel.INIT(sequelize)
+        this.PostAuthor = PostAuthorModel.INIT(sequelize)
     }
 
 

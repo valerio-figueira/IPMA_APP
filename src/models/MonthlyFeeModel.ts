@@ -1,4 +1,4 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, ModelStatic } from 'sequelize';
 import IMonthlyFee from '../interfaces/IMonthlyFee';
 import MemberModel from './MemberModel';
 import { TMonthlyFeeModel } from '../types/TModels';
@@ -15,7 +15,7 @@ class MonthlyFeeModel extends Model<IMonthlyFee> {
     declare payment_date?: Date;
     declare created_at: Date;
 
-    static init(sequelize: any) {
+    static INIT(sequelize: any): ModelStatic<MonthlyFeeModel> {
         super.init({
             monthly_fee_id: {
                 type: DataTypes.INTEGER,

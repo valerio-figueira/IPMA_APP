@@ -1,4 +1,4 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, ModelStatic } from 'sequelize';
 import HolderModel from './HolderModel';
 import DependentModel from './DependentModel';
 import AgreementModel from './AgreementModel';
@@ -17,7 +17,7 @@ class MemberModel extends Model<IMember> {
     declare exclusion_date?: Date | null;
     declare agreement?: AgreementModel;
 
-    static init(sequelize: any) {
+    static INIT(sequelize: any): ModelStatic<MemberModel> {
         super.init({
             member_id: {
                 type: DataTypes.INTEGER,

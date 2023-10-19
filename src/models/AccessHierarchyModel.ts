@@ -1,4 +1,4 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, ModelStatic } from 'sequelize';
 import IAccessHierarchy from '../interfaces/IAccessHierarchy';
 
 
@@ -8,7 +8,8 @@ class AccessHierarchyModel extends Model<IAccessHierarchy> {
   declare parent_level_id?: number | null;
   declare created_at: Date;
 
-  static init(sequelize: any) {
+  static INIT(sequelize: any)
+  : ModelStatic<AccessHierarchyModel> {
     super.init({
       hierarchy_id: {
         type: DataTypes.INTEGER,

@@ -1,4 +1,4 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, ModelStatic } from 'sequelize';
 import UserModel from './UserModel';
 import { IDocument } from '../../interfaces/IUser';
 import { TDocumentModel } from '../../types/TModels';
@@ -13,7 +13,8 @@ class DocumentModel extends Model<IDocument> {
     declare health_card?: string | null;
     declare created_at: Date;
 
-    static init(sequelize: any) {
+    static INIT(sequelize: any)
+    : ModelStatic<DocumentModel> {
         super.init({
             document_id: {
                 type: DataTypes.INTEGER,

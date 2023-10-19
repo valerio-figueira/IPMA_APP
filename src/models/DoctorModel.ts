@@ -1,4 +1,4 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, ModelStatic } from 'sequelize';
 import { IDoctor } from '../interfaces/IDoctor';
 
 
@@ -14,7 +14,7 @@ class DoctorModel extends Model<IDoctor> {
     declare phone_number: string;
     declare created_at: Date;
 
-    static init(sequelize: any) {
+    static INIT(sequelize: any): ModelStatic<DoctorModel> {
         super.init({
             doctor_id: {
                 type: DataTypes.INTEGER,

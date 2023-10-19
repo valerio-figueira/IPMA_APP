@@ -1,4 +1,4 @@
-import { Model, DataTypes, Sequelize } from 'sequelize';
+import { Model, DataTypes, Sequelize, ModelStatic } from 'sequelize';
 import UserModel from './user/UserModel';
 import HolderModel from './HolderModel';
 import { IDependentBase } from '../interfaces/IDependent';
@@ -14,7 +14,7 @@ class DependentModel extends Model<IDependentBase> {
   declare created_at: Date;
   declare user?: IUser
 
-  static init(sequelize: any) {
+  static INIT(sequelize: any): ModelStatic<DependentModel> {
     super.init({
       dependent_id: {
         type: DataTypes.INTEGER,

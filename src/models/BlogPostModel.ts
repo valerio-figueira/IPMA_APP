@@ -1,4 +1,4 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, ModelStatic } from 'sequelize';
 import IBlogPost from '../interfaces/IBlogPost';
 import SSTModel from './SocialSecurityTeamModel';
 
@@ -12,7 +12,8 @@ class BlogPostModel extends Model<IBlogPost> {
     declare views: number;
     declare created_at: Date;
 
-    static init(sequelize: any) {
+    static INIT(sequelize: any)
+    : ModelStatic<BlogPostModel> {
         super.init({
             post_id: {
                 type: DataTypes.INTEGER,
