@@ -1,5 +1,6 @@
 export default class StringSanitizer {
   static convertToUpperCase(key: string, data: any) {
+      if (key === 'password') return data
       if (key === 'email') return data
       if (!data) return null;
       if (typeof data === 'string') {
