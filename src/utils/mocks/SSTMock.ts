@@ -22,3 +22,30 @@ export const UserMock = {
     "password": "supersenha10",
     "user_photo": ""
 }
+
+export const SSTUserMock = {
+    "sst_member_id": undefined as undefined | number,
+    "role": "Administrador(a)",
+    "name": "Nikos Papadopoulos",
+    "gender": "Masculino",
+    "marital_status": "Casado",
+    "birth_date": "1985-07-20",
+    "father_name": "Dimitri Papadopoulos",
+    "mother_name": "Eleni Katsaros",
+    "phone_number": "210-1234567",
+    "residential_phone": "210-7654321",
+    "email": "nikos@email.gr",
+    "address": "Egeo Street",
+    "number": 45,
+    "neighborhood": "Santorini",
+    "city": "Atenas",
+    "state": "GR",
+    "cpf": "654.321.098-76",
+    "identity": "AG-123456",
+    "issue_date": "2006-09-15",
+    "hierarchy_id": 2,
+    "username": "NikosP",
+    "password": "supersenha10",
+    "user_photo": ""
+}
+
