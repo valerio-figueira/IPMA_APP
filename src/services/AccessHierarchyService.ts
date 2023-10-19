@@ -11,6 +11,11 @@ export default class AccessHierarchyService {
     }
 
     async Create(body: IAccessHierarchy) {
+        const hierarchyFound = await this.accessHierarchyRepository
+            .Exists(body)
+
+        if (hierarchyFound) throw new CustomError('Já está registrado no sistema', 400)
+
         return this.accessHierarchyRepository.Create(body)
     }
 

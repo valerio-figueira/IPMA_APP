@@ -33,7 +33,11 @@ class SocialSecurityTeamService {
     }
 
     async Update(query: any) {
-        return this.sstRepository.Update(query)
+        const [affectedCount] = await this.sstRepository.Update(query)
+
+        if (!affectedCount) throw new CustomError('Não houve alterações', 400)
+        if (affectedCount === 1) return { message: 'Atualizado com sucesso' }
+        if (affectedCount > 1) return { message: 'Houve mais de uma alteração' }
     }
 
     async Delete(query: string | number) {
