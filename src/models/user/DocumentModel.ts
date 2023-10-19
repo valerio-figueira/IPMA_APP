@@ -69,7 +69,8 @@ class DocumentModel extends Model<IDocument> {
     private static createAssociations(DocumentModel: TDocumentModel) {
         UserModel.hasOne(DocumentModel, {
             foreignKey: 'user_id',
-            as: 'document'
+            as: 'document',
+            onDelete: 'CASCADE'
         })
         DocumentModel.belongsTo(UserModel, {
             foreignKey: 'user_id'

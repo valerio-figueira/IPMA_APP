@@ -65,11 +65,13 @@ class DependentModel extends Model<IDependentBase> {
     UserModel.hasOne(DependentModel, {
       foreignKey: 'user_id',
       as: 'dependent',
+      onDelete: 'CASCADE'
     });
 
     HolderModel.hasMany(DependentModel, {
       foreignKey: 'holder_id',
       as: 'dependent',
+      onDelete: 'CASCADE'
     });
 
     DependentModel.belongsTo(UserModel, {

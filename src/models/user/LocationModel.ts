@@ -77,7 +77,8 @@ class LocationModel extends Model<ILocation> {
     private static createAssociations(LocationModel: TLocationModel) {
         UserModel.hasOne(LocationModel, {
             foreignKey: 'user_id',
-            as: 'location'
+            as: 'location',
+            onDelete: 'CASCADE'
         })
         LocationModel.belongsTo(UserModel, {
             foreignKey: 'user_id'

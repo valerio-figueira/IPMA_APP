@@ -69,7 +69,8 @@ class BlogPostModel extends Model<IBlogPost> {
 
         SSTModel.hasMany(BlogPostModel, {
             foreignKey: 'last_editor_id',
-            as: 'post'
+            as: 'post',
+            onDelete: 'CASCADE'
         })
 
         BlogPostModel.belongsTo(SSTModel, {

@@ -92,7 +92,8 @@ class MonthlyFeeModel extends Model<IMonthlyFee> {
 
         MemberModel.hasMany(MonthlyFeeModel, {
             foreignKey: 'member_id',
-            as: 'billing'
+            as: 'billing',
+            onDelete: 'CASCADE'
         })
     }
 }

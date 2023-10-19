@@ -93,16 +93,19 @@ class MemberModel extends Model<IMember> {
 
         HolderModel.hasMany(MemberModel, {
             foreignKey: 'holder_id',
-            as: 'subscription'
+            as: 'subscription',
+            onDelete: 'CASCADE'
         });
 
         DependentModel.hasMany(MemberModel, {
-            foreignKey: 'dependent_id'
+            foreignKey: 'dependent_id',
+            onDelete: 'CASCADE'
         })
 
         AgreementModel.hasMany(MemberModel, {
             foreignKey: 'agreement_id',
-            as: 'subscription'
+            as: 'subscription',
+            onDelete: 'CASCADE'
         })
     }
 }

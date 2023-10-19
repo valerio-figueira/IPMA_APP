@@ -54,7 +54,8 @@ class PostAuthorModel extends Model<IPostAuthor> {
     static createAssociations(PostAuthorModel: any) {
         SSTModel.hasMany(PostAuthorModel, {
             foreignKey: 'sst_author_id',
-            as: 'authors'
+            as: 'authors',
+            onDelete: 'CASCADE'
         })
 
         PostAuthorModel.belongsTo(SSTModel, {
@@ -64,7 +65,7 @@ class PostAuthorModel extends Model<IPostAuthor> {
 
         BlogPostModel.hasMany(PostAuthorModel, {
             foreignKey: 'post_id',
-            as: 'authors'
+            as: 'authors',
         })
 
         PostAuthorModel.belongsTo(BlogPostModel, {

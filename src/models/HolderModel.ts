@@ -59,7 +59,8 @@ class HolderModel extends Model<IHolderBase> {
     static createAssociations(HolderModel: THolderModel) {
         UserModel.hasOne(HolderModel, {
             foreignKey: 'user_id',
-            as: 'holder'
+            as: 'holder',
+            onDelete: 'CASCADE'
         })
         HolderModel.belongsTo(UserModel, {
             foreignKey: 'user_id',

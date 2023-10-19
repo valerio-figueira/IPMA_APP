@@ -63,7 +63,8 @@ class ContactModel extends Model<IContact> {
   private static createAssociations(ContactModel: TContactModel) {
     UserModel.hasOne(ContactModel, {
       foreignKey: 'user_id',
-      as: 'contact'
+      as: 'contact',
+      onDelete: 'CASCADE'
     })
     ContactModel.belongsTo(UserModel, {
       foreignKey: 'user_id'

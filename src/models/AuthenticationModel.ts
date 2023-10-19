@@ -81,7 +81,8 @@ class AuthenticationModel extends Model<IAuthentication> {
 
         UserModel.hasOne(AuthenticationModel, {
             foreignKey: 'user_id',
-            as: 'authentication'
+            as: 'authentication',
+            onDelete: 'CASCADE'
         })
 
         AuthenticationModel.belongsTo(UserModel, {
