@@ -8,12 +8,6 @@ import CustomError from '../../utils/CustomError'
 const agreementService = new AgreementService()
 
 describe('TEST for Access Hierarchy Service', () => {
-    beforeAll(async () => {
-        const db = new Database()
-        await db.syncModels()
-        await db.clearDatabase()        
-    })
-
     it('should create new agreement', async () => {
         const newAgreement: IAgreement = {
             agreement_name: 'Unimed',
