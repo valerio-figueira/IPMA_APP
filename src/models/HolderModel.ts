@@ -1,8 +1,10 @@
 import { Model, DataTypes, ModelStatic } from 'sequelize';
 import UserModel from './user/UserModel';
 import { IHolderBase } from '../interfaces/IHolder';
-import { IUser } from '../interfaces/IUser';
+import { IContact, IDocument, ILocation, IUser } from '../interfaces/IUser';
 import { THolderModel } from '../types/TModels';
+import IAuthentication from '../interfaces/IAuthentication';
+import IMember from '../interfaces/IMember';
 
 
 class HolderModel extends Model<IHolderBase> {
@@ -11,7 +13,12 @@ class HolderModel extends Model<IHolderBase> {
     declare subscription_number?: number | null;
     declare status: 'ATIVO(A)' | 'APOSENTADO(A)' | 'LICENÇA';
     declare created_at: Date;
+    authentication?: IAuthentication
     user?: IUser
+    document?: IDocument
+    location?: ILocation
+    contact?: IContact
+    member?: IMember
 
     static INIT(sequelize: any): ModelStatic<HolderModel> {
         super.init({
