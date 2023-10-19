@@ -2,6 +2,7 @@ import IMember from "./IMember";
 import { IDependentBase } from "./IDependent";
 import { IHolderBase } from "./IHolder";
 import ISocialSecurityTeam from "./ISocialSecurityTeam";
+import IAuthentication from "./IAuthentication";
 
 export interface IUser {
     user_id?: number;
@@ -54,5 +55,6 @@ export interface IUserAttributes {
     holder?: IHolderBase;
     dependent?: IDependentBase;
     member?: IMember
+    authentication?: IAuthentication
     [key: string]: any;
 }
