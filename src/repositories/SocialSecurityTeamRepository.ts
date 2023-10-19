@@ -4,10 +4,6 @@ import { SST_Props } from "../interfaces/ISocialSecurityTeam"
 import AccessHierarchyModel from "../models/AccessHierarchyModel"
 import AuthenticationModel from "../models/AuthenticationModel"
 import SSTModel from "../models/SocialSecurityTeamModel"
-import ContactModel from "../models/user/ContactModel"
-import DocumentModel from "../models/user/DocumentModel"
-import LocationModel from "../models/user/LocationModel"
-import UserModel from "../models/user/UserModel"
 import { ID } from "../types/ID"
 import CustomError from "../utils/CustomError"
 import UserRepository from "./UserRepository"
@@ -25,10 +21,6 @@ class SocialSecurityTeamRepository {
         this.userRepository = new UserRepository()
         this.models = {
             SocialSecurityTeam: SSTModel.INIT(this.seq),
-            User: UserModel.INIT(this.seq),
-            Document: DocumentModel.INIT(this.seq),
-            Contact: ContactModel.INIT(this.seq),
-            Location: LocationModel.INIT(this.seq),
             AccessHierarchy: AccessHierarchyModel.INIT(this.seq),
             Authentication: AuthenticationModel.INIT(this.seq)
         }
@@ -40,6 +32,9 @@ class SocialSecurityTeamRepository {
         try {
             await this.userRepository
                 .CreateWithTransaction(body, t)
+
+            await this.models.Authentication
+                .create(body.authentication, { transaction: t, raw: true })
 
             const sstMember = await this.models.SocialSecurityTeam
                 .create(body.sstEntity, { transaction: t, raw: true })

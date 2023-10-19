@@ -37,4 +37,12 @@ export default class AccessHierarchyRepository {
         })
     }
 
+    async Exists(query: IAccessHierarchy) {
+        const whereClause: any = { level_name: query.level_name }
+
+        if (query.hierarchy_id) whereClause.hierarchy_id = query.hierarchy_id
+
+        return this.model.findOne({ where: whereClause })
+    }
+
 }

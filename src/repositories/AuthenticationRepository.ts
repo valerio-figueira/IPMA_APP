@@ -2,28 +2,34 @@ import Database from "../db/Database";
 import Queries from "../db/Queries";
 import IAuthentication from "../interfaces/IAuthentication";
 import AuthenticationModel from "../models/AuthenticationModel";
+import UserModel from "../models/user/UserModel";
 
 
 export default class AuthenticationRepository {
-    private model
+    private db: Database
+    private models
 
     constructor() {
-        this.model = AuthenticationModel
+        this.db = new Database()
+        this.models = {
+            Authentication: AuthenticationModel.INIT(this.db.sequelize),
+            User: UserModel.INIT(this.db.sequelize)
+        }
     }
 
     async Create(query: IAuthentication) {
-        return this.model.create(query, { raw: true })
+        return this.models.Authentication.create(query, { raw: true })
     }
 
     async ReadAll(query: any) {
-        return this.model.findAll({
+        return this.models.Authentication.findAll({
             include: Queries.IncludeHierarchyAndUser,
             raw: true, nest: true
         })
     }
 
     async ReadOne(authentication_id: string | number) {
-        return this.model.findOne({
+        return this.models.Authentication.findOne({
             where: { authentication_id },
             attributes: { exclude: ['password'] },
             include: Queries.IncludeHierarchyAndUser,
@@ -32,13 +38,13 @@ export default class AuthenticationRepository {
     }
 
     async Update(query: IAuthentication) {
-        return this.model.update(query, {
+        return this.models.Authentication.update(query, {
             where: { authentication_id: query.authentication_id }
         })
     }
 
     async Delete(authentication_id: string | number) {
-        return this.model.destroy({
+        return this.models.Authentication.destroy({
             where: { authentication_id }
         })
     }
