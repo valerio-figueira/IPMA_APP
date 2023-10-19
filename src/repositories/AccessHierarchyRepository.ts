@@ -1,11 +1,14 @@
 import AccessHierarchyModel from "../models/AccessHierarchyModel";
 import IAccessHierarchy from "../interfaces/IAccessHierarchy";
+import Database from "../db/Database";
 
 export default class AccessHierarchyRepository {
+    private db: Database
     private model
 
     constructor() {
-        this.model = AccessHierarchyModel
+        this.db = new Database()
+        this.model = AccessHierarchyModel.INIT(this.db.sequelize)
     }
 
     async Create(query: IAccessHierarchy) {

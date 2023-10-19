@@ -16,7 +16,12 @@ export default class UserRepository {
 
     constructor() {
         this.db = new Database();
-        this.models = { UserModel, DocumentModel, LocationModel, ContactModel }
+        this.models = {
+            UserModel: UserModel.INIT(this.db.sequelize),
+            DocumentModel: DocumentModel.INIT(this.db.sequelize),
+            LocationModel: LocationModel.INIT(this.db.sequelize),
+            ContactModel: ContactModel.INIT(this.db.sequelize)
+        }
     }
 
     async Create(query: IUserAttributes) {
@@ -83,41 +88,41 @@ export default class UserRepository {
 
     async CreateWithTransaction(query: IUserAttributes, transaction: Transaction) {
         const user = await this.models.UserModel
-        .create(query.user, { transaction, raw: true });
+            .create(query.user, { transaction, raw: true });
 
         this.insertIdValues(query, user.user_id);
 
         const document = await this.models.DocumentModel
-        .create(query.document, { transaction, raw: true });
+            .create(query.document, { transaction, raw: true });
         const contact = await this.models.ContactModel
-        .create(query.contact, { transaction, raw: true });
+            .create(query.contact, { transaction, raw: true });
         const location = await this.models.LocationModel
-        .create(query.location, { transaction, raw: true });
+            .create(query.location, { transaction, raw: true });
 
         return { user, document, contact, location }
     }
 
     async UpdateWithTransaction(user_id: number, query: IUserAttributes, transaction: Transaction) {
         const [user] = await this.models.UserModel
-        .update(query.user, {
-            where: { user_id },
-            transaction
-        })
+            .update(query.user, {
+                where: { user_id },
+                transaction
+            })
 
         const [contact] = await this.models.ContactModel
-        .update(query.contact, {
-            where: { user_id }, transaction
-        })
+            .update(query.contact, {
+                where: { user_id }, transaction
+            })
 
         const [document] = await this.models.DocumentModel
-        .update(query.document, {
-            where: { user_id }, transaction
-        })
+            .update(query.document, {
+                where: { user_id }, transaction
+            })
 
         const [location] = await this.models.LocationModel
-        .update(query.location, {
-            where: { user_id }, transaction
-        })
+            .update(query.location, {
+                where: { user_id }, transaction
+            })
 
         return this.checkAffectedCount({ user, contact, document, location })
     }

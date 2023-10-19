@@ -3,10 +3,12 @@ import IAgreement from "../interfaces/IAgreement";
 import AgreementModel from "../models/AgreementModel";
 
 export default class AgreementRepository {
+    private db: Database
     private model
 
     constructor() {
-        this.model = AgreementModel
+        this.db = new Database()
+        this.model = AgreementModel.INIT(this.db.sequelize)
     }
 
     async Create(query: IAgreement) {
