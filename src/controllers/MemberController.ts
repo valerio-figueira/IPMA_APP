@@ -3,13 +3,16 @@ import MemberService from "../services/MemberService";
 import MemberValidator from "./validation/MemberValidator";
 import Controller from "../utils/decorators/ControllerDecorator";
 import { Delete, Get, Post, Put } from "../utils/decorators/HandlersDecorator";
+import Database from "../db/Database";
 
 @Controller('/api/v1/members')
 class MemberController {
-    memberService: MemberService;
+    memberService: MemberService
+    db: Database
 
     constructor() {
-        this.memberService = new MemberService();
+        this.db = new Database()
+        this.memberService = new MemberService(this.db);
     }
 
     @Post('/')

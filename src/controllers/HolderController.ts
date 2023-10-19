@@ -3,13 +3,16 @@ import HolderService from "../services/HolderService";
 import UserValidator from "./validation/UserValidator";
 import Controller from "../utils/decorators/ControllerDecorator";
 import { Get, Post, Put, Delete } from "../utils/decorators/HandlersDecorator";
+import Database from "../db/Database";
 
 @Controller('/api/v1/holders')
 class HolderController {
-    holderService: HolderService;
+    private holderService: HolderService
+    private db: Database
 
     constructor() {
-        this.holderService = new HolderService();
+        this.db = new Database()
+        this.holderService = new HolderService(this.db);
     }
 
     @Post('/')

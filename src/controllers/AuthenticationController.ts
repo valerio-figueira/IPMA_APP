@@ -3,14 +3,17 @@ import AuthenticationService from "../services/AuthenticationService";
 import Controller from "../utils/decorators/ControllerDecorator";
 import { Delete, Get, Post, Put } from "../utils/decorators/HandlersDecorator";
 import JWT from "../authentication/JWT";
+import Database from "../db/Database";
 
 
 @Controller('/api/v1/authentications')
 class AuthenticationController {
-    authenticationService: AuthenticationService;
+    private authenticationService: AuthenticationService;
+    private db: Database
 
     constructor() {
-        this.authenticationService = new AuthenticationService();
+        this.db = new Database()
+        this.authenticationService = new AuthenticationService(this.db);
     }
 
     @Post('/')

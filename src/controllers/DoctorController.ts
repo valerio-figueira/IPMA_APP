@@ -2,14 +2,17 @@ import { Request, Response } from "express";
 import DoctorService from "../services/DoctorService";
 import Controller from "../utils/decorators/ControllerDecorator";
 import { Delete, Get, Post, Put } from "../utils/decorators/HandlersDecorator";
+import Database from "../db/Database";
 
 
 @Controller('/api/v1/doctors')
 class DoctorController {
-    doctorService: DoctorService;
+    private doctorService: DoctorService
+    private db: Database
 
     constructor() {
-        this.doctorService = new DoctorService();
+        this.db = new Database()
+        this.doctorService = new DoctorService(this.db)
     }
 
     @Post('/')

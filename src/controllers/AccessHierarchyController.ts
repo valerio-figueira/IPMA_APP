@@ -2,13 +2,16 @@ import { Request, Response } from "express";
 import AccessHierarchyService from "../services/AccessHierarchyService";
 import Controller from "../utils/decorators/ControllerDecorator";
 import { Delete, Get, Post, Put } from "../utils/decorators/HandlersDecorator";
+import Database from "../db/Database";
 
 @Controller('/api/v1/access-hierarchy')
 class AccessHierarchyController {
-    accessHierarchyService: AccessHierarchyService;
+    private db: Database
+    private accessHierarchyService: AccessHierarchyService;
 
     constructor() {
-        this.accessHierarchyService = new AccessHierarchyService();
+        this.db = new Database()
+        this.accessHierarchyService = new AccessHierarchyService(this.db);
     }
 
     @Post('/')

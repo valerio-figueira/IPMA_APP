@@ -2,14 +2,17 @@ import { Request, Response } from "express";
 import AgreementService from "../services/AgreementService";
 import Controller from "../utils/decorators/ControllerDecorator";
 import { Delete, Get, Post, Put } from "../utils/decorators/HandlersDecorator";
+import Database from "../db/Database";
 
 
 @Controller('/api/v1/agreements')
 class AgreementController {
-    agreementService: AgreementService;
+    private db: Database
+    private agreementService: AgreementService;
 
     constructor() {
-        this.agreementService = new AgreementService();
+        this.db = new Database()
+        this.agreementService = new AgreementService(this.db);
     }
 
     @Post('/')

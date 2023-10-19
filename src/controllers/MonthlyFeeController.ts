@@ -2,14 +2,17 @@ import { Request, Response } from "express";
 import MonthlyFeeService from "../services/MonthlyFeeService";
 import Controller from "../utils/decorators/ControllerDecorator";
 import { Delete, Get, Post, Put } from "../utils/decorators/HandlersDecorator";
+import Database from "../db/Database";
 
 
 @Controller('/api/v1/monthly-fee')
 class MonthlyFeeController {
-    monthlyFeeService: MonthlyFeeService;
+    private db: Database
+    private monthlyFeeService: MonthlyFeeService
 
     constructor() {
-        this.monthlyFeeService = new MonthlyFeeService();
+        this.db = new Database()
+        this.monthlyFeeService = new MonthlyFeeService(this.db);
     }
 
     @Post('/')

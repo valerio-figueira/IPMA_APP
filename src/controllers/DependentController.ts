@@ -2,14 +2,17 @@ import { Request, Response } from "express";
 import DependentService from "../services/DependentService";
 import Controller from "../utils/decorators/ControllerDecorator";
 import { Delete, Get, Post, Put } from "../utils/decorators/HandlersDecorator";
+import Database from "../db/Database";
 
 
 @Controller('/api/vi/dependents')
 class DependentController {
-    dependentService: DependentService;
+    private dependentService: DependentService
+    private db: Database
 
     constructor() {
-        this.dependentService = new DependentService();
+        this.db = new Database()
+        this.dependentService = new DependentService(this.db);
     }
 
     @Post('/:holder')
