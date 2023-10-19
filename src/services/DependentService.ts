@@ -8,16 +8,17 @@ import ContactEntity from "../entities/ContactEntity";
 import DependentBundleEntities from "../entities/DependentBundleEntities";
 import DependentEntity from "../entities/DependentEntity";
 import MemberEntity from "../entities/MemberEntity";
+import Database from "../db/Database";
 
 type ID = number | string
 
 export default class DependentService {
-    dependentRepository: DependentRepository;
-    holderRepository: HolderRepository;
+    private dependentRepository: DependentRepository;
+    private holderRepository: HolderRepository;
 
-    constructor() {
-        this.dependentRepository = new DependentRepository();
-        this.holderRepository = new HolderRepository();
+    constructor(db: Database) {
+        this.dependentRepository = new DependentRepository(db);
+        this.holderRepository = new HolderRepository(db);
     }
 
     async Create(body: any) {

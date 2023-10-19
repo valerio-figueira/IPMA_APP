@@ -13,9 +13,9 @@ export default class DependentRepository {
     private userRepository: UserRepository;
     private model
 
-    constructor() {
-        this.userRepository = new UserRepository();
-        this.db = new Database();
+    constructor(db: Database) {
+        this.db = db
+        this.userRepository = new UserRepository(this.db);
         this.model = DependentModel
     }
 

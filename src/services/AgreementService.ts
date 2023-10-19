@@ -3,12 +3,13 @@ import AgreementSchema from "../entities/AgreementEntity";
 import IAgreement from "../interfaces/IAgreement";
 import CustomError from "../utils/CustomError";
 import AgreementModel from "../models/AgreementModel";
+import Database from "../db/Database";
 
 export default class AgreementService {
-    agreementRepository: AgreementRepository;
+   private agreementRepository: AgreementRepository;
 
-    constructor() {
-        this.agreementRepository = new AgreementRepository();
+    constructor(db: Database) {
+        this.agreementRepository = new AgreementRepository(db);
     }
 
     async Create(body: IAgreement) {

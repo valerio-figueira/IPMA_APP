@@ -1,3 +1,4 @@
+import { Sequelize } from "sequelize"
 import Database from "../db/Database"
 import Queries from "../db/Queries"
 import { SST_Props } from "../interfaces/ISocialSecurityTeam"
@@ -11,15 +12,15 @@ import UserRepository from "./UserRepository"
 
 
 class SocialSecurityTeamRepository {
-    private db
-    private seq
+    private db: Database
+    private seq: Sequelize
     private userRepository: UserRepository
     private models
 
-    constructor() {
-        this.db = new Database()
+    constructor(db: Database) {
+        this.db = db
         this.seq = this.db.sequelize
-        this.userRepository = new UserRepository()
+        this.userRepository = new UserRepository(this.db)
         this.models = {
             SocialSecurityTeam: SSTModel.INIT(this.seq),
             AccessHierarchy: AccessHierarchyModel.INIT(this.seq),

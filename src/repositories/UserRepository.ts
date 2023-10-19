@@ -7,6 +7,9 @@ import Database from "../db/Database";
 import Queries from "../db/Queries";
 import CustomError from "../utils/CustomError";
 import UserModel from "../models/user/UserModel";
+import { ID } from "../types/ID";
+import DocumentEntity from "../entities/DocumentEntity";
+import AuthenticationModel from "../models/AuthenticationModel";
 
 type OptionalTransaction = Transaction | undefined;
 
@@ -14,9 +17,10 @@ export default class UserRepository {
     private db: Database
     private models
 
-    constructor() {
-        this.db = new Database();
+    constructor(database: Database) {
+        this.db = database
         this.models = {
+            Authentication: AuthenticationModel,
             UserModel: UserModel.INIT(this.db.sequelize),
             DocumentModel: DocumentModel.INIT(this.db.sequelize),
             LocationModel: LocationModel.INIT(this.db.sequelize),
@@ -42,7 +46,7 @@ export default class UserRepository {
         })
     }
 
-    async ReadOne(user_id: number | string) {
+    async ReadOne(user_id: ID) {
         return this.models.UserModel.findByPk(user_id, {
             include: [
                 {
@@ -64,7 +68,7 @@ export default class UserRepository {
         })
     }
 
-    async ReadOneSummary(user_id: number | string) {
+    async ReadOneSummary(user_id: ID) {
         return this.models.UserModel.findByPk(user_id, {
             plain: true, raw: true
         })
@@ -81,7 +85,7 @@ export default class UserRepository {
         }
     }
 
-    async Delete(user_id: number | string) {
+    async Delete(user_id: ID) {
         const transaction = await this.db.sequelize.transaction()
 
         try {
@@ -115,6 +119,9 @@ export default class UserRepository {
                 transaction
             })
 
+        const [authentication] = await this.UpdateUserAuthentication(query, transaction)
+            console.log(authentication)
+            console.log(query)
         const [contact] = await this.models.ContactModel
             .update(query.contact, {
                 where: { user_id }, transaction
@@ -130,13 +137,31 @@ export default class UserRepository {
                 where: { user_id }, transaction
             })
 
-        return this.checkAffectedCount({ user, contact, document, location })
+        return this.checkAffectedCount({ user, contact, document, location, authentication })
     }
 
-    async DeleteWithTransaction(user_id: number | string, transaction: OptionalTransaction) {
+    async DeleteWithTransaction(user_id: ID, transaction: OptionalTransaction) {
         return this.models.UserModel.destroy({
             where: { user_id }, transaction
         });
+    }
+
+    async Exists(query: DocumentEntity) {
+        const whereClause: any = { cpf: query.cpf }
+        if (query.identity) whereClause.identity = query.identity
+
+        return this.models.DocumentModel.findOne({
+            where: whereClause
+        })
+    }
+
+    private async UpdateUserAuthentication(query: IUserAttributes, transaction: Transaction) {
+        if (!query.authentication) return [0]
+
+        return this.models.Authentication
+            .update(query.authentication, {
+                where: { user_id: query.user.user_id }, transaction
+            })
     }
 
     private insertIdValues(data: IUserAttributes, user_id: number) {

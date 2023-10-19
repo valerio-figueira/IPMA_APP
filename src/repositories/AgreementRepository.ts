@@ -6,8 +6,8 @@ export default class AgreementRepository {
     private db: Database
     private model
 
-    constructor() {
-        this.db = new Database()
+    constructor(db: Database) {
+        this.db = db
         this.model = AgreementModel.INIT(this.db.sequelize)
     }
 

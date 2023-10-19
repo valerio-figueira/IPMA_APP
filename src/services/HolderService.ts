@@ -8,20 +8,30 @@ import UserDataSanitizer from "../helpers/UserDataSanitizer";
 import HolderBundleEntities from "../entities/HolderBundleEntities";
 import HolderEntity from "../entities/HolderEntity";
 import MemberEntity from "../entities/MemberEntity";
+import AccessHierarchyService from "./AccessHierarchyService";
+import AuthenticationEntity from "../entities/AuthenticationEntity";
+import Database from "../db/Database";
 
 
 export default class HolderService {
-    holderRepository: HolderRepository;
+    holderRepository: HolderRepository
+    accessHierarchyService: AccessHierarchyService
 
-    constructor() {
-        this.holderRepository = new HolderRepository();
+    constructor(db: Database) {
+        this.holderRepository = new HolderRepository(db)
+        this.accessHierarchyService = new AccessHierarchyService(db)
     }
+
+
 
     async Create(body: any) {
         UserDataSanitizer.sanitizeBody(body)
         const holderData = this.bundleEntities(body)
 
+        await this.checkIfHolderExists(holderData.document)
+
         if (body.username && body.password) {
+            await this.checkPermissionLevel(body.hierarchy_id)
             holderData.setAuthentication(body)
         }
 
@@ -29,6 +39,9 @@ export default class HolderService {
 
         return this.holderRepository.Create(holderData)
     }
+
+
+
 
     async ReadAll() {
         const holders = await this.holderRepository.ReadAll()
@@ -38,40 +51,63 @@ export default class HolderService {
         return holders
     }
 
+
+
+
     async ReadOne(holder_id: string | number) {
-        const rawData = await this.holderRepository.ReadOne(holder_id);
+        const holderData = await this.holderRepository.ReadOne(holder_id);
 
-        if (!rawData) throw new CustomError('Nenhum registro encontrado!', 400)
+        if (!holderData) throw new CustomError('Nenhum registro encontrado!', 400)
 
-        return UserDataSanitizer.sanitizeQuery(rawData)
+        return holderData
     }
+
+
+
 
     async ReadOneSummary(holder_id: string | number) {
-        const rawData = await this.holderRepository.ReadOneSummary(holder_id);
+        const holderData = await this.holderRepository.ReadOneSummary(holder_id);
 
-        if (!rawData) throw new CustomError('Nenhum registro encontrado!', 400)
+        if (!holderData) throw new CustomError('Nenhum registro encontrado!', 400)
 
-        return UserDataSanitizer.sanitizeQuery(rawData)
+        return holderData
     }
+
+
+
 
     async Update(body: any) {
         UserDataSanitizer.sanitizeBody(body)
         const holderData = this.bundleEntities(body)
+        const holderID = holderData.holder.holder_id
+        const userID = holderData.user.user_id
 
+        if (holderID) await this.ReadOne(holderID)
+        if (userID) await this.userExists(userID)
         if (!holderData.holder) throw new CustomError('Falha ao processar os dados do titular', 400)
 
-        const rawData = await this.holderRepository
-            .Update(holderData)
+        if (holderData.authentication) {
+            // SE O TITULAR NÃO POSSUI AUTENTICAÇÃO, ENTÃO FAÇA AQUI
+            await this.checkHolderAuthentication(holderData)
+            await this.checkPermissionLevel(body.hierarchy_id)
+        }
 
-        return UserDataSanitizer.sanitizeQuery(rawData)
+        return this.holderRepository.Update(holderData)
     }
+
+
+
 
     async Delete(holder_id: string) {
         return this.holderRepository.Delete(holder_id);
     }
 
+
+
+
     private bundleEntities(body: any) {
         return new HolderBundleEntities({
+            authentication: new AuthenticationEntity(body),
             holder: new HolderEntity(body),
             user: new UserEntity(body),
             document: new DocumentEntity(body),
@@ -79,6 +115,47 @@ export default class HolderService {
             location: new LocationEntity(body),
             member: new MemberEntity(body)
         })
+    }
+
+
+    private async checkHolderAuthentication(body: HolderBundleEntities) {
+        if (!body.authentication?.authentication_id) return
+
+        const holder = await this.ReadOne(body.holder.holder_id!)
+        const authID = holder.authentication?.authentication_id
+
+        if (authID) body.authentication.authentication_id = authID
+    }
+
+
+    private async userExists(user_id: number) {
+        const userInfo = await this.holderRepository
+            .verifyIfUserExists(user_id)
+
+        if (!userInfo) throw new CustomError('Dados de usuário inválido', 404)
+    }
+
+
+    private async checkPermissionLevel(hierarchy_id: number) {
+        const permissionLevel = await this.accessHierarchyService
+            .ReadOne(hierarchy_id)
+
+        if (!permissionLevel) throw new CustomError('Nível de permissão não encontrado', 400)
+        if (permissionLevel.level_name !== 'Common_User') {
+            throw new CustomError('Todo titular deve ser um usuário comum', 400)
+        }
+    }
+
+
+
+
+    private async checkIfHolderExists(document: DocumentEntity) {
+        const holderFounded = await this.holderRepository
+            .Exists(document)
+
+        if (!holderFounded) return
+
+        throw new CustomError('Titular já existe na base de dados', 400)
     }
 
 }

@@ -3,12 +3,10 @@ import IAccessHierarchy from "../interfaces/IAccessHierarchy";
 import Database from "../db/Database";
 
 export default class AccessHierarchyRepository {
-    private db: Database
     private model
 
-    constructor() {
-        this.db = new Database()
-        this.model = AccessHierarchyModel.INIT(this.db.sequelize)
+    constructor(db: Database) {
+        this.model = AccessHierarchyModel.INIT(db.sequelize)
     }
 
     async Create(query: IAccessHierarchy) {

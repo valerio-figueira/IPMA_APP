@@ -8,30 +8,22 @@ import UserModel from "../models/user/UserModel";
 import Queries from "../db/Queries";
 import MemberModel from "../models/MemberModel";
 import DependentModel from "../models/DependentModel";
-import DocumentModel from "../models/user/DocumentModel";
-import ContactModel from "../models/user/ContactModel";
-import LocationModel from "../models/user/LocationModel";
 import AccessHierarchyModel from "../models/AccessHierarchyModel";
 import AuthenticationModel from "../models/AuthenticationModel";
+import DocumentEntity from "../entities/DocumentEntity";
 
 export default class HolderRepository {
     private db: Database;
     private userRepository: UserRepository;
     private models
-    private seq
 
-    constructor() {
-        this.userRepository = new UserRepository();
-        this.db = new Database();
-        this.seq = this.db.sequelize
+    constructor(db: Database) {
+        this.db = db
+        this.userRepository = new UserRepository(this.db)
         this.models = {
-            Holder: HolderModel.INIT(this.seq),
-            User: UserModel.INIT(this.seq),
-            Document: DocumentModel.INIT(this.seq),
-            Contact: ContactModel.INIT(this.seq),
-            Location: LocationModel.INIT(this.seq),
-            AccessHierarchy: AccessHierarchyModel.INIT(this.seq),
-            Authentication: AuthenticationModel.INIT(this.seq)
+            Holder: HolderModel.INIT(this.db.sequelize),
+            AccessHierarchy: AccessHierarchyModel.INIT(this.db.sequelize),
+            Authentication: AuthenticationModel.INIT(this.db.sequelize)
         }
     }
 
@@ -80,24 +72,16 @@ export default class HolderRepository {
         const t: Transaction = await this.db.sequelize.transaction();
 
         try {
-            const holder = await this.ReadOne(query.holder?.holder_id!)
-
-            if (!holder) throw new CustomError('Usuário não encontrado', 404)
-
             const userResult = await this.userRepository
-                .UpdateWithTransaction(holder.user_id, query, t)
+                .UpdateWithTransaction(query.user.user_id!, query, t)
 
-            const [holderResult] = await this.models.Holder
-                .update(query.holder!, {
-                    where: { user_id: query.user.user_id },
-                    transaction: t
-                })
+            const [holderResult] = await this.UpdateHolderInfo(query, t)
 
-            if (!userResult && !holderResult) throw new CustomError(`Nenhum dado foi alterado para ${query.user.name}`, 400)
+            //if (!userResult && !holderResult) throw new CustomError(`Nenhum dado foi alterado para ${query.user.name}`, 400)
 
             await t.commit()
 
-            return this.ReadOne(holder.holder_id)
+            return this.ReadOne(query.holder!.holder_id!)
         } catch (error: any) {
             await t.rollback()
             throw new CustomError(error.message || 'Não foi possível atualizar os dados do usuário', error.status || 500)
@@ -145,18 +129,19 @@ export default class HolderRepository {
         }
     }
 
-    private createNestedObj(data: any[]) {
-        return {
-            holder: {
-                ...data[0].toJSON(),
-                user: {
-                    ...data[1].toJSON(),
-                    document: data[2].toJSON(),
-                    contact: data[3].toJSON(),
-                    location: data[4].toJSON(),
-                }
-            }
-        }
+    private async UpdateHolderInfo(query: any, transaction: Transaction) {
+        return this.models.Holder
+            .update(query.holder!, {
+                where: { user_id: query.user.user_id },
+                transaction
+            })
     }
 
+    async verifyIfUserExists(user_id: number) {
+        return this.userRepository.ReadOneSummary(user_id)
+    }
+
+    async Exists(query: DocumentEntity) {
+        return this.userRepository.Exists(query)
+    }
 }

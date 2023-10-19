@@ -3,14 +3,15 @@ import { readFile, utils } from "xlsx";
 import { FileArray, UploadedFile } from "express-fileupload";
 import CustomError from "../utils/CustomError";
 import { IDoctor } from "../interfaces/IDoctor";
+import Database from "../db/Database";
 const path = require('path')
 const fs = require('fs')
 
 export default class DoctorService {
     doctorRepository: DoctorRepository;
 
-    constructor() {
-        this.doctorRepository = new DoctorRepository();
+    constructor(db: Database) {
+        this.doctorRepository = new DoctorRepository(db);
     }
 
     async Create(body: IDoctor) {

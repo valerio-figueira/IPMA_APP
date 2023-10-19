@@ -11,6 +11,7 @@ import DependentService from "./DependentService";
 import HolderModel from "../models/HolderModel";
 import DependentModel from "../models/DependentModel";
 import MemberModel from "../models/MemberModel";
+import Database from "../db/Database";
 
 
 export default class MemberService {
@@ -20,12 +21,12 @@ export default class MemberService {
     monthlyFeeService: MonthlyFeeService;
     dependentService: DependentService;
 
-    constructor() {
-        this.memberRepository = new MemberRepository();
-        this.holderService = new HolderService()
-        this.dependentService = new DependentService()
-        this.agreementService = new AgreementService()
-        this.monthlyFeeService = new MonthlyFeeService()
+    constructor(db: Database) {
+        this.memberRepository = new MemberRepository(db);
+        this.holderService = new HolderService(db)
+        this.dependentService = new DependentService(db)
+        this.agreementService = new AgreementService(db)
+        this.monthlyFeeService = new MonthlyFeeService(db)
     }
 
     async Create(body: IMember & IMonthlyFee) {

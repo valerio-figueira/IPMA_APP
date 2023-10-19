@@ -3,12 +3,13 @@ import MonthlyFeeSchema from "../entities/MonthlyFeeEntity";
 import IMonthlyFee from "../interfaces/IMonthlyFee";
 import CustomError from "../utils/CustomError";
 import MonthlyFeeModel from "../models/MonthlyFeeModel";
+import Database from "../db/Database";
 
 export default class MonthlyFeeService {
     monthlyFeeRepository: MonthlyFeeRepository;
 
-    constructor() {
-        this.monthlyFeeRepository = new MonthlyFeeRepository();
+    constructor(db: Database) {
+        this.monthlyFeeRepository = new MonthlyFeeRepository(db);
     }
 
     async Create(body: IMonthlyFee) {

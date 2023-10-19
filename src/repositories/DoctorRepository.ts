@@ -1,12 +1,15 @@
 import DoctorModel from "../models/DoctorModel"
 import { IDoctor } from "../interfaces/IDoctor"
 import Doctors from '../json/doctors.json'
+import Database from "../db/Database"
 
 export default class DoctorRepository {
+    private db: Database
     private model
 
-    constructor() {
-        this.model = DoctorModel
+    constructor(db: Database) {
+        this.db = db
+        this.model = DoctorModel.INIT(this.db.sequelize)
     }
 
     async Create(query: IDoctor) {

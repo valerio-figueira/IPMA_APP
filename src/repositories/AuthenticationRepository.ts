@@ -6,14 +6,12 @@ import UserModel from "../models/user/UserModel";
 
 
 export default class AuthenticationRepository {
-    private db: Database
     private models
 
-    constructor() {
-        this.db = new Database()
+    constructor(db: Database) {
         this.models = {
-            Authentication: AuthenticationModel.INIT(this.db.sequelize),
-            User: UserModel.INIT(this.db.sequelize)
+            Authentication: AuthenticationModel.INIT(db.sequelize),
+            User: UserModel.INIT(db.sequelize)
         }
     }
 

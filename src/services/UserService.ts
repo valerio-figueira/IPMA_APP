@@ -5,12 +5,13 @@ import DocumentEntity from "../entities/DocumentEntity";
 import ContactEntity from "../entities/ContactEntity";
 import LocationEntity from "../entities/LocationEntity";
 import UserAttributes from "../entities/UserAttributes";
+import Database from "../db/Database";
 
 export default class UserService {
     userRepository: UserRepository;
 
-    constructor() {
-        this.userRepository = new UserRepository();
+    constructor(db: Database) {
+        this.userRepository = new UserRepository(db);
     }
 
     async Create(body: any) {

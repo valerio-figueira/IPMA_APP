@@ -3,13 +3,14 @@ import CustomError from "../utils/CustomError";
 import AuthenticationEntity from "../entities/AuthenticationEntity";
 import UserService from "./UserService";
 import IAuthentication from "../interfaces/IAuthentication";
+import Database from "../db/Database";
 
 export default class AutenticationService {
     authenticationRepository: AuthenticationRepository;
     userService: UserService;
 
-    constructor() {
-        this.authenticationRepository = new AuthenticationRepository()
+    constructor(db: Database) {
+        this.authenticationRepository = new AuthenticationRepository(db)
         this.userService = new UserService()
     }
 

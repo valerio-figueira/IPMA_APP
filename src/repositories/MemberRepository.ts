@@ -11,9 +11,9 @@ export default class MemberRepository {
     private db: Database
     private model
 
-    constructor() {
-        this.db = new Database()
-        this.model = MemberModel
+    constructor(db: Database) {
+        this.db = db
+        this.model = MemberModel.INIT(this.db.sequelize)
     }
 
     async Create(query: IMember) {

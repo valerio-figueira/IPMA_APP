@@ -8,13 +8,14 @@ import SSTBundleEntities from "../entities/SSTBundleEntities"
 import AuthenticationEntity from "../entities/AuthenticationEntity"
 import UserDataSanitizer from "../helpers/UserDataSanitizer"
 import CustomError from "../utils/CustomError"
+import Database from "../db/Database"
 
 
 class SocialSecurityTeamService {
     private sstRepository: SSTRepository
 
-    constructor() {
-        this.sstRepository = new SSTRepository()
+    constructor(db: Database) {
+        this.sstRepository = new SSTRepository(db)
     }
 
     async Create(body: any) {
