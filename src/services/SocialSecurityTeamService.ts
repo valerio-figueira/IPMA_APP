@@ -4,9 +4,10 @@ import UserEntity from "../entities/UserEntity"
 import DocumentEntity from "../entities/DocumentEntity"
 import ContactEntity from "../entities/ContactEntity"
 import LocationEntity from "../entities/LocationEntity"
-import { SST_Props } from "../interfaces/ISocialSecurityTeam"
 import SSTBundleEntities from "../entities/SSTBundleEntities"
 import AuthenticationEntity from "../entities/AuthenticationEntity"
+import UserDataSanitizer from "../helpers/UserDataSanitizer"
+import CustomError from "../utils/CustomError"
 
 
 class SocialSecurityTeamService {
@@ -16,19 +17,28 @@ class SocialSecurityTeamService {
         this.sstRepository = new SSTRepository()
     }
 
-    Create(body: SST_Props) {
+    async Create(body: any) {
+        UserDataSanitizer.sanitizeBody(body)
         const sstData = this.bundleEntities(body)
 
         return this.sstRepository.Create(sstData)
     }
 
-    ReadAll(query: string) { }
+    async ReadAll(query: string) {
+        return this.sstRepository.ReadAll(query)
+    }
 
-    ReadOne(query: string | number) { }
+    async ReadOne(query: string | number) {
+        return this.sstRepository.ReadOne(query)
+    }
 
-    Update(query: any) { }
+    async Update(query: any) {
+        return this.sstRepository.Update(query)
+    }
 
-    Delete(query: string | number) { }
+    async Delete(query: string | number) {
+        return this.sstRepository.Delete(query)
+    }
 
 
     private bundleEntities(body: any) {

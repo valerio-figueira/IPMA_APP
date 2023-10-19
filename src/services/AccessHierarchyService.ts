@@ -37,7 +37,12 @@ export default class AccessHierarchyService {
     }
 
     async Delete(hierarchy_id: string | number) {
-        return this.accessHierarchyRepository.Delete(hierarchy_id)
+        const affectedCount = await this.accessHierarchyRepository
+            .Delete(hierarchy_id)
+
+        if (!affectedCount) throw new CustomError('Não houve alterações', 400)
+        if (affectedCount === 1) return { message: `O nível hierárquico foi removido` }
+        if (affectedCount > 1) return { message: `Mais de um nível foi removido` }
     }
 
 }
