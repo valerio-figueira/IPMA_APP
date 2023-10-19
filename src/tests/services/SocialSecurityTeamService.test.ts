@@ -35,27 +35,25 @@ describe('TEST for SST service', () => {
     })
 
 
-    it('should create new member for social security team', async () => {
-
+    it('should CREATE new member in social security team', async () => {
         const response = await sstService.Create(UserMock)
         expect(response).toBeInstanceOf(Object)
     })
 
-    it('should insert another member in social security team', async () => {
-
+    it('should INSERT another member in social security team', async () => {
         const response = await sstService.Create(SSTUserMock)
         expect(response).toBeInstanceOf(Object)
     })
 
-    it('should GET a member', async () => {
-
+    it('should READ ONE member', async () => {
         const response = await sstService.ReadOne(2)
         expect(response).toBeInstanceOf(Object)
     })
 
-    it('should update a member in social security team', async () => {
+    it('should UPDATE a member in social security team', async () => {
         SSTUserMock.name = 'Nikos Papadopoulos II'
         SSTUserMock.sst_member_id = 1
+
         const response = await sstService.Update(SSTUserMock)
 
         expect(response).toBeInstanceOf(Object)
@@ -63,7 +61,7 @@ describe('TEST for SST service', () => {
         expect(response?.message).toBe('Atualizado com sucesso')
     })
 
-    it('should not update a member in social security team', async () => {
+    it('should NOT UPDATE a member in social security team', async () => {
         SSTUserMock.name = 'Nikos Papadopoulos II'
         SSTUserMock.sst_member_id = 1
 
@@ -73,5 +71,47 @@ describe('TEST for SST service', () => {
             expect(error).toBeInstanceOf(CustomError)
             expect(error.message).toBe('Não houve alterações')
         }
+    })
+
+    it('should NOT READ any member in social security team', async () => {
+        SSTUserMock.sst_member_id = 100
+
+        try {
+            await sstService.Update(SSTUserMock)
+        } catch (error: any) {
+            expect(error).toBeInstanceOf(CustomError)
+            expect(error.message).toBe('O membro não foi localizado')
+        }
+    })
+
+    it('should READ ALL members in social security team', async () => {
+        const res = await sstService.ReadAll()
+
+        expect(res).toBeInstanceOf(Array)
+        expect(res).toHaveLength(2)
+    })
+
+    it('should DELETE ONE member in social security team', async () => {
+        const res = await sstService.Delete(2)
+
+        expect(res).toHaveProperty('message')
+        expect(res?.message).toBe('Usuário removido do sistema')
+    })
+
+    it('should NOT DELETE a member in social security team', async () => {
+
+        try {
+            await sstService.Delete(100)
+        } catch (error: any) {
+            expect(error).toBeInstanceOf(CustomError)
+            expect(error.message).toBe('Não foi localizado')
+        }
+    })
+
+    it('should GET ALL members in social security team', async () => {
+        const res = await sstService.ReadAll()
+
+        expect(res).toBeInstanceOf(Array)
+        expect(res).toHaveLength(1)
     })
 })
