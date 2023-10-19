@@ -24,8 +24,8 @@ class SocialSecurityTeamService {
         return this.sstRepository.Create(sstData)
     }
 
-    async ReadAll(query: string) {
-        return this.sstRepository.ReadAll(query)
+    async ReadAll() {
+        return this.sstRepository.ReadAll()
     }
 
     async ReadOne(query: string | number) {
@@ -33,15 +33,28 @@ class SocialSecurityTeamService {
     }
 
     async Update(query: any) {
-        const [affectedCount] = await this.sstRepository.Update(query)
+        const memberFound = await this.ReadOne(query.sst_member_id)
 
-        if (!affectedCount) throw new CustomError('Não houve alterações', 400)
-        if (affectedCount === 1) return { message: 'Atualizado com sucesso' }
-        if (affectedCount > 1) return { message: 'Houve mais de uma alteração' }
+        if (!memberFound) throw new CustomError('O membro não foi localizado', 400)
+        query.user_id = memberFound.user_id
+
+        const [userAffectedCount, affectedCount] = await this.sstRepository.Update(query)
+
+        if (!affectedCount && userAffectedCount) throw new CustomError('Não houve alterações', 400)
+
+        return { message: 'Atualizado com sucesso' }
     }
 
     async Delete(query: string | number) {
-        return this.sstRepository.Delete(query)
+        const member = await this.ReadOne(query)
+
+        if (!member) throw new CustomError('Não foi localizado', 400)
+
+        const affectedCount = await this.sstRepository.Delete(member.user_id)
+
+        if (!affectedCount) throw new CustomError('Não houve nenhuma remoção', 400)
+        if (affectedCount === 1) return { message: 'Usuário removido do sistema' }
+        if (affectedCount > 1) return { message: 'Mais de um usuário foi removido' }
     }
 
 

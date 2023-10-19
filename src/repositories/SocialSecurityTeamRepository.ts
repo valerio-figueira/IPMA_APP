@@ -4,6 +4,7 @@ import { SST_Props } from "../interfaces/ISocialSecurityTeam"
 import AccessHierarchyModel from "../models/AccessHierarchyModel"
 import AuthenticationModel from "../models/AuthenticationModel"
 import SSTModel from "../models/SocialSecurityTeamModel"
+import UserModel from "../models/user/UserModel"
 import { ID } from "../types/ID"
 import CustomError from "../utils/CustomError"
 import UserRepository from "./UserRepository"
@@ -47,7 +48,7 @@ class SocialSecurityTeamRepository {
         }
     }
 
-    async ReadAll(query: any) {
+    async ReadAll() {
         return this.models.SocialSecurityTeam.findAll({
             include: Queries.IncludeUserData,
             raw: true, nest: true
@@ -69,14 +70,40 @@ class SocialSecurityTeamRepository {
     }
 
     async Update(query: any) {
-        return this.models.SocialSecurityTeam.update(query, {
-            where: {
-                sst_member_id: query.sst_member_id
-            }
-        })
+        const t = await this.db.sequelize.transaction()
+
+        try {
+            const userAffectedCount = await this.userRepository
+                .UpdateWithTransaction(query.user_id, query, t)
+
+            const [affectedCount] = await this.models.SocialSecurityTeam.update(query, {
+                where: {
+                    sst_member_id: query.sst_member_id
+                }, transaction: t
+            })
+
+            await t.commit()
+            return [userAffectedCount, affectedCount]
+        } catch (error: any) {
+            await t.rollback()
+            throw new CustomError('Não foi possível atualizar os dados', 500)
+        }
     }
 
-    async Delete(query: any) { }
+    async Delete(user_id: ID) {
+        await this.seq.sync()
+        const transaction = await this.db.sequelize.transaction()
+
+        try {
+            const affectedCount = await this.userRepository
+                .DeleteWithTransaction(user_id, transaction)
+
+            await transaction.commit()
+            return affectedCount
+        } catch (error: any) {
+            await transaction.rollback()
+        }
+    }
 }
 
 export default SocialSecurityTeamRepository

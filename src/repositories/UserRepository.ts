@@ -64,6 +64,12 @@ export default class UserRepository {
         })
     }
 
+    async ReadOneSummary(user_id: number | string) {
+        return this.models.UserModel.findByPk(user_id, {
+            plain: true, raw: true
+        })
+    }
+
     async Update(user_id: number, query: IUserAttributes) {
         const transaction = await this.db.sequelize.transaction()
 
@@ -128,19 +134,7 @@ export default class UserRepository {
     }
 
     async DeleteWithTransaction(user_id: number | string, transaction: OptionalTransaction) {
-        await this.models.DocumentModel.destroy({
-            where: { user_id }, transaction
-        });
-
-        await this.models.LocationModel.destroy({
-            where: { user_id }, transaction
-        });
-
-        await this.models.ContactModel.destroy({
-            where: { user_id }, transaction
-        });
-
-        await this.models.UserModel.destroy({
+        return this.models.UserModel.destroy({
             where: { user_id }, transaction
         });
     }
