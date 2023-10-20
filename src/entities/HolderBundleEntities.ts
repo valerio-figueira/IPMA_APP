@@ -1,6 +1,7 @@
 import IAuthentication from "../interfaces/IAuthentication";
 import { IHolderProps } from "../interfaces/IHolder";
 import IMember from "../interfaces/IMember";
+import AuthenticationEntity from "./AuthenticationEntity";
 import ContactEntity from "./ContactEntity";
 import DocumentEntity from "./DocumentEntity";
 import HolderEntity from "./HolderEntity";
@@ -19,6 +20,7 @@ class HolderBundleEntities {
     member?: MemberEntity;
 
     constructor(props: IHolderProps) {
+        this.authentication = props.authentication
         this.holder = props.holder
         this.user = props.user
         this.document = props.document
