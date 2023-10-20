@@ -9,21 +9,28 @@ import AuthenticationEntity from "../entities/AuthenticationEntity"
 import UserDataSanitizer from "../helpers/UserDataSanitizer"
 import CustomError from "../utils/CustomError"
 import Database from "../db/Database"
+import { validateUser } from "../utils/decorators/validateBody"
+import UserService from "./UserService"
+import SSTErrors from "../utils/errors/SocialSecurityErrors"
+
 
 
 class SocialSecurityTeamService {
     private sstRepository: SSTRepository
+    private userService: UserService
 
     constructor(db: Database) {
         this.sstRepository = new SSTRepository(db)
+        this.userService = new UserService(db)
     }
 
 
 
-
+    @validateUser('SSTeam')
     async Create(body: any) {
         UserDataSanitizer.sanitizeBody(body)
         const sstData = this.bundleEntities(body)
+        await this.userService.Exists(sstData.document)
 
         return this.sstRepository.Create(sstData)
     }
@@ -44,18 +51,18 @@ class SocialSecurityTeamService {
 
 
 
-
+    @validateUser('SSTeam')
     async Update(query: any) {
         const memberFound = await this.ReadOne(query.sst_member_id)
 
-        if (!memberFound) throw new CustomError('O membro não foi localizado', 400)
+        if (!memberFound) throw new CustomError(SSTErrors.NotFound, 400)
         query.user_id = memberFound.user_id
 
         const [userAffectedCount, affectedCount] = await this.sstRepository.Update(query)
 
-        if (!affectedCount && userAffectedCount) throw new CustomError('Não houve alterações', 400)
+        if (!affectedCount && userAffectedCount) throw new CustomError(SSTErrors.NotAffected, 400)
 
-        return { message: 'Atualizado com sucesso' }
+        return { message: SSTErrors.UpdatedSuccessfully }
     }
 
 
@@ -64,13 +71,13 @@ class SocialSecurityTeamService {
     async Delete(query: string | number) {
         const member = await this.ReadOne(query)
 
-        if (!member) throw new CustomError('Não foi localizado', 400)
+        if (!member) throw new CustomError(SSTErrors.NotFound, 400)
 
         const affectedCount = await this.sstRepository.Delete(member.user_id)
 
-        if (!affectedCount) throw new CustomError('Não houve nenhuma remoção', 400)
-        if (affectedCount === 1) return { message: 'Usuário removido do sistema' }
-        if (affectedCount > 1) return { message: 'Mais de um usuário foi removido' }
+        if (!affectedCount) throw new CustomError(SSTErrors.NotRemoved, 400)
+        if (affectedCount === 1) return { message: SSTErrors.Removed }
+        if (affectedCount > 1) return { message: SSTErrors.MultipleDelete }
     }
 
 
