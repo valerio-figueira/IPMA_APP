@@ -16,9 +16,15 @@ export default class MemberRepository {
         this.model = MemberModel.INIT(this.db.sequelize)
     }
 
+
+
+
     async Create(query: IMember) {
         return this.model.create(query, { raw: true })
     }
+
+
+
 
     async ReadAll(query: any) {
         const page = query.page || 1;
@@ -47,6 +53,9 @@ export default class MemberRepository {
         })
     }
 
+
+
+
     async ReadOne(subscription_id: string | number) {
         return HolderModel.findOne({
             include: [{
@@ -66,11 +75,17 @@ export default class MemberRepository {
         })
     }
 
+
+
+
     async Update(body: IMember) {
         return this.model.update(body, {
             where: { member_id: body.member_id }
         })
     }
+
+
+
 
     async Delete(body: IMember) {
         return this.model.destroy({
@@ -82,6 +97,9 @@ export default class MemberRepository {
         })
     }
 
+
+
+
     async ifMemberExists(query: IMember, dependent_id: number | null = null) {
         return this.model.findOne({
             where: {
@@ -91,6 +109,9 @@ export default class MemberRepository {
             }
         })
     }
+
+
+
 
     async updateExclusionOfDependents(query: IMember) {
         const transaction = await this.db.sequelize.transaction()

@@ -87,8 +87,6 @@ export default class HolderService {
         if (!holderData.holder) throw new CustomError('Falha ao processar os dados do titular', 400)
 
         if (holderData.authentication) {
-            // SE O TITULAR NÃO POSSUI AUTENTICAÇÃO, ENTÃO FAÇA AQUI
-            await this.checkHolderAuthentication(holderData)
             await this.checkPermissionLevel(body.hierarchy_id)
         }
 
@@ -118,14 +116,7 @@ export default class HolderService {
     }
 
 
-    private async checkHolderAuthentication(body: HolderBundleEntities) {
-        if (!body.authentication?.authentication_id) return
 
-        const holder = await this.ReadOne(body.holder.holder_id!)
-        const authID = holder.authentication?.authentication_id
-
-        if (authID) body.authentication.authentication_id = authID
-    }
 
 
     private async userExists(user_id: number) {
@@ -134,6 +125,8 @@ export default class HolderService {
 
         if (!userInfo) throw new CustomError('Dados de usuário inválido', 404)
     }
+
+
 
 
     private async checkPermissionLevel(hierarchy_id: number) {

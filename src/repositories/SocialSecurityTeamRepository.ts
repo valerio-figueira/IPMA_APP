@@ -28,6 +28,9 @@ class SocialSecurityTeamRepository {
         }
     }
 
+
+
+
     async Create(body: SST_Props) {
         const t = await this.db.sequelize.transaction()
 
@@ -49,12 +52,18 @@ class SocialSecurityTeamRepository {
         }
     }
 
+
+
+
     async ReadAll() {
         return this.models.SocialSecurityTeam.findAll({
             include: Queries.IncludeUserData,
             raw: true, nest: true
         })
     }
+
+
+
 
     async ReadOne(query: ID) {
         return this.models.SocialSecurityTeam.findByPk(query, {
@@ -63,12 +72,18 @@ class SocialSecurityTeamRepository {
         })
     }
 
+
+
+
     async ReadOneSummary(query: ID) {
         return this.models.SocialSecurityTeam.findByPk(query, {
             include: Queries.IncludeUserDataSummary,
             raw: true, nest: true
         })
     }
+
+
+
 
     async Update(query: any) {
         const t = await this.db.sequelize.transaction()
@@ -90,6 +105,9 @@ class SocialSecurityTeamRepository {
             throw new CustomError('Não foi possível atualizar os dados', 500)
         }
     }
+
+
+
 
     async Delete(user_id: ID) {
         await this.seq.sync()

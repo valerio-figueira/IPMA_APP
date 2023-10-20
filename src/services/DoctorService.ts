@@ -14,9 +14,15 @@ export default class DoctorService {
         this.doctorRepository = new DoctorRepository(db);
     }
 
+
+
+
     async Create(body: IDoctor) {
         return this.doctorRepository.Create(body)
     }
+
+
+
 
     async BulkCreate() {
         const doctors = await this.doctorRepository.BulkCreate()
@@ -28,13 +34,22 @@ export default class DoctorService {
         return { message: 'Os médicos foram registrados no sistema' }
     }
 
+
+
+
     async ReadAll(query: any) {
         return this.doctorRepository.ReadAll(query)
     }
 
+
+
+
     async ReadOne(id_doctor: string | number) {
         return this.doctorRepository.ReadOne(id_doctor)
     }
+
+
+
 
     async Update(query: IDoctor) {
         if (!query.doctor_id) throw new CustomError('Insira o código de identificação', 400)
@@ -50,6 +65,9 @@ export default class DoctorService {
         return doctor
     }
 
+
+
+
     async Delete(id_doctor: string | number) {
         const doctor = await this.doctorRepository.ReadOne(id_doctor);
 
@@ -61,6 +79,9 @@ export default class DoctorService {
 
         return { message: `${doctor.doctor_name} foi removido do sistema` }
     }
+
+
+
 
     async ExtractData(files: FileArray | undefined | null) {
         if (!files || Object.keys(files).length === 0) throw new CustomError('Nenhuma planilha foi enviada', 400)
@@ -88,6 +109,9 @@ export default class DoctorService {
         }
     }
 
+
+
+
     createJsonFromTable(columns: any, rows: any[]) {
         return rows.slice(1).map((row: any) => {
             const doctor: Record<string, any> = {};
@@ -101,16 +125,19 @@ export default class DoctorService {
         });
     }
 
+
+
+
     replaceColumnName(column: string) {
         if (column.match(/Código\sPrestador/gi)) return 'provider_code'
         if (column.match(/Nome\sPrestador/gi)) return 'doctor_name'
         if (column.match(/Endereço/gi)) return 'address'
-        if(column.match(/Especialidade/gi)) return 'speciality'
-        if(column.match(/Localidade/gi)) return 'location'
-        if(column.match(/CEP/gi)) return 'zip_code'
-        if(column.match(/Bairro/gi)) return 'neighborhood'
-        if(column.match(/Cidade/gi)) return 'city'
-        if(column.match(/Telefone/gi)) return 'phone_number'
+        if (column.match(/Especialidade/gi)) return 'speciality'
+        if (column.match(/Localidade/gi)) return 'location'
+        if (column.match(/CEP/gi)) return 'zip_code'
+        if (column.match(/Bairro/gi)) return 'neighborhood'
+        if (column.match(/Cidade/gi)) return 'city'
+        if (column.match(/Telefone/gi)) return 'phone_number'
         return column.toLowerCase()
     }
 

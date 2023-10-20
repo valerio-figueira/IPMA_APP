@@ -12,9 +12,14 @@ export default class DoctorRepository {
         this.model = DoctorModel.INIT(this.db.sequelize)
     }
 
+
+
     async Create(query: IDoctor) {
         return await this.model.create(query, { raw: true })
     }
+
+
+
 
     async BulkCreate() {
         const doctors: IDoctor[] | null = Doctors
@@ -22,6 +27,9 @@ export default class DoctorRepository {
         if (doctors) return await this.model.bulkCreate(doctors)
         else return null
     }
+
+
+
 
     async ReadAll(query: any) {
         const whereClause: any = {}
@@ -35,6 +43,9 @@ export default class DoctorRepository {
         })
     }
 
+
+
+
     async ReadOne(id_doctor: string | number) {
         return this.model.findOne({
             where: { doctor_id: id_doctor },
@@ -42,11 +53,17 @@ export default class DoctorRepository {
         })
     }
 
+
+
+
     async Update(query: IDoctor) {
         return this.model.update(query, {
             where: { doctor_id: query.doctor_id }
         })
     }
+
+
+
 
     async Delete(id_doctor: string | number) {
         return this.model.destroy({

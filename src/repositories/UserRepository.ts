@@ -28,6 +28,9 @@ export default class UserRepository {
         }
     }
 
+
+
+
     async Create(query: IUserAttributes) {
         const transaction = await this.db.sequelize.transaction()
 
@@ -39,12 +42,18 @@ export default class UserRepository {
         }
     }
 
+
+
+
     async ReadAll() {
         return this.models.UserModel.findAll({
             include: Queries.IncludeUserData,
             raw: true
         })
     }
+
+
+
 
     async ReadOne(user_id: ID) {
         return this.models.UserModel.findByPk(user_id, {
@@ -68,11 +77,18 @@ export default class UserRepository {
         })
     }
 
+
+
+
     async ReadOneSummary(user_id: ID) {
         return this.models.UserModel.findByPk(user_id, {
             plain: true, raw: true
         })
     }
+
+
+
+
 
     async Update(user_id: number, query: IUserAttributes) {
         const transaction = await this.db.sequelize.transaction()
@@ -85,6 +101,10 @@ export default class UserRepository {
         }
     }
 
+
+
+
+
     async Delete(user_id: ID) {
         const transaction = await this.db.sequelize.transaction()
 
@@ -95,6 +115,9 @@ export default class UserRepository {
             throw new CustomError('Não foi possível remover os dados do usuário', 500)
         }
     }
+
+
+
 
     async CreateWithTransaction(query: IUserAttributes, transaction: Transaction) {
         const user = await this.models.UserModel
@@ -112,6 +135,9 @@ export default class UserRepository {
         return { user, document, contact, location }
     }
 
+
+
+
     async UpdateWithTransaction(user_id: number, query: IUserAttributes, transaction: Transaction) {
         const [user] = await this.models.UserModel
             .update(query.user, {
@@ -120,8 +146,7 @@ export default class UserRepository {
             })
 
         const [authentication] = await this.UpdateUserAuthentication(query, transaction)
-            console.log(authentication)
-            console.log(query)
+
         const [contact] = await this.models.ContactModel
             .update(query.contact, {
                 where: { user_id }, transaction
@@ -140,11 +165,17 @@ export default class UserRepository {
         return this.checkAffectedCount({ user, contact, document, location, authentication })
     }
 
+
+
+
     async DeleteWithTransaction(user_id: ID, transaction: OptionalTransaction) {
         return this.models.UserModel.destroy({
             where: { user_id }, transaction
         });
     }
+
+
+
 
     async Exists(query: DocumentEntity) {
         const whereClause: any = { cpf: query.cpf }
@@ -155,20 +186,47 @@ export default class UserRepository {
         })
     }
 
+
+
+
     private async UpdateUserAuthentication(query: IUserAttributes, transaction: Transaction) {
         if (!query.authentication) return [0]
 
-        return this.models.Authentication
+        const [affectedCount] = await this.models.Authentication
             .update(query.authentication, {
                 where: { user_id: query.user.user_id }, transaction
             })
+
+        if (affectedCount) return [affectedCount]
+        return this.CreateUserAuthIfNotExists(query, transaction)
     }
+
+
+
+
+    private async CreateUserAuthIfNotExists(query: IUserAttributes, transaction: Transaction) {
+        const authID = query.authentication?.authentication_id
+        if (!authID) {
+            const auth = await this.models.Authentication
+                .create(query.authentication, { transaction })
+
+            if (auth) return [1]
+        }
+
+        return [0]
+    }
+
+
+
 
     private insertIdValues(data: IUserAttributes, user_id: number) {
         for (let key in data) {
             data[key].user_id = user_id
         }
     }
+
+
+
 
     private checkAffectedCount(data: any) {
         for (let entry in data) {

@@ -14,6 +14,8 @@ export default class UserService {
         this.userRepository = new UserRepository(db);
     }
 
+
+
     async Create(body: any) {
         const user = new UserEntity(body)
         const document = new DocumentEntity(body)
@@ -28,13 +30,22 @@ export default class UserService {
         }
     }
 
+
+
+
     async ReadAll() {
         return this.userRepository.ReadAll()
     }
 
+
+
+
     async ReadOne(user_id: string | number) {
         return this.userRepository.ReadOne(user_id)
     }
+
+
+
 
     async Update(body: any) {
         const user = new UserEntity(body)
@@ -49,6 +60,9 @@ export default class UserService {
             throw new CustomError('Não foi possível registrar o usuário', 400)
         }
     }
+
+
+
 
     async Delete(user_id: string | number) {
         return this.userRepository.Delete(user_id)

@@ -12,6 +12,9 @@ export default class MonthlyFeeService {
         this.monthlyFeeRepository = new MonthlyFeeRepository(db);
     }
 
+
+
+
     async Create(body: IMonthlyFee) {
         const billing = new MonthlyFeeSchema(body)
 
@@ -26,31 +29,50 @@ export default class MonthlyFeeService {
         return createdBilling
     }
 
+
+
+
+
     async ReadAll(query: any) {
         return this.monthlyFeeRepository.ReadAll(query);
     }
+
+
+
 
     async ReadOne(billing_id: string | number) {
         return this.monthlyFeeRepository.ReadOne(billing_id);
     }
 
+
+
+
     async Update() {
         return this.monthlyFeeRepository.Update();
     }
 
+
+
+
     async Delete(billing_id: string | number) {
         const affectedCount = await this.monthlyFeeRepository.Delete(billing_id)
 
-        if(affectedCount === 0) throw new CustomError('Não houve alterações', 400)
-        if(affectedCount === 1) return { message: `Houve ${affectedCount} alteração.` }
-        if(affectedCount > 1) return { message: `Houve ${affectedCount} alterações.` }
+        if (affectedCount === 0) throw new CustomError('Não houve alterações', 400)
+        if (affectedCount === 1) return { message: `Houve ${affectedCount} alteração.` }
+        if (affectedCount > 1) return { message: `Houve ${affectedCount} alterações.` }
     }
+
+
+
 
     verifyDate(billing: IMonthlyFee) {
         if (!billing.reference_date) billing.reference_date = new Date(Date.now())
         if (!billing.reference_year) billing.reference_year = new Date().getFullYear()
         if (!billing.reference_month) billing.reference_month = new Date().getMonth()
     }
+
+
+
 
     async findDuplicateBilling(body: IMonthlyFee) {
         const billing: any = await MonthlyFeeModel.findOne({

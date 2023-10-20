@@ -9,13 +9,20 @@ export default class AccessHierarchyRepository {
         this.model = AccessHierarchyModel.INIT(db.sequelize)
     }
 
+
+
     async Create(query: IAccessHierarchy) {
         return this.model.create(query, { raw: true })
     }
 
+
+
     async ReadAll() {
         return this.model.findAll({ raw: true })
     }
+
+
+
 
     async ReadOne(hierarchy_id: string | number) {
         return this.model.findOne({
@@ -23,17 +30,25 @@ export default class AccessHierarchyRepository {
         })
     }
 
+
+
+
     async Update(query: IAccessHierarchy) {
         return this.model.update(query, {
             where: { hierarchy_id: query.hierarchy_id }
         })
     }
 
+
+
     async Delete(hierarchy_id: string | number) {
         return this.model.destroy({
             where: { hierarchy_id }
         })
     }
+
+
+
 
     async Exists(query: IAccessHierarchy) {
         const whereClause: any = { level_name: query.level_name }

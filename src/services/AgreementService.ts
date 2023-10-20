@@ -6,17 +6,25 @@ import AgreementModel from "../models/AgreementModel";
 import Database from "../db/Database";
 
 export default class AgreementService {
-   private agreementRepository: AgreementRepository;
+    private agreementRepository: AgreementRepository;
 
     constructor(db: Database) {
         this.agreementRepository = new AgreementRepository(db);
     }
+
+
+
+
 
     async Create(body: IAgreement) {
         const agreement = new AgreementSchema(body);
 
         return this.agreementRepository.Create(agreement);
     }
+
+
+
+
 
     async ReadAll() {
         const agreement = await this.agreementRepository.ReadAll();
@@ -26,6 +34,10 @@ export default class AgreementService {
         return agreement;
     }
 
+
+
+
+
     async ReadOne(agreement_id: string | number) {
         const contract = await this.agreementRepository.ReadOne(agreement_id);
 
@@ -33,6 +45,10 @@ export default class AgreementService {
 
         return contract
     }
+
+
+
+
 
     async Update(body: IAgreement) {
         const agreement = new AgreementSchema(body);
@@ -45,6 +61,10 @@ export default class AgreementService {
 
         return await AgreementModel.findByPk(agreement.agreement_id)
     }
+
+
+
+
 
     async Delete(body: IAgreement) {
         if (!body.agreement_id) throw new CustomError('Convênio não localizado', 404)

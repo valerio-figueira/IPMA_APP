@@ -19,6 +19,9 @@ export default class DependentRepository {
         this.model = DependentModel
     }
 
+
+
+
     async Create(query: IUserAttributes) {
         const t: Transaction = await this.db.sequelize.transaction();
 
@@ -39,6 +42,9 @@ export default class DependentRepository {
         }
     }
 
+
+
+
     async ReadAll(holder: string) {
         return this.model.findAll({
             where: { holder_id: holder },
@@ -47,6 +53,9 @@ export default class DependentRepository {
             raw: true, nest: true
         })
     }
+
+
+
 
     async ReadOne(holder: string | number, dependent_id: string | number) {
         return this.model.findOne({
@@ -57,6 +66,9 @@ export default class DependentRepository {
         })
     }
 
+
+
+
     async ReadOneSummary(holder: string | number, dependent_id: string | number) {
         return this.model.findOne({
             where: { holder_id: holder, dependent_id },
@@ -66,9 +78,19 @@ export default class DependentRepository {
         })
     }
 
+
+
+
     async Update() { }
 
+
+
+
     async Delete() { }
+
+
+
+
 
     createNestedObj(data: any[]) {
         return {

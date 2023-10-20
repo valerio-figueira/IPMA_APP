@@ -21,10 +21,15 @@ export default class MonthlyFeeRepository {
         }
     }
 
+
+
     async Create(query: IMonthlyFee) {
         return this.models.MonthlyFee
             .create(query, { raw: true })
     }
+
+
+
 
     async ReadAll(query: any) {
         const month = new Date().getMonth();
@@ -44,6 +49,9 @@ export default class MonthlyFeeRepository {
             raw: true, nest: true
         })
     }
+
+
+
 
     async ReadOne(monthly_fee_id: string | number) {
         return this.models.Member.findOne({
@@ -68,7 +76,13 @@ export default class MonthlyFeeRepository {
         })
     }
 
+
+
+
     async Update() { }
+
+
+
 
     async Delete(monthly_fee_id: string | number) {
         return this.models.MonthlyFee

@@ -11,13 +11,22 @@ export default class AgreementRepository {
         this.model = AgreementModel.INIT(this.db.sequelize)
     }
 
+
+
+
     async Create(query: IAgreement) {
         return this.model.create(query, { raw: true })
     }
 
+
+
+
     async ReadAll() {
         return this.model.findAll({ raw: true })
     }
+
+
+
 
     async ReadOne(agreement_id: string | number) {
         return this.model.findOne({
@@ -26,11 +35,17 @@ export default class AgreementRepository {
         })
     }
 
+
+
+
     async Update(query: IAgreement) {
         return this.model.update(query, {
             where: { agreement_id: query.agreement_id }
         })
     }
+
+
+
 
     async Delete(query: IAgreement) {
         return this.model.destroy({

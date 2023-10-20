@@ -15,9 +15,15 @@ export default class AuthenticationRepository {
         }
     }
 
+
+
+
     async Create(query: IAuthentication) {
         return this.models.Authentication.create(query, { raw: true })
     }
+
+
+
 
     async ReadAll(query: any) {
         return this.models.Authentication.findAll({
@@ -25,6 +31,9 @@ export default class AuthenticationRepository {
             raw: true, nest: true
         })
     }
+
+
+
 
     async ReadOne(authentication_id: string | number) {
         return this.models.Authentication.findOne({
@@ -35,11 +44,17 @@ export default class AuthenticationRepository {
         })
     }
 
+
+
+
     async Update(query: IAuthentication) {
         return this.models.Authentication.update(query, {
             where: { authentication_id: query.authentication_id }
         })
     }
+
+
+
 
     async Delete(authentication_id: string | number) {
         return this.models.Authentication.destroy({

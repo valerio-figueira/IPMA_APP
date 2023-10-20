@@ -21,6 +21,9 @@ export default class DependentService {
         this.holderRepository = new HolderRepository(db);
     }
 
+
+
+
     async Create(body: any) {
         UserDataSanitizer.sanitizeBody(body)
         const dependentData = this.bundleEntities(body)
@@ -31,6 +34,9 @@ export default class DependentService {
 
         return await this.dependentRepository.Create(dependentData)
     }
+
+
+
 
     async ReadAll(holder: string) {
         const dependents: any[] = await this.dependentRepository
@@ -55,19 +61,34 @@ export default class DependentService {
         return Object.values(holderData)
     }
 
+
+
+
     async ReadOne(holder: ID, dependent_id: ID) {
         return this.dependentRepository
             .ReadOne(holder, dependent_id);
     }
+
+
+
 
     async ReadOneSummary(holder: ID, dependent_id: ID) {
         return this.dependentRepository
             .ReadOneSummary(holder, dependent_id);
     }
 
+
+
+
     async Update() { }
 
+
+
+
     async Delete() { }
+
+
+
 
     private bundleEntities(body: any) {
         return new DependentBundleEntities({

@@ -11,6 +11,9 @@ export default class AccessHierarchyService {
         this.accessHierarchyRepository = new AccessHierarchyRepository(db);
     }
 
+
+
+
     async Create(body: IAccessHierarchy) {
         const hierarchyFound = await this.accessHierarchyRepository
             .Exists(body)
@@ -20,6 +23,9 @@ export default class AccessHierarchyService {
         return this.accessHierarchyRepository.Create(body)
     }
 
+
+
+
     async ReadAll() {
         const hierarchies = await this.accessHierarchyRepository.ReadAll()
         const hierarchyTree = new AccessHierarchyTree(hierarchies)
@@ -27,9 +33,15 @@ export default class AccessHierarchyService {
         return hierarchyTree.buildHierarchyTree()
     }
 
+
+
+
     async ReadOne(hierarchy_id: string | number) {
         return this.accessHierarchyRepository.ReadOne(hierarchy_id)
     }
+
+
+
 
     async Update(body: IAccessHierarchy) {
         if (!body.hierarchy_id) throw new CustomError('É preciso ter a identificação', 400)
@@ -41,6 +53,9 @@ export default class AccessHierarchyService {
         return this.accessHierarchyRepository
             .ReadOne(body.hierarchy_id)
     }
+
+
+
 
     async Delete(hierarchy_id: string | number) {
         const affectedCount = await this.accessHierarchyRepository

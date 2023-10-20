@@ -29,6 +29,9 @@ export default class MemberService {
         this.monthlyFeeService = new MonthlyFeeService(db)
     }
 
+
+
+
     async Create(body: IMember & IMonthlyFee) {
         const dependent = await this.findDependent(body)
         await this.checkIfExists(body, dependent)
@@ -52,6 +55,10 @@ export default class MemberService {
         return { message: `${name} agora é conveniado(a) da ${agreement.agreement_name}` }
     }
 
+
+
+
+
     async ReadAll(query: any) {
         const subscriptions: MemberModel[] = await this.memberRepository.ReadAll(query);
 
@@ -72,6 +79,10 @@ export default class MemberService {
         return response
     }
 
+
+
+
+
     async ReadOne(subscription_id: string | number) {
         const data = await this.memberRepository.ReadOne(subscription_id);
 
@@ -79,6 +90,10 @@ export default class MemberService {
 
         return UserDataSanitizer.sanitizeQuery(data);
     }
+
+
+
+
 
     async Update(body: IMember) {
         const subscription = new MemberSchema(body)
@@ -107,6 +122,10 @@ export default class MemberService {
         }
     }
 
+
+
+
+
     async Delete(body: IMember) {
         const holder = await this.findHolder(body)
         const agreement = await this.findAgreement(body)
@@ -116,6 +135,10 @@ export default class MemberService {
 
         return { message: `${holder.user!.name} foi removido(a) do convênio ${agreement.agreement_name}` }
     }
+
+
+
+
 
     private async findDependent(body: IMember) {
         if (!body.dependent_id) return
@@ -127,6 +150,10 @@ export default class MemberService {
         return dependent
     }
 
+
+
+
+
     private async findHolder(body: IMember) {
         const holder: HolderModel = await this.holderService.ReadOne(body.holder_id)
 
@@ -135,6 +162,10 @@ export default class MemberService {
         return holder
     }
 
+
+
+
+
     private async findAgreement(body: IMember) {
         const agreement = await this.agreementService.ReadOne(body.agreement_id);
 
@@ -142,6 +173,9 @@ export default class MemberService {
 
         return agreement;
     }
+
+
+
 
     private async checkIfExists(body: IMember, dependent: DependentModel | undefined) {
         if (dependent) {
@@ -154,11 +188,17 @@ export default class MemberService {
         if (member) throw new CustomError(`O titular já existe na base de dados`, 400)
     }
 
+
+
+
     private async checkIfMemberExists(body: IMember) {
         const member = await this.memberRepository.ReadOne(body.member_id!)
 
         if (!member) throw new CustomError(`O conveniado não existe`, 400)
     }
+
+
+
 
     private async addUsersToResponse(subscriptions: MemberModel[]) {
         const holders: Record<number, any> = {}
@@ -170,7 +210,7 @@ export default class MemberService {
 
             if (!holders[holderID]) {
                 const holder = await this.holderService.ReadOneSummary(holderID)
-                holder['subscriptions'] = {}
+                //holder['subscriptions'] = {}
                 holders[holderID] = holder
                 index = 1
             }

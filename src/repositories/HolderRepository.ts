@@ -27,6 +27,9 @@ export default class HolderRepository {
         }
     }
 
+
+
+
     async Create(query: IUserAttributes) {
         const t: Transaction = await this.db.sequelize.transaction();
 
@@ -44,6 +47,9 @@ export default class HolderRepository {
         }
     }
 
+
+
+
     async ReadAll() {
         return this.models.Holder
             .findAll({
@@ -51,6 +57,9 @@ export default class HolderRepository {
                 raw: true, nest: true
             })
     }
+
+
+
 
     async ReadOne(holder_id: string | number) {
         return this.models.Holder
@@ -60,6 +69,9 @@ export default class HolderRepository {
             })
     }
 
+
+
+
     async ReadOneSummary(holder_id: string | number) {
         return this.models.Holder
             .findByPk(holder_id, {
@@ -67,6 +79,9 @@ export default class HolderRepository {
                 raw: true, nest: true
             })
     }
+
+
+
 
     async Update(query: IUserAttributes) {
         const t: Transaction = await this.db.sequelize.transaction();
@@ -77,7 +92,7 @@ export default class HolderRepository {
 
             const [holderResult] = await this.UpdateHolderInfo(query, t)
 
-            //if (!userResult && !holderResult) throw new CustomError(`Nenhum dado foi alterado para ${query.user.name}`, 400)
+            if (!userResult && !holderResult) throw new CustomError(`Nenhum dado foi alterado para ${query.user.name}`, 400)
 
             await t.commit()
 
@@ -87,6 +102,9 @@ export default class HolderRepository {
             throw new CustomError(error.message || 'Não foi possível atualizar os dados do usuário', error.status || 500)
         }
     }
+
+
+
 
     async Delete(holder_id: string) {
         const t: Transaction = await this.db.sequelize.transaction();
@@ -129,6 +147,9 @@ export default class HolderRepository {
         }
     }
 
+
+
+
     private async UpdateHolderInfo(query: any, transaction: Transaction) {
         return this.models.Holder
             .update(query.holder!, {
@@ -137,9 +158,15 @@ export default class HolderRepository {
             })
     }
 
+
+
+
     async verifyIfUserExists(user_id: number) {
         return this.userRepository.ReadOneSummary(user_id)
     }
+
+
+
 
     async Exists(query: DocumentEntity) {
         return this.userRepository.Exists(query)

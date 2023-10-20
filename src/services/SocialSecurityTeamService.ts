@@ -18,6 +18,9 @@ class SocialSecurityTeamService {
         this.sstRepository = new SSTRepository(db)
     }
 
+
+
+
     async Create(body: any) {
         UserDataSanitizer.sanitizeBody(body)
         const sstData = this.bundleEntities(body)
@@ -25,13 +28,22 @@ class SocialSecurityTeamService {
         return this.sstRepository.Create(sstData)
     }
 
+
+
+
     async ReadAll() {
         return this.sstRepository.ReadAll()
     }
 
+
+
+
     async ReadOne(query: string | number) {
         return this.sstRepository.ReadOne(query)
     }
+
+
+
 
     async Update(query: any) {
         const memberFound = await this.ReadOne(query.sst_member_id)
@@ -46,6 +58,9 @@ class SocialSecurityTeamService {
         return { message: 'Atualizado com sucesso' }
     }
 
+
+
+
     async Delete(query: string | number) {
         const member = await this.ReadOne(query)
 
@@ -57,6 +72,9 @@ class SocialSecurityTeamService {
         if (affectedCount === 1) return { message: 'Usuário removido do sistema' }
         if (affectedCount > 1) return { message: 'Mais de um usuário foi removido' }
     }
+
+
+
 
 
     private bundleEntities(body: any) {

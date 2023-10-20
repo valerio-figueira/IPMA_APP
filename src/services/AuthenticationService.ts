@@ -5,14 +5,17 @@ import UserService from "./UserService";
 import IAuthentication from "../interfaces/IAuthentication";
 import Database from "../db/Database";
 
-export default class AutenticationService {
+export default class AuthenticationService {
     authenticationRepository: AuthenticationRepository;
     userService: UserService;
 
+
     constructor(db: Database) {
         this.authenticationRepository = new AuthenticationRepository(db)
-        this.userService = new UserService()
+        this.userService = new UserService(db)
     }
+
+
 
     async Create(body: any) {
         const authSchema = new AuthenticationEntity(body)
@@ -33,13 +36,22 @@ export default class AutenticationService {
         }
     }
 
+
+
+
     async ReadAll(query: any) {
         return this.authenticationRepository.ReadAll(query)
     }
 
+
+
+
     async ReadOne(auth_id: string | number) {
         return this.authenticationRepository.ReadOne(auth_id)
     }
+
+
+
 
     async Update(query: IAuthentication) {
         if (!query.authentication_id) throw new CustomError('É necessário a identificação', 400)
@@ -50,6 +62,9 @@ export default class AutenticationService {
 
         return this.ReadOne(query.authentication_id)
     }
+
+
+
 
     async Delete(auth_id: string | number) {
         return this.authenticationRepository.Delete(auth_id)
