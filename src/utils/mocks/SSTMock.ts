@@ -24,7 +24,7 @@ export const UserMock = {
 }
 
 export const SSTUserMock = {
-    "sst_member_id": undefined as undefined | number,
+    "sst_member_id": null as null | number,
     "role": "Administrador(a)",
     "name": "Nikos Papadopoulos",
     "gender": "Masculino",

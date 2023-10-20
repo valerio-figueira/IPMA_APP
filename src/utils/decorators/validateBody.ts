@@ -11,10 +11,9 @@ export function validateUser(userType: string) {
             if (typeof param !== 'object') {
                 throw new Error(`Validation failed, parameter must be an object.`);
             }
-            console.log("DECORATOR PARAMS")
-            console.log(param)
 
             if (userType === 'Holder') validateStatus(param.status)
+            if (userType === 'SSTeam') validateRole(param.role)
             validateStringOrNumber(param)
             validateCPF(param.cpf)
             validateDate(param.birth_date)
@@ -67,4 +66,12 @@ function validateStatus(value: string) {
     if (value === 'LICENÇA') return
 
     throw new CustomError('Status inválido', 400)
+}
+
+function validateRole(value: string) {
+    if (typeof value !== 'string') throw new CustomError('Formato inválido', 400)
+    if (value === '') throw new CustomError('Insira o cargo', 400)
+    if (value.length < 4) throw new CustomError('Insira um cargo válido', 400)
+
+    return
 }
