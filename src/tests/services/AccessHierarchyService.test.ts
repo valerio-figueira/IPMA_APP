@@ -5,11 +5,11 @@ import CustomError from '../../utils/CustomError'
 import Database from '../../db/Database'
 
 
-const accessHierarchyService = new AccessHierarchyService()
+const db = new Database()
+const accessHierarchyService = new AccessHierarchyService(db)
 
 describe('TEST for Access Hierarchy Service', () => {
     beforeAll(async () => {
-        const db = new Database()
         await db.syncModels()
         await db.clearDatabase()
     })

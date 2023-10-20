@@ -4,6 +4,7 @@ import { UserMock, SSTUserMock } from '../../utils/mocks/SSTMock'
 import AccessHierarchyService from '../../services/AccessHierarchyService'
 import Database from '../../db/Database'
 import CustomError from '../../utils/CustomError'
+import SSTErrors from '../../utils/errors/SocialSecurityErrors'
 
 const db = new Database()
 const sstService = new SocialSecurityTeamService(db)
@@ -34,9 +35,29 @@ describe('TEST for SST service', () => {
     })
 
 
+    it('should NOT CREATE new member in social security team with no role', async () => {
+        UserMock.role = ''
+
+        try {
+            expect(await sstService.Create(UserMock)).toThrowError(CustomError)
+        } catch (error: any) {
+            expect(error.message).toBe('Insira o cargo')
+        }
+    })
+
+
     it('should CREATE new member in social security team', async () => {
+        UserMock.role = 'Administrador(a)'
         const response = await sstService.Create(UserMock)
         expect(response).toBeInstanceOf(Object)
+    })
+
+    it('should NOT CREATE new member in social security team if already exists', async () => {
+        try {
+            expect(await sstService.Create(UserMock)).toThrowError(CustomError)
+        } catch (error: any) {
+            expect(error.message).toBe('Usuário já existe na base de dados')
+        }
     })
 
     it('should INSERT another member in social security team', async () => {
@@ -57,7 +78,7 @@ describe('TEST for SST service', () => {
 
         expect(response).toBeInstanceOf(Object)
         expect(response).toHaveProperty('message')
-        expect(response?.message).toBe('Atualizado com sucesso')
+        expect(response?.message).toBe(SSTErrors.UpdatedSuccessfully)
     })
 
     it('should NOT UPDATE a member in social security team', async () => {
@@ -68,7 +89,7 @@ describe('TEST for SST service', () => {
             await sstService.Update(SSTUserMock)
         } catch (error: any) {
             expect(error).toBeInstanceOf(CustomError)
-            expect(error.message).toBe('Não houve alterações')
+            expect(error.message).toBe(SSTErrors.NotAffected)
         }
     })
 
@@ -79,7 +100,7 @@ describe('TEST for SST service', () => {
             await sstService.Update(SSTUserMock)
         } catch (error: any) {
             expect(error).toBeInstanceOf(CustomError)
-            expect(error.message).toBe('O membro não foi localizado')
+            expect(error.message).toBe(SSTErrors.NotFound)
         }
     })
 
@@ -94,7 +115,7 @@ describe('TEST for SST service', () => {
         const res = await sstService.Delete(2)
 
         expect(res).toHaveProperty('message')
-        expect(res?.message).toBe('Usuário removido do sistema')
+        expect(res?.message).toBe(SSTErrors.Removed)
     })
 
     it('should NOT DELETE a member in social security team', async () => {
@@ -103,7 +124,7 @@ describe('TEST for SST service', () => {
             await sstService.Delete(100)
         } catch (error: any) {
             expect(error).toBeInstanceOf(CustomError)
-            expect(error.message).toBe('Não foi localizado')
+            expect(error.message).toBe(SSTErrors.NotFound)
         }
     })
 

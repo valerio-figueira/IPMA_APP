@@ -5,11 +5,11 @@ import Database from '../../db/Database'
 import IAgreement from '../../interfaces/IAgreement'
 import CustomError from '../../utils/CustomError'
 
-const agreementService = new AgreementService()
+const db = new Database()
+const agreementService = new AgreementService(db)
 
 describe('TEST for Access Hierarchy Service', () => {
     beforeAll(async () => {
-        const db = new Database()
         await db.syncModels()
         await db.clearDatabase()
     })
