@@ -76,4 +76,12 @@ export default class UserService {
             throw new CustomError('Usuário já existe na base de dados', 400)
     }
 
+    async throwErrorIfNotExists(user_id: string | number) {
+        const userFound = await this.userRepository
+            .ExistsById(user_id)
+
+        if (!userFound)
+            throw new CustomError('Identificação de usuário inválida', 400)
+    }
+
 }

@@ -4,43 +4,42 @@ import AuthenticationEntity from "../entities/AuthenticationEntity";
 import UserService from "./UserService";
 import IAuthentication from "../interfaces/IAuthentication";
 import Database from "../db/Database";
+import { BadRequest } from "../utils/messages/APIResponse";
+import AccessHierarchyService from "./AccessHierarchyService";
+import { validate } from "../utils/decorators/validateBody";
+
 
 export default class AuthenticationService {
     authenticationRepository: AuthenticationRepository;
+    accessHierarchyService: AccessHierarchyService;
     userService: UserService;
 
 
     constructor(db: Database) {
         this.authenticationRepository = new AuthenticationRepository(db)
+        this.accessHierarchyService = new AccessHierarchyService(db)
         this.userService = new UserService(db)
     }
 
 
+    @validate
+    async Create(body: AuthenticationEntity) {
+        const authEntity = new AuthenticationEntity(body)
 
-    async Create(body: any) {
-        const authSchema = new AuthenticationEntity(body)
+        if (!authEntity.user_id || !authEntity.hierarchy_id)
+            throw new CustomError(BadRequest.MESSAGE, BadRequest.STATUS)
 
-        if (!authSchema.user_id) {
-            const { user } = await this.userService.Create(body);
-            authSchema.user_id = user.user_id;
-        }
+        // THE USER IS HOLDER, DEPENDENT OR MEMBER OF ORGANIZATION?
 
-        const auth = await this.authenticationRepository.Create(authSchema);
 
-        if (auth) {
-            const userName = (await this.userService.ReadOne(authSchema.user_id))?.name;
-            if (!userName) {
-                throw new CustomError('Usuário não foi encontrado', 400);
-            }
-            return this.authenticationRepository.ReadOne(auth.authentication_id)
-        }
+        return this.authenticationRepository.Create(authEntity)
     }
 
 
 
 
-    async ReadAll(query: any) {
-        return this.authenticationRepository.ReadAll(query)
+    async ReadAll() {
+        return this.authenticationRepository.ReadAll()
     }
 
 
