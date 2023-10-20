@@ -4,13 +4,12 @@ import HolderModel from "../models/HolderModel";
 import Database from "../db/Database";
 import CustomError from '../utils/CustomError';
 import { Transaction } from 'sequelize';
-import UserModel from "../models/user/UserModel";
 import Queries from "../db/Queries";
 import MemberModel from "../models/MemberModel";
-import DependentModel from "../models/DependentModel";
 import AccessHierarchyModel from "../models/AccessHierarchyModel";
 import AuthenticationModel from "../models/AuthenticationModel";
 import DocumentEntity from "../entities/DocumentEntity";
+import RES from "../utils/messages/HolderResponses";
 
 export default class HolderRepository {
     private db: Database;
@@ -43,7 +42,7 @@ export default class HolderRepository {
             return this.ReadOne(holder.holder_id)
         } catch (error: any) {
             await t.rollback();
-            throw new CustomError(`Erro ao criar o titular: ${error}`, 500)
+            throw new CustomError(RES.ServerError, 500)
         }
     }
 
@@ -92,14 +91,14 @@ export default class HolderRepository {
 
             const [holderResult] = await this.UpdateHolderInfo(query, t)
 
-            if (!userResult && !holderResult) throw new CustomError(`Nenhum dado foi alterado para ${query.user.name}`, 400)
+            if (!userResult && !holderResult) throw new CustomError(RES.NotAffected, 400)
 
             await t.commit()
 
             return this.ReadOne(query.holder!.holder_id!)
         } catch (error: any) {
             await t.rollback()
-            throw new CustomError(error.message || 'Não foi possível atualizar os dados do usuário', error.status || 500)
+            throw new CustomError(RES.NotAffected, 500)
         }
     }
 
@@ -127,7 +126,7 @@ export default class HolderRepository {
             return { message: `O titular foi removido com todas as suas dependências` }
         } catch (error: any) {
             await t.rollback();
-            throw new CustomError(`Falha ao remover titular: ${error.message}`, 500)
+            throw new CustomError(RES.NotRemoved, 500)
         }
     }
 
@@ -140,19 +139,5 @@ export default class HolderRepository {
                 where: { user_id: query.user.user_id },
                 transaction
             })
-    }
-
-
-
-
-    async verifyIfUserExists(user_id: number) {
-        return this.userRepository.ReadOneSummary(user_id)
-    }
-
-
-
-
-    async Exists(query: DocumentEntity) {
-        return this.userRepository.Exists(query)
     }
 }
