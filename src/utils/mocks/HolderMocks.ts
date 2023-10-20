@@ -1,4 +1,6 @@
 export const firstHolder = {
+    "holder_id": 1,
+    "user_id": 1,
     "name": "Maria Konstantopoulos",
     "gender": "Feminino",
     "marital_status": "Casada",
@@ -21,34 +23,6 @@ export const firstHolder = {
     "subscription_number": 16
 }
 
-export const firstHolderWithAuth = {
-    "holder_id": 1,
-    "user_id": 1,
-    "name": "Maria Konstantopoulos",
-    "gender": "Feminino",
-    "marital_status": "Casada",
-    "birth_date": "1980-12-05",
-    "father_name": "Nikos Konstantopoulos",
-    "mother_name": "Sophia Rhodes",
-    "phone_number": "21 8765-4321",
-    "residential_phone": "21 6666-7777",
-    "email": "maria@email.gr",
-    "address": "Aegean Avenue",
-    "number": 72,
-    "neighborhood": "Mykonos",
-    "city": "Athens",
-    "state": "GR",
-    "cpf": "987.654.321-09",
-    "identity": "AG-543210",
-    "issue_date": "2003-10-18",
-    "health_card": "123456789012345",
-    "status": "ATIVO(A)",
-    "subscription_number": 16,
-    "hierarchy_id": 4,
-    "username": "MariaK",
-    "password": "supersenha10",
-    "user_photo": ""
-}
 
 export const secondHolder = {
     "name": "Giulia Bianchi",
@@ -78,7 +52,8 @@ export const secondHolder = {
 }
 
 export const thirdHolder = {
-    "holder_id": null as null | number,
+    "user_id": 3,
+    "holder_id": 3,
     "name": "Nikos Papadopoulos",
     "gender": "Masculino",
     "marital_status": "Solteiro",
