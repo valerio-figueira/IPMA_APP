@@ -9,8 +9,8 @@ import HolderBundleEntities from "../entities/HolderBundleEntities";
 import HolderEntity from "../entities/HolderEntity";
 import MemberEntity from "../entities/MemberEntity";
 import AccessHierarchyService from "./AccessHierarchyService";
-import AuthenticationEntity from "../entities/AuthenticationEntity";
 import Database from "../db/Database";
+import { validateBody } from "../utils/decorators/validateBody";
 
 
 export default class HolderService {
@@ -24,24 +24,11 @@ export default class HolderService {
 
 
 
-    async Create(body: any) {
+    async Create(@validateBody body: any) {
         UserDataSanitizer.sanitizeBody(body)
         const holderData = this.bundleEntities(body)
-        const authID = holderData.authentication?.hierarchy_id
-        const username = holderData.authentication?.username
-        const password = holderData.authentication?.password
 
         await this.checkIfHolderExists(holderData.document)
-
-        if (authID && username && password) {
-            await this.checkPermissionLevel(authID)
-        } else {
-            delete holderData.authentication
-        }
-
-        console.log('BODY!!!!!!!!')
-        console.log(holderData)
-        // SET MEMBER IF HOLDER'LL BE MEMBER OF ANY AGREEMENT
 
         return this.holderRepository.Create(holderData)
     }
@@ -85,17 +72,12 @@ export default class HolderService {
     async Update(body: any) {
         UserDataSanitizer.sanitizeBody(body)
         const holderData = this.bundleEntities(body)
-        const authID = holderData.authentication?.hierarchy_id
         const holderID = holderData.holder.holder_id
         const userID = holderData.user.user_id
 
         if (holderID) await this.ReadOne(holderID)
         if (userID) await this.userExists(userID)
         if (!holderData.holder) throw new CustomError('Falha ao processar os dados do titular', 400)
-
-        if (authID) {
-            await this.checkPermissionLevel(authID)
-        }
 
         return this.holderRepository.Update(holderData)
     }
@@ -114,7 +96,6 @@ export default class HolderService {
 
     private bundleEntities(body: any) {
         return new HolderBundleEntities({
-            authentication: new AuthenticationEntity(body),
             holder: new HolderEntity(body),
             user: new UserEntity(body),
             document: new DocumentEntity(body),

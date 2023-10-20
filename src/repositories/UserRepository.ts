@@ -9,7 +9,6 @@ import CustomError from "../utils/CustomError";
 import UserModel from "../models/user/UserModel";
 import { ID } from "../types/ID";
 import DocumentEntity from "../entities/DocumentEntity";
-import AuthenticationModel from "../models/AuthenticationModel";
 
 type OptionalTransaction = Transaction | undefined;
 
@@ -20,7 +19,6 @@ export default class UserRepository {
     constructor(database: Database) {
         this.db = database
         this.models = {
-            Authentication: AuthenticationModel,
             UserModel: UserModel.INIT(this.db.sequelize),
             DocumentModel: DocumentModel.INIT(this.db.sequelize),
             LocationModel: LocationModel.INIT(this.db.sequelize),
@@ -125,11 +123,6 @@ export default class UserRepository {
 
         this.insertIdValues(query, user.user_id);
 
-        if (query.authentication) {
-            await this.models.Authentication
-                .create(query.authentication, { transaction, raw: true })
-        }
-
         await this.models.DocumentModel
             .create(query.document, { transaction, raw: true });
         await this.models.ContactModel
@@ -148,8 +141,6 @@ export default class UserRepository {
                 transaction
             })
 
-        const [authentication] = await this.UpdateUserAuthentication(query, transaction)
-
         const [contact] = await this.models.ContactModel
             .update(query.contact, {
                 where: { user_id }, transaction
@@ -165,7 +156,7 @@ export default class UserRepository {
                 where: { user_id }, transaction
             })
 
-        return this.checkAffectedCount({ user, contact, document, location, authentication })
+        return this.checkAffectedCount({ user, contact, document, location })
     }
 
 
@@ -192,39 +183,10 @@ export default class UserRepository {
 
 
 
-    private async UpdateUserAuthentication(query: IUserAttributes, transaction: Transaction) {
-        if (!query.authentication) return [0]
 
-        const [affectedCount] = await this.models.Authentication
-            .update(query.authentication, {
-                where: { user_id: query.user.user_id }, transaction
-            })
-
-        if (affectedCount) return [affectedCount]
-        return this.CreateUserAuthIfNotExists(query, transaction)
-    }
-
-
-
-
-    private async CreateUserAuthIfNotExists(query: IUserAttributes, transaction: Transaction) {
-        const authID = query.authentication?.authentication_id
-        if (!authID) {
-            const auth = await this.models.Authentication
-                .create(query.authentication, { transaction })
-
-            if (auth) return [1]
-        }
-
-        return [0]
-    }
-
-
-
-
-    private insertIdValues(data: IUserAttributes, user_id: number) {
+    private insertIdValues(data: Record<string, any>, user_id: number) {
         for (let key in data) {
-            data[key].user_id = user_id
+            if (typeof data[key] === 'object') data[key].user_id = user_id
         }
     }
 

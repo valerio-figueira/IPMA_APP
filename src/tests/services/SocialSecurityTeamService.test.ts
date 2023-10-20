@@ -5,12 +5,11 @@ import AccessHierarchyService from '../../services/AccessHierarchyService'
 import Database from '../../db/Database'
 import CustomError from '../../utils/CustomError'
 
-
-const sstService = new SocialSecurityTeamService()
-const accessHierarchyService = new AccessHierarchyService()
+const db = new Database()
+const sstService = new SocialSecurityTeamService(db)
+const accessHierarchyService = new AccessHierarchyService(db)
 
 const resetDB = async () => {
-    const db = new Database()
     await db.syncModels()
     await db.clearDatabase()
 }

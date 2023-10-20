@@ -20,7 +20,6 @@ class HolderBundleEntities {
     member?: MemberEntity;
 
     constructor(props: IHolderProps) {
-        this.authentication = props.authentication
         this.holder = props.holder
         this.user = props.user
         this.document = props.document
@@ -29,7 +28,7 @@ class HolderBundleEntities {
     }
 
     setAuthentication(auth: IAuthentication) {
-        this.authentication = auth
+        this.authentication = new AuthenticationEntity(auth)
     }
 
     setMember(member: IMember) {

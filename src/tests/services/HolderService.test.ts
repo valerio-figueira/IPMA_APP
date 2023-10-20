@@ -2,7 +2,7 @@ import 'jest'
 import Database from '../../db/Database'
 import AccessHierarchyService from '../../services/AccessHierarchyService'
 import HolderService from '../../services/HolderService'
-import { firstHolder, firstHolderWithAuth, secondHolder, thirdHolder } from '../../utils/mocks/HolderMocks'
+import { firstHolder, secondHolder, thirdHolder } from '../../utils/mocks/HolderMocks'
 import CustomError from '../../utils/CustomError'
 
 const db = new Database()
@@ -90,22 +90,22 @@ describe('TEST for Holder Service layer', () => {
 
 
 
-    it('should NOT CREATE holder with high level permission', async () => {
-        try {
-            await holderService.Create(thirdHolder)
-        } catch (error: any) {
-            expect(error).toBeInstanceOf(CustomError)
-            expect(error.message).toBe('Todo titular deve ser um usuário comum')
-        }
+    it('should CREATE holder', async () => {
+        const res = await holderService.Create(thirdHolder)
+        expect(res).toBeInstanceOf(Object)
+        expect(res?.user?.name).toBe('Nikos Papadopoulos'.toUpperCase())
     })
 
 
 
-    it('should CREATE holder with common permissions', async () => {
-        thirdHolder.hierarchy_id = 4
-        const res = await holderService.Create(thirdHolder)
-
-        expect(res).toBeInstanceOf(Object)
+    it('should NOT CREATE new holder', async () => {
+        try {
+            expect(await holderService.Create(thirdHolder))
+                .toThrowError(CustomError)
+        } catch (error: any) {
+            expect(error).toBeInstanceOf(CustomError)
+            expect(error.message).toBe('Titular já existe na base de dados')
+        }
     })
 
 
@@ -157,21 +157,20 @@ describe('TEST for Holder Service layer', () => {
 
 
 
-    it('should UPDATE ONE holder with authentication permission', async () => {
-        const res = await holderService.Update(firstHolderWithAuth)
+    it('should UPDATE ONE holder', async () => {
+        firstHolder.name = 'Maria Konstantopoulos I'
+        const res = await holderService.Update(firstHolder)
         expect(res).toBeInstanceOf(Object)
         expect(res).toHaveProperty('user')
-        expect(res!.user?.name).toBe('Maria Konstantopoulos'.toLocaleUpperCase())
-        expect(res!.user).toHaveProperty('authentication')
-        expect(res?.user?.authentication).toHaveProperty('username')
-        expect(res?.user?.authentication.username).toBe('MariaK')
+        expect(res!.user?.name).toBe('Maria Konstantopoulos I'.toLocaleUpperCase())
     })
 
 
 
     it('should NOT UPDATE ONE holder if holder ID doesnt match any', async () => {
         try {
-            await holderService.Update({ holder_id: 999 })
+            expect(await holderService.Update({ holder_id: 999 }))
+                .toThrowError(CustomError)
         } catch (error: any) {
             expect(error).toBeInstanceOf(CustomError)
             expect(error.message).toBe('Nenhum registro encontrado!')
@@ -182,7 +181,8 @@ describe('TEST for Holder Service layer', () => {
 
     it('should NOT UPDATE ONE holder if body is empty', async () => {
         try {
-            await holderService.Update({ holder_id: 3, user_id: 999 })
+            expect(await holderService.Update({ holder_id: 3, user_id: 999 }))
+                .toThrowError(CustomError)
         } catch (error: any) {
             expect(error).toBeInstanceOf(CustomError)
             expect(error.message).toBe('Dados de usuário inválido')
