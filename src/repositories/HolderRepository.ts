@@ -106,41 +106,25 @@ export default class HolderRepository {
 
 
 
-    async Delete(holder_id: string) {
+    async Delete(holder: HolderModel) {
         const t: Transaction = await this.db.sequelize.transaction();
 
         try {
-            const holder = await this.ReadOneSummary(holder_id)
-            const user_id = holder!['user_id']
-            const user = await UserModel.findByPk(user_id, { raw: true })
-            const dependents = await DependentModel.findAll({
-                where: { holder_id }
-            })
-
-            if (dependents.length > 0) {
-                for (let dependent of dependents) {
-                    await MemberModel.destroy({
-                        where: { holder_id },
-                        transaction: t,
-                    })
-
-                    await DependentModel.destroy({
-                        where: { dependent_id: dependent.dependent_id },
-                        transaction: t,
-                    })
-                }
-            }
-
-            await this.models.Holder.destroy({
-                where: { user_id },
+            await MemberModel.destroy({
+                where: { holder_id: holder.holder_id },
                 transaction: t,
             })
 
-            await this.userRepository.DeleteWithTransaction((user_id as number), t)
+            await this.models.Holder.destroy({
+                where: { user_id: holder.user_id },
+                transaction: t,
+            })
+
+            await this.userRepository.DeleteWithTransaction(holder.user_id, t)
 
             await t.commit()
 
-            return { message: `O usuário ${user?.name} foi removido juntamente com todas as suas dependências` }
+            return { message: `O titular foi removido com todas as suas dependências` }
         } catch (error: any) {
             await t.rollback();
             throw new CustomError(`Falha ao remover titular: ${error.message}`, 500)

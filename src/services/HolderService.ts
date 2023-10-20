@@ -27,15 +27,21 @@ export default class HolderService {
     async Create(body: any) {
         UserDataSanitizer.sanitizeBody(body)
         const holderData = this.bundleEntities(body)
+        const authID = holderData.authentication?.hierarchy_id
+        const username = holderData.authentication?.username
+        const password = holderData.authentication?.password
 
         await this.checkIfHolderExists(holderData.document)
 
-        if (body.username && body.password) {
-            await this.checkPermissionLevel(body.hierarchy_id)
-            holderData.setAuthentication(body)
+        if (authID && username && password) {
+            await this.checkPermissionLevel(authID)
+        } else {
+            delete holderData.authentication
         }
 
-        // SET MEMBER IF IT'LL BE A MEMBER OF ANY AGREEMENT
+        console.log('BODY!!!!!!!!')
+        console.log(holderData)
+        // SET MEMBER IF HOLDER'LL BE MEMBER OF ANY AGREEMENT
 
         return this.holderRepository.Create(holderData)
     }
@@ -79,6 +85,7 @@ export default class HolderService {
     async Update(body: any) {
         UserDataSanitizer.sanitizeBody(body)
         const holderData = this.bundleEntities(body)
+        const authID = holderData.authentication?.hierarchy_id
         const holderID = holderData.holder.holder_id
         const userID = holderData.user.user_id
 
@@ -86,8 +93,8 @@ export default class HolderService {
         if (userID) await this.userExists(userID)
         if (!holderData.holder) throw new CustomError('Falha ao processar os dados do titular', 400)
 
-        if (holderData.authentication) {
-            await this.checkPermissionLevel(body.hierarchy_id)
+        if (authID) {
+            await this.checkPermissionLevel(authID)
         }
 
         return this.holderRepository.Update(holderData)
@@ -96,8 +103,10 @@ export default class HolderService {
 
 
 
-    async Delete(holder_id: string) {
-        return this.holderRepository.Delete(holder_id);
+    async Delete(holder_id: string | number) {
+        const holder = await this.ReadOneSummary(holder_id)
+
+        return this.holderRepository.Delete(holder);
     }
 
 

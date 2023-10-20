@@ -125,14 +125,17 @@ export default class UserRepository {
 
         this.insertIdValues(query, user.user_id);
 
-        const document = await this.models.DocumentModel
-            .create(query.document, { transaction, raw: true });
-        const contact = await this.models.ContactModel
-            .create(query.contact, { transaction, raw: true });
-        const location = await this.models.LocationModel
-            .create(query.location, { transaction, raw: true });
+        if (query.authentication) {
+            await this.models.Authentication
+                .create(query.authentication, { transaction, raw: true })
+        }
 
-        return { user, document, contact, location }
+        await this.models.DocumentModel
+            .create(query.document, { transaction, raw: true });
+        await this.models.ContactModel
+            .create(query.contact, { transaction, raw: true });
+        await this.models.LocationModel
+            .create(query.location, { transaction, raw: true });
     }
 
 
