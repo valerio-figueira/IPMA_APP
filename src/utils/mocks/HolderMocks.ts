@@ -107,3 +107,26 @@ export const fourthHolder = {
     "password": "senhaGrega123",
     "user_photo": ""
 }
+
+export const fifthHolder = {
+    "name": "Luca Moretti",
+    "gender": "Maschio",
+    "marital_status": "Celibe",
+    "birth_date": "1990-08-20",
+    "father_name": "Antonio Moretti",
+    "mother_name": "Giulia Rossi",
+    "phone_number": "333-123-4567",
+    "residential_phone": "06-9876-5432",
+    "email": "luca@email.it",
+    "address": "Via Veneto",
+    "number": 45,
+    "neighborhood": "Trastevere",
+    "city": "Roma",
+    "state": "RM",
+    "cpf": "123.456.789-01",
+    "identity": "RM-987654",
+    "issue_date": "2010-06-15",
+    "health_card": "456789012345678",
+    "status": "ATIVO(A)",
+    "subscription_number": 32
+}

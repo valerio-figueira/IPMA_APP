@@ -2,7 +2,7 @@ import 'jest'
 import Database from '../../db/Database'
 import AccessHierarchyService from '../../services/AccessHierarchyService'
 import HolderService from '../../services/HolderService'
-import { firstHolder, secondHolder, thirdHolder } from '../../utils/mocks/HolderMocks'
+import { fifthHolder, firstHolder, secondHolder, thirdHolder } from '../../utils/mocks/HolderMocks'
 import CustomError from '../../utils/CustomError'
 
 const db = new Database()
@@ -98,13 +98,26 @@ describe('TEST for Holder Service layer', () => {
 
 
 
-    it('should NOT CREATE new holder', async () => {
+    it('should NOT CREATE new holder if exists', async () => {
         try {
             expect(await holderService.Create(thirdHolder))
                 .toThrowError(CustomError)
         } catch (error: any) {
             expect(error).toBeInstanceOf(CustomError)
             expect(error.message).toBe('Titular já existe na base de dados')
+        }
+    })
+
+
+
+    it('should NOT CREATE new holder with invalid CPF', async () => {
+        fifthHolder.cpf = '9991'
+        try {
+            expect(await holderService.Create(fifthHolder))
+                .toThrowError(CustomError)
+        } catch (error: any) {
+            expect(error).toBeInstanceOf(CustomError)
+            expect(error.message).toBe('CPF inválido')
         }
     })
 
@@ -169,7 +182,13 @@ describe('TEST for Holder Service layer', () => {
 
     it('should NOT UPDATE ONE holder if holder ID doesnt match any', async () => {
         try {
-            expect(await holderService.Update({ holder_id: 999 }))
+            expect(await holderService.Update({
+                holder_id: 999,
+                status: 'ATIVO(A)',
+                cpf: '132.256.988-55',
+                birth_date: '',
+                issue_date: ''
+            }))
                 .toThrowError(CustomError)
         } catch (error: any) {
             expect(error).toBeInstanceOf(CustomError)
@@ -181,7 +200,14 @@ describe('TEST for Holder Service layer', () => {
 
     it('should NOT UPDATE ONE holder if body is empty', async () => {
         try {
-            expect(await holderService.Update({ holder_id: 3, user_id: 999 }))
+            expect(await holderService.Update({
+                holder_id: 3,
+                user_id: 999,
+                status: 'APOSENTADO(A)',
+                cpf: '159.657.258-88',
+                birth_date: '',
+                issue_date: ''
+            }))
                 .toThrowError(CustomError)
         } catch (error: any) {
             expect(error).toBeInstanceOf(CustomError)
