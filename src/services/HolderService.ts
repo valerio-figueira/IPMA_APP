@@ -10,13 +10,16 @@ import HolderEntity from "../entities/HolderEntity";
 import MemberEntity from "../entities/MemberEntity";
 import Database from "../db/Database";
 import { validateUser } from "../utils/decorators/validateBody";
+import UserService from "./UserService";
 
 
 export default class HolderService {
     holderRepository: HolderRepository
+    userService: UserService
 
     constructor(db: Database) {
         this.holderRepository = new HolderRepository(db)
+        this.userService = new UserService(db)
     }
 
 
@@ -25,7 +28,7 @@ export default class HolderService {
         UserDataSanitizer.sanitizeBody(body)
         const holderData = this.bundleEntities(body)
 
-        await this.checkIfHolderExists(holderData.document)
+        await this.userService.Exists(holderData.document)
 
         return this.holderRepository.Create(holderData)
     }
@@ -73,7 +76,7 @@ export default class HolderService {
         const userID = holderData.user.user_id
 
         if (holderID) await this.ReadOne(holderID)
-        if (userID) await this.userExists(userID)
+        if (userID) await this.userService.throwErrorIfNotExists(userID)
         if (!holderData.holder) throw new CustomError('Falha ao processar os dados do titular', 400)
 
         return this.holderRepository.Update(holderData)
@@ -100,30 +103,6 @@ export default class HolderService {
             location: new LocationEntity(body),
             member: new MemberEntity(body)
         })
-    }
-
-
-
-
-
-    private async userExists(user_id: number) {
-        const userInfo = await this.holderRepository
-            .verifyIfUserExists(user_id)
-
-        if (!userInfo) throw new CustomError('Dados de usuário inválido', 404)
-    }
-
-
-
-
-
-    private async checkIfHolderExists(document: DocumentEntity) {
-        const holderFounded = await this.holderRepository
-            .Exists(document)
-
-        if (!holderFounded) return
-
-        throw new CustomError('Titular já existe na base de dados', 400)
     }
 
 }
