@@ -1,6 +1,7 @@
 import Database from "../db/Database";
 import Queries from "../db/Queries";
 import IAuthentication from "../interfaces/IAuthentication";
+import AccessHierarchyModel from "../models/AccessHierarchyModel";
 import AuthenticationModel from "../models/AuthenticationModel";
 import UserModel from "../models/user/UserModel";
 
@@ -10,8 +11,9 @@ export default class AuthenticationRepository {
 
     constructor(db: Database) {
         this.models = {
+            AccessHierarchy: AccessHierarchyModel.INIT(db.sequelize),
+            User: UserModel.INIT(db.sequelize),
             Authentication: AuthenticationModel.INIT(db.sequelize),
-            User: UserModel.INIT(db.sequelize)
         }
     }
 
@@ -19,13 +21,15 @@ export default class AuthenticationRepository {
 
 
     async Create(query: IAuthentication) {
-        return this.models.Authentication.create(query, { raw: true })
+        const auth = await this.models.Authentication.create(query, { raw: true })
+
+        return this.models.Authentication.findByPk(auth.user_id)
     }
 
 
 
 
-    async ReadAll(query: any) {
+    async ReadAll() {
         return this.models.Authentication.findAll({
             include: Queries.IncludeHierarchyAndUser,
             raw: true, nest: true
