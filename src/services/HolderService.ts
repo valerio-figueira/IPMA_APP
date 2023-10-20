@@ -8,23 +8,20 @@ import UserDataSanitizer from "../helpers/UserDataSanitizer";
 import HolderBundleEntities from "../entities/HolderBundleEntities";
 import HolderEntity from "../entities/HolderEntity";
 import MemberEntity from "../entities/MemberEntity";
-import AccessHierarchyService from "./AccessHierarchyService";
 import Database from "../db/Database";
-import { validateBody } from "../utils/decorators/validateBody";
+import { validateUser } from "../utils/decorators/validateBody";
 
 
 export default class HolderService {
     holderRepository: HolderRepository
-    accessHierarchyService: AccessHierarchyService
 
     constructor(db: Database) {
         this.holderRepository = new HolderRepository(db)
-        this.accessHierarchyService = new AccessHierarchyService(db)
     }
 
 
-
-    async Create(@validateBody body: any) {
+    @validateUser('Holder')
+    async Create(body: any) {
         UserDataSanitizer.sanitizeBody(body)
         const holderData = this.bundleEntities(body)
 
@@ -68,7 +65,7 @@ export default class HolderService {
 
 
 
-
+    @validateUser('Holder')
     async Update(body: any) {
         UserDataSanitizer.sanitizeBody(body)
         const holderData = this.bundleEntities(body)
@@ -116,18 +113,6 @@ export default class HolderService {
         if (!userInfo) throw new CustomError('Dados de usuário inválido', 404)
     }
 
-
-
-
-    private async checkPermissionLevel(hierarchy_id: number) {
-        const permissionLevel = await this.accessHierarchyService
-            .ReadOne(hierarchy_id)
-
-        if (!permissionLevel) throw new CustomError('Nível de permissão não encontrado', 400)
-        if (permissionLevel.level_name !== 'Common_User') {
-            throw new CustomError('Todo titular deve ser um usuário comum', 400)
-        }
-    }
 
 
 
