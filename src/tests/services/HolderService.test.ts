@@ -84,7 +84,7 @@ describe('TEST for Holder Service layer', () => {
             await holderService.Create(secondHolder)
         } catch (error: any) {
             expect(error).toBeInstanceOf(CustomError)
-            expect(error.message).toBe('Titular já existe na base de dados')
+            expect(error.message).toBe('Usuário já existe na base de dados')
         }
     })
 
@@ -104,7 +104,7 @@ describe('TEST for Holder Service layer', () => {
                 .toThrowError(CustomError)
         } catch (error: any) {
             expect(error).toBeInstanceOf(CustomError)
-            expect(error.message).toBe('Titular já existe na base de dados')
+            expect(error.message).toBe('Usuário já existe na base de dados')
         }
     })
 
@@ -198,7 +198,7 @@ describe('TEST for Holder Service layer', () => {
 
 
 
-    it('should NOT UPDATE ONE holder if body is empty', async () => {
+    it('should NOT UPDATE ONE holder if user ID is invalid', async () => {
         try {
             expect(await holderService.Update({
                 holder_id: 3,
@@ -211,7 +211,7 @@ describe('TEST for Holder Service layer', () => {
                 .toThrowError(CustomError)
         } catch (error: any) {
             expect(error).toBeInstanceOf(CustomError)
-            expect(error.message).toBe('Dados de usuário inválido')
+            expect(error.message).toBe('Identificação de usuário inválida')
         }
     })
 
