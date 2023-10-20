@@ -2,7 +2,6 @@ import { Model, DataTypes, ModelStatic } from 'sequelize';
 import IAuthentication from '../interfaces/IAuthentication';
 import UserModel from './user/UserModel';
 import AccessHierarchyModel from './AccessHierarchyModel';
-import IAccessHierarchy from '../interfaces/IAccessHierarchy';
 import { TAuthenticationModel } from '../types/TModels';
 
 class AuthenticationModel extends Model<IAuthentication> {
@@ -12,7 +11,6 @@ class AuthenticationModel extends Model<IAuthentication> {
     declare username: string;
     declare password: string;
     declare user_photo: string | null;
-    declare hierarchy: IAccessHierarchy;
     declare created_at: Date;
 
     static INIT(sequelize: any)
