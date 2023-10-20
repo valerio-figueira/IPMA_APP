@@ -182,6 +182,12 @@ export default class UserRepository {
 
 
 
+    async ExistsById(user_id: string | number) {
+        return this.models.UserModel.findByPk(user_id)
+    }
+
+
+
 
 
     private insertIdValues(data: Record<string, any>, user_id: number) {
