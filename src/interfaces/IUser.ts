@@ -3,6 +3,7 @@ import { IDependentBase } from "./IDependent";
 import { IHolderBase } from "./IHolder";
 import ISocialSecurityTeam from "./ISocialSecurityTeam";
 import IAuthentication from "./IAuthentication";
+import IAccessHierarchy from "./IAccessHierarchy";
 
 export interface IUser {
     user_id?: number;
@@ -57,4 +58,27 @@ export interface IUserAttributes {
     member?: IMember
     authentication?: IAuthentication
     [key: string]: any;
+}
+
+export interface UserNestedProps {
+    user_id?: number;
+    name: string;
+    gender: 'MASCULINO' | 'FEMININO' | 'OUTRO';
+    marital_status: string | null;
+    birth_date: Date | null;
+    father_name: string | null;
+    mother_name: string | null;
+    authentication: {
+        authentication_id?: number;
+        user_id?: number;
+        hierarchy_id: number;
+        username: string;
+        password: string;
+        user_photo: string;
+        hierarchy: IAccessHierarchy
+    }
+    document: IDocument
+    location: ILocation
+    contact: IContact
+    member: IMember
 }
