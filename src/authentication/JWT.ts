@@ -56,7 +56,7 @@ export default class JWT {
             const user = {
                 user_id: userFound!.user_id,
                 username: userFound!.username,
-                role: userFound!.hierarchy?.level_name
+                role: userFound!.hierarchy_id
             };
             const token = jwt.sign({ user }, this.SECRET_KEY, { expiresIn: '1h' });
 
