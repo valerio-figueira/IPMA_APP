@@ -5,10 +5,11 @@ import LocationEntity from "./LocationEntity";
 import SocialSecurityTeamEntity from "./SocialSecurityTeamEntity";
 import UserEntity from "./UserEntity";
 import { SST_Props } from "../interfaces/ISocialSecurityTeam";
+import AuthenticationEntity from "./AuthenticationEntity";
 
 
 class SSTBundleEntities {
-    authentication: IAuthentication
+    authentication?: IAuthentication
     user: UserEntity
     document: DocumentEntity
     contact: ContactEntity
@@ -16,12 +17,15 @@ class SSTBundleEntities {
     sstEntity: SocialSecurityTeamEntity
 
     constructor(props: SST_Props) {
-        this.authentication = props.authentication
         this.user = props.user
         this.document = props.document
         this.contact = props.contact
         this.location = props.location
         this.sstEntity = props.sstEntity
+    }
+
+    setAuthentication(auth: AuthenticationEntity) {
+        this.authentication = auth
     }
 }
 
