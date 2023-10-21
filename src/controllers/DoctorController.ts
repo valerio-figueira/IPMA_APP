@@ -1,21 +1,20 @@
 import { Request, Response } from "express";
 import DoctorService from "../services/DoctorService";
-import Controller from "../utils/decorators/ControllerDecorator";
-import { Delete, Get, Post, Put } from "../utils/decorators/HandlersDecorator";
 import Database from "../db/Database";
 
 
-@Controller('/api/v1/doctors')
+
 class DoctorController {
     private doctorService: DoctorService
     private db: Database
 
-    constructor() {
-        this.db = new Database()
+    constructor(database: Database) {
+        this.db = database
         this.doctorService = new DoctorService(this.db)
     }
 
-    @Post('/')
+
+
     async Create(req: Request, res: Response) {
         try {
             res.status(201).json(await this.doctorService.Create(req.body))
@@ -24,7 +23,8 @@ class DoctorController {
         }
     }
 
-    @Post('/bulk-create')
+
+
     async BulkCreate(req: Request, res: Response) {
         try {
             res.status(201).json(await this.doctorService.BulkCreate())
@@ -33,7 +33,8 @@ class DoctorController {
         }
     }
 
-    @Get('/')
+
+
     async ReadAll(req: Request, res: Response) {
         try {
             res.status(200).json(await this.doctorService.ReadAll(req.query))
@@ -42,7 +43,8 @@ class DoctorController {
         }
     }
 
-    @Get('/:id')
+
+
     async ReadOne(req: Request, res: Response) {
         try {
             res.status(200).json(await this.doctorService.ReadOne(req.params.id))
@@ -51,7 +53,8 @@ class DoctorController {
         }
     }
 
-    @Put('/')
+
+
     async Update(req: Request, res: Response) {
         try {
             res.status(200).json(await this.doctorService.Update(req.body))
@@ -60,7 +63,8 @@ class DoctorController {
         }
     }
 
-    @Delete('/:id')
+
+
     async Delete(req: Request, res: Response) {
         try {
             res.status(200).json(await this.doctorService.Delete(req.params.id))
@@ -69,7 +73,8 @@ class DoctorController {
         }
     }
 
-    @Post('/extract-data')
+
+
     async ExtractData(req: Request, res: Response) {
         try {
             res.status(200).json(await this.doctorService.ExtractData(req.files))

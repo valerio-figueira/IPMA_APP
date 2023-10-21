@@ -1,0 +1,55 @@
+import { Application } from "express";
+import AccessHierarchyRoutes from "./AccessHierarchyRoutes";
+import AgreementRoutes from "./AgreementRoutes";
+import AuthenticationRoutes from "./AuthenticationRoutes";
+import DependentRoutes from "./DependentController";
+import DoctorRoutes from "./DoctorRoutes";
+import HolderRoutes from "./HolderRoutes";
+import MemberRoutes from "./MemberRoutes";
+import MonthlyFeeRoutes from "./MonthlyFeeController";
+import Database from "../db/Database";
+
+
+class RegisterRoutes {
+    private APP: Application
+    private database: Database
+    private routes
+
+    constructor(app: Application, db: Database) {
+        this.APP = app
+        this.database = db
+        this.routes = {
+            AccessHierarchy: new AccessHierarchyRoutes(this.database).router,
+            Agreement: new AgreementRoutes(this.database).router,
+            Authentication: new AuthenticationRoutes(this.database).router,
+            Holder: new HolderRoutes(this.database).router,
+            Dependent: new DependentRoutes(this.database).router,
+            Doctor: new DoctorRoutes(this.database).router,
+            Member: new MemberRoutes(this.database).router,
+            MonthlyFee: new MonthlyFeeRoutes(this.database).router
+        }
+
+        this.initialize()
+        this.printRoutes()
+    }
+
+    initialize() {
+        this.APP.use('/api/v1/access-hierarchy', this.routes.AccessHierarchy)
+        this.APP.use('/api/v1/agreements', this.routes.Agreement)
+        this.APP.use('/api/v1/authentications', this.routes.Authentication)
+        this.APP.use('/api/v1/dependents', this.routes.Dependent)
+        this.APP.use('/api/v1/holders', this.routes.Holder)
+        this.APP.use('/api/v1/members', this.routes.Member)
+        this.APP.use('/api/v1/monthly-fee', this.routes.MonthlyFee)
+    }
+
+    printRoutes() {
+        const routeInfo = Object.entries(this.routes).map(([name, router]) => {
+            return { Name: name, Path: router.stack[0].route.path }
+        });
+        console.table(routeInfo);
+    }
+}
+
+
+export default RegisterRoutes

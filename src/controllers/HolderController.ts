@@ -1,21 +1,20 @@
 import { Request, Response } from "express";
 import HolderService from "../services/HolderService";
 import UserValidator from "./validation/UserValidator";
-import Controller from "../utils/decorators/ControllerDecorator";
-import { Get, Post, Put, Delete } from "../utils/decorators/HandlersDecorator";
 import Database from "../db/Database";
 
-@Controller('/api/v1/holders')
+
 class HolderController {
     private holderService: HolderService
     private db: Database
 
-    constructor() {
-        this.db = new Database()
+    constructor(database: Database) {
+        this.db = database
         this.holderService = new HolderService(this.db);
     }
 
-    @Post('/')
+
+
     async Create(req: Request, res: Response) {
         try {
             UserValidator.validate(req.body)
@@ -25,7 +24,8 @@ class HolderController {
         }
     }
 
-    @Get('/')
+
+
     async ReadAll(req: Request, res: Response) {
         try {
             res.status(200).json(await this.holderService.ReadAll())
@@ -34,7 +34,8 @@ class HolderController {
         }
     }
 
-    @Get('/:id')
+
+
     async ReadOne(req: Request, res: Response) {
         try {
             res.status(200).json(await this.holderService.ReadOne(req.params.id))
@@ -43,7 +44,8 @@ class HolderController {
         }
     }
 
-    @Put('/')
+
+
     async Update(req: Request, res: Response) {
         try {
             UserValidator.validateIdentifications(req.body)
@@ -53,7 +55,8 @@ class HolderController {
         }
     }
 
-    @Delete('/:id')
+
+
     async Delete(req: Request, res: Response) {
         try {
             res.status(200).json(await this.holderService.Delete(req.params.id))

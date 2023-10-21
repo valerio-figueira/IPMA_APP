@@ -1,21 +1,21 @@
 import { Request, Response } from "express";
 import MemberService from "../services/MemberService";
 import MemberValidator from "./validation/MemberValidator";
-import Controller from "../utils/decorators/ControllerDecorator";
-import { Delete, Get, Post, Put } from "../utils/decorators/HandlersDecorator";
 import Database from "../db/Database";
 
-@Controller('/api/v1/members')
+
+
 class MemberController {
     memberService: MemberService
     db: Database
 
-    constructor() {
-        this.db = new Database()
+    constructor(database: Database) {
+        this.db = database
         this.memberService = new MemberService(this.db);
     }
 
-    @Post('/')
+
+
     async Create(req: Request, res: Response) {
         try {
             MemberValidator.validate(req.body)
@@ -25,7 +25,8 @@ class MemberController {
         }
     }
 
-    @Get('/')
+
+
     async ReadAll(req: Request, res: Response) {
         try {
             res.status(200).json(await this.memberService.ReadAll(req.query))
@@ -34,7 +35,8 @@ class MemberController {
         }
     }
 
-    @Get('/:id')
+
+
     async ReadOne(req: Request, res: Response) {
         try {
             res.status(200).json(await this.memberService.ReadOne(req.params.id))
@@ -43,7 +45,8 @@ class MemberController {
         }
     }
 
-    @Put('/')
+
+
     async Update(req: Request, res: Response) {
         try {
             MemberValidator.validate(req.body)
@@ -54,7 +57,8 @@ class MemberController {
         }
     }
 
-    @Delete('/')
+
+
     async Delete(req: Request, res: Response) {
         try {
             MemberValidator.validate(req.body)

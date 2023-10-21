@@ -1,21 +1,20 @@
 import { Request, Response } from "express";
 import MonthlyFeeService from "../services/MonthlyFeeService";
-import Controller from "../utils/decorators/ControllerDecorator";
-import { Delete, Get, Post, Put } from "../utils/decorators/HandlersDecorator";
 import Database from "../db/Database";
 
 
-@Controller('/api/v1/monthly-fee')
+
 class MonthlyFeeController {
     private db: Database
     private monthlyFeeService: MonthlyFeeService
 
-    constructor() {
-        this.db = new Database()
+    constructor(database: Database) {
+        this.db = database
         this.monthlyFeeService = new MonthlyFeeService(this.db);
     }
 
-    @Post('/')
+
+
     async Create(req: Request, res: Response) {
         try {
             res.status(201).json(await this.monthlyFeeService.Create(req.body))
@@ -24,7 +23,8 @@ class MonthlyFeeController {
         }
     }
 
-    @Get('/')
+
+
     async ReadAll(req: Request, res: Response) {
         try {
             res.status(200).json(await this.monthlyFeeService.ReadAll(req.query))
@@ -33,7 +33,8 @@ class MonthlyFeeController {
         }
     }
 
-    @Get('/:id')
+
+
     async ReadOne(req: Request, res: Response) {
         try {
             res.status(200).json(await this.monthlyFeeService.ReadOne(req.params.id))
@@ -42,7 +43,8 @@ class MonthlyFeeController {
         }
     }
 
-    @Put('/')
+
+
     async Update(req: Request, res: Response) {
         try {
             res.status(200).json(await this.monthlyFeeService.Update())
@@ -51,7 +53,8 @@ class MonthlyFeeController {
         }
     }
 
-    @Delete('/:id')
+
+
     async Delete(req: Request, res: Response) {
         try {
             res.status(200).json(await this.monthlyFeeService.Delete(req.params.id))

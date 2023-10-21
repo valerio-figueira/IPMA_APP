@@ -1,22 +1,21 @@
 import { Request, Response } from "express";
 import AuthenticationService from "../services/AuthenticationService";
-import Controller from "../utils/decorators/ControllerDecorator";
-import { Delete, Get, Post, Put } from "../utils/decorators/HandlersDecorator";
 import JWT from "../authentication/JWT";
 import Database from "../db/Database";
 
 
-@Controller('/api/v1/authentications')
+
 class AuthenticationController {
     private authenticationService: AuthenticationService;
     private db: Database
 
-    constructor() {
-        this.db = new Database()
+    constructor(database: Database) {
+        this.db = database
         this.authenticationService = new AuthenticationService(this.db);
     }
 
-    @Post('/')
+
+
     async Create(req: Request, res: Response) {
         try {
             res.status(201).json(await this.authenticationService.Create(req.body))
@@ -25,7 +24,8 @@ class AuthenticationController {
         }
     }
 
-    @Get('/')
+
+
     async ReadAll(req: Request, res: Response) {
         try {
             res.status(200).json(await this.authenticationService.ReadAll())
@@ -34,7 +34,8 @@ class AuthenticationController {
         }
     }
 
-    @Get('/:id')
+
+
     async ReadOne(req: Request, res: Response) {
         try {
             res.status(200).json(await this.authenticationService.ReadOne(req.params.id))
@@ -43,7 +44,8 @@ class AuthenticationController {
         }
     }
 
-    @Put('/')
+
+
     async Update(req: Request, res: Response) {
         try {
             res.status(200).json(await this.authenticationService.Update(req.body))
@@ -52,7 +54,8 @@ class AuthenticationController {
         }
     }
 
-    @Delete('/:id')
+
+
     async Delete(req: Request, res: Response) {
         try {
             res.status(200).json(await this.authenticationService.Delete(req.params.id))
@@ -61,7 +64,8 @@ class AuthenticationController {
         }
     }
 
-    @Post('/login')
+
+
     async Login(req: Request, res: Response) {
         JWT.Login(req, res)
     }

@@ -1,21 +1,20 @@
 import { Request, Response } from "express";
 import DependentService from "../services/DependentService";
-import Controller from "../utils/decorators/ControllerDecorator";
-import { Delete, Get, Post, Put } from "../utils/decorators/HandlersDecorator";
 import Database from "../db/Database";
 
 
-@Controller('/api/vi/dependents')
+
 class DependentController {
     private dependentService: DependentService
     private db: Database
 
-    constructor() {
-        this.db = new Database()
+    constructor(database: Database) {
+        this.db = database
         this.dependentService = new DependentService(this.db);
     }
 
-    @Post('/:holder')
+
+
     async Create(req: Request, res: Response) {
         try {
             res.status(201).json(await this.dependentService.Create(req.body))
@@ -24,7 +23,8 @@ class DependentController {
         }
     }
 
-    @Get('/:holder')
+
+
     async ReadAll(req: Request, res: Response) {
         try {
             res.status(200).json(await this.dependentService.ReadAll(req.params.holder))
@@ -33,7 +33,8 @@ class DependentController {
         }
     }
 
-    @Get('/:holder/:dependent')
+
+
     async ReadOne(req: Request, res: Response) {
         try {
             res.status(200).json(await this.dependentService.ReadOne(req.params.holder, req.params.dependent))
@@ -42,10 +43,12 @@ class DependentController {
         }
     }
 
-    @Put('/:holder')
+
+
     async Update(req: Request, res: Response) { }
 
-    @Delete('/:holder/:dependent')
+
+
     async Delete(req: Request, res: Response) { }
 
 }
