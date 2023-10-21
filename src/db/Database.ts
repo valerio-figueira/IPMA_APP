@@ -1,7 +1,8 @@
-import { Sequelize } from "sequelize";
+import { QueryTypes, Sequelize } from "sequelize";
 import DB_Config from "./DatabaseConfig";
 import dotenv from "dotenv";
 import Models from "../models";
+import { DBErrors as ERROR } from "../utils/errors/Errors";
 dotenv.config();
 
 type envProps = 'development' | 'test' | 'production'
@@ -29,30 +30,80 @@ export default class Database {
         })
     }
 
+
+
     async authenticate() {
         try {
             await this.sequelize.authenticate();
             console.log('Conexão com o banco de dados estabelecida com sucesso.');
-        } catch (error) {
-            console.error('Erro ao conectar ao banco de dados:', error);
+        } catch (error: any) {
+            throw ERROR.DBAuthError
         }
     }
+
+
 
     async syncModels() {
         try {
             return new Models(this.sequelize)
-        } catch (error) {
-            console.error('Erro ao sincronizar modelos com o banco de dados:', error);
+        } catch (error: any) {
+            throw ERROR.DBSyncError
         }
     }
+
+
 
     async clearDatabase() {
         try {
             await this.authenticate()
             await this.sequelize.sync({ force: true })
             console.log('Banco de dados limpo com sucesso.');
-        } catch (error) {
-            console.error('Erro ao limpar o banco de dados:', error);
+        } catch (error: any) {
+            throw ERROR.ClearDBError
         }
+    }
+
+
+
+    async startTransaction() {
+        return this.sequelize.transaction();
+    }
+
+
+
+    async commitTransaction(transaction: any) {
+        if (transaction) {
+            await transaction.commit();
+        }
+    }
+
+
+
+    async rollbackTransaction(transaction: any) {
+        if (transaction) {
+            await transaction.rollback();
+        }
+    }
+
+
+
+    async createIndex(tableName: string, indexName: string, columns: string[]) {
+        const sql = `CREATE INDEX ${indexName} ON ${tableName} (${columns.join(', ')})`;
+        await this.sequelize.query(sql, { type: QueryTypes.RAW });
+    }
+
+
+
+    async updateIndex(tableName: string, indexName: string, newColumns: string[]) {
+        // Para atualizar um índice, você pode criar um novo índice e, em seguida, excluir o antigo
+        await this.createIndex(tableName, `new_${indexName}`, newColumns);
+        await this.dropIndex(tableName, indexName);
+    }
+
+
+
+    async dropIndex(tableName: string, indexName: string) {
+        const sql = `DROP INDEX ${indexName} ON ${tableName}`;
+        await this.sequelize.query(sql, { type: QueryTypes.RAW });
     }
 }
