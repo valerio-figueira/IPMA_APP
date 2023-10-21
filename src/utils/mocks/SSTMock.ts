@@ -16,11 +16,7 @@ export const UserMock = {
     "state": "GR",
     "cpf": "987.654.321-09",
     "identity": "AG-543210",
-    "issue_date": "2003-10-18",
-    "hierarchy_id": 3,
-    "username": "MariaK",
-    "password": "supersenha10",
-    "user_photo": ""
+    "issue_date": "2003-10-18"
 }
 
 export const SSTUserMock = {
@@ -43,9 +39,5 @@ export const SSTUserMock = {
     "cpf": "654.321.098-76",
     "identity": "AG-123456",
     "issue_date": "2006-09-15",
-    "hierarchy_id": 2,
-    "username": "NikosP",
-    "password": "supersenha10",
-    "user_photo": ""
 }
 
