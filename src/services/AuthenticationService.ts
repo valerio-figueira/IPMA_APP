@@ -9,6 +9,7 @@ import AccessHierarchyService from "./AccessHierarchyService";
 import { validate } from "../utils/decorators/validateBody";
 import HolderService from "./HolderService";
 import SocialSecurityTeamService from "./SocialSecurityTeamService";
+import ERROR from "../utils/errors/Errors";
 
 
 export default class AuthenticationService {
@@ -34,11 +35,13 @@ export default class AuthenticationService {
         if (!authEntity.user_id || !authEntity.hierarchy_id)
             throw new CustomError(BadRequest.MESSAGE, BadRequest.STATUS)
 
+
         // THE USER IS HOLDER, DEPENDENT OR MEMBER OF ORGANIZATION?
+        await this.throwErrorIfAlreadyExists(authEntity.user_id)
         await this.userService.throwErrorIfNotExists(authEntity.user_id)
         const userType = await this.findTypeOfUser(authEntity.user_id)
 
-        this.verifyPermissionLevel(userType, authEntity.hierarchy_id)
+        await this.verifyPermissionLevel(userType, authEntity.hierarchy_id)
 
         return this.authenticationRepository.Create(authEntity)
     }
@@ -59,13 +62,13 @@ export default class AuthenticationService {
 
 
 
-
+    @validate // FUTURAMENTE: VERIFICAR MAIS LÓGICAS DE SERVIÇO NESTA FUNÇÃO
     async Update(query: IAuthentication) {
-        if (!query.authentication_id) throw new CustomError('É necessário a identificação', 400)
+        if (!query.authentication_id) throw ERROR.UserIdRequired
 
         const [affectedCount] = await this.authenticationRepository.Update(query)
 
-        if (affectedCount === 0) throw new CustomError('Nenhum dado foi alterado', 400)
+        if (affectedCount === 0) throw ERROR.NotChanged
 
         return this.ReadOne(query.authentication_id)
     }
@@ -99,33 +102,42 @@ export default class AuthenticationService {
 
 
 
-
+    // FUTURAMENTE: ESTRUTURAR AS HIERARQUIAS EM UMA ESTRUTURA DE DADOS
     private async verifyPermissionLevel(userType: string, hierarchy_id: number) {
-        const ERROR = new CustomError(BadRequest.MESSAGE, BadRequest.STATUS)
         const permissionLevel = await this.accessHierarchyService
             .ReadOne(hierarchy_id)
 
-        if (!permissionLevel) throw ERROR
+        if (!permissionLevel) throw ERROR.BadRequest
         const levelName = permissionLevel.level_name
 
-        if (levelName.match('Root')) throw ERROR
+        if (levelName.match('Root')) throw ERROR.BadRequest
 
-        if (userType.match('Holder')) {
+        if (userType === 'Holder') {
             // CHECK IF HIERARCHY LEVEL IS FOR COMMON USER
-            if (!levelName.match('Common_User')) throw ERROR
+            if (levelName !== 'Common_User') throw ERROR.BadRequest
         }
 
-        if (userType.match('Dependent')) {
-            if (!levelName.match('Common_User')) throw ERROR
+        if (userType === 'Dependent') {
+            if (levelName !== 'Common_User') throw ERROR.BadRequest
         }
 
-        if (userType.match('SSTMember')) {
-            if (levelName.match('Administrator')) throw ERROR
-            if (levelName.match('Advanced_Employee')) return
-            if (levelName.match('Common_Employee')) return
+        if (userType === 'SSTMember') {
+            if (levelName === 'Administrator') throw ERROR.BadRequest
+            if (levelName === 'Advanced_Employee') return
+            if (levelName === 'Common_Employee') return
         }
     }
 
+
+
+    private async throwErrorIfAlreadyExists(user_id: string | number) {
+        const exists = await this.authenticationRepository
+            .findByUserId(user_id)
+
+        if (exists) throw new CustomError(BadRequest.MESSAGE, BadRequest.STATUS)
+
+        return
+    }
 
 
 }

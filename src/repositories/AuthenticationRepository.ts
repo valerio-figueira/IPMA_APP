@@ -66,4 +66,15 @@ export default class AuthenticationRepository {
         })
     }
 
+
+
+    async findByUserId(user_id: string | number) {
+        return this.models.Authentication.findOne({
+            where: { user_id },
+            attributes: { exclude: ['password'] },
+            include: Queries.IncludeHierarchyAndUser,
+            raw: true, nest: true
+        })
+    }
+
 }

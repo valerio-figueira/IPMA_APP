@@ -38,9 +38,6 @@ class SocialSecurityTeamRepository {
             await this.userRepository
                 .CreateWithTransaction(body, t)
 
-            await this.models.Authentication
-                .create(body.authentication, { transaction: t, raw: true })
-
             const sstMember = await this.models.SocialSecurityTeam
                 .create(body.sstEntity, { transaction: t, raw: true })
 

@@ -5,7 +5,6 @@ import DocumentEntity from "../entities/DocumentEntity"
 import ContactEntity from "../entities/ContactEntity"
 import LocationEntity from "../entities/LocationEntity"
 import SSTBundleEntities from "../entities/SSTBundleEntities"
-import AuthenticationEntity from "../entities/AuthenticationEntity"
 import UserDataSanitizer from "../helpers/UserDataSanitizer"
 import CustomError from "../utils/CustomError"
 import Database from "../db/Database"
@@ -94,8 +93,7 @@ class SocialSecurityTeamService {
             document: new DocumentEntity(body),
             contact: new ContactEntity(body),
             location: new LocationEntity(body),
-            sstEntity: new SSTEntity(body),
-            authentication: new AuthenticationEntity(body)
+            sstEntity: new SSTEntity(body)
         })
     }
 }
