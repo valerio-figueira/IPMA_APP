@@ -1,4 +1,4 @@
-import { Model, DataTypes, ModelStatic } from 'sequelize';
+import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import IMonthlyFee from '../interfaces/IMonthlyFee';
 import MemberModel from './MemberModel';
 import { TMonthlyFeeModel } from '../types/TModels';
@@ -79,18 +79,18 @@ class MonthlyFeeModel extends Model<IMonthlyFee> {
 
         const monthlyFeeModel = sequelize.models.MonthlyFeeModel
 
-        this.createAssociations(monthlyFeeModel)
+        this.createAssociations(monthlyFeeModel, sequelize)
 
         return monthlyFeeModel
     }
 
-    static createAssociations(MonthlyFeeModel: TMonthlyFeeModel) {
+    static createAssociations(MonthlyFeeModel: TMonthlyFeeModel, sequelize: Sequelize) {
         MonthlyFeeModel.belongsTo(MemberModel, {
             foreignKey: 'member_id',
             as: 'subscription'
         })
 
-        MemberModel.hasMany(MonthlyFeeModel, {
+        MemberModel.INIT(sequelize).hasMany(MonthlyFeeModel, {
             foreignKey: 'member_id',
             as: 'billing',
             onDelete: 'CASCADE'

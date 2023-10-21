@@ -1,9 +1,10 @@
-import { Model, DataTypes, ModelStatic } from 'sequelize';
+import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import HolderModel from './HolderModel';
 import DependentModel from './DependentModel';
 import AgreementModel from './AgreementModel';
 import IMember from '../interfaces/IMember';
 import { TMemberModel } from '../types/TModels';
+import sequelize from 'sequelize';
 
 
 class MemberModel extends Model<IMember> {
@@ -70,12 +71,29 @@ class MemberModel extends Model<IMember> {
         })
 
         const memberModel = sequelize.models.MemberModel
-        this.createAssociations(memberModel)
+        this.createAssociations(memberModel, sequelize)
 
         return memberModel
     }
 
-    private static createAssociations(MemberModel: TMemberModel) {
+    private static createAssociations(MemberModel: TMemberModel, sequelize: Sequelize) {
+        HolderModel.INIT(sequelize).hasMany(MemberModel, {
+            foreignKey: 'holder_id',
+            as: 'subscription',
+            onDelete: 'CASCADE'
+        });
+
+        DependentModel.INIT(sequelize).hasMany(MemberModel, {
+            foreignKey: 'dependent_id',
+            onDelete: 'CASCADE'
+        })
+
+        AgreementModel.INIT(sequelize).hasMany(MemberModel, {
+            foreignKey: 'agreement_id',
+            as: 'subscription',
+            onDelete: 'CASCADE'
+        })
+
         MemberModel.belongsTo(HolderModel, {
             foreignKey: 'holder_id',
             as: 'holder'
@@ -90,23 +108,6 @@ class MemberModel extends Model<IMember> {
             foreignKey: 'agreement_id',
             as: 'agreement'
         });
-
-        HolderModel.hasMany(MemberModel, {
-            foreignKey: 'holder_id',
-            as: 'subscription',
-            onDelete: 'CASCADE'
-        });
-
-        DependentModel.hasMany(MemberModel, {
-            foreignKey: 'dependent_id',
-            onDelete: 'CASCADE'
-        })
-
-        AgreementModel.hasMany(MemberModel, {
-            foreignKey: 'agreement_id',
-            as: 'subscription',
-            onDelete: 'CASCADE'
-        })
     }
 }
 

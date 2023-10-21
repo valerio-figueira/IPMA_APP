@@ -56,19 +56,19 @@ class DependentModel extends Model<IDependentBase> {
 
     const dependentModel = sequelize.models.DependentModel
 
-    this.createAssociations(dependentModel)
+    this.createAssociations(dependentModel, sequelize)
 
     return dependentModel
   }
 
-  static createAssociations(DependentModel: TDependentModel) {
-    UserModel.hasOne(DependentModel, {
+  static createAssociations(DependentModel: TDependentModel, sequelize: Sequelize) {
+    UserModel.INIT(sequelize).hasOne(DependentModel, {
       foreignKey: 'user_id',
       as: 'dependent',
       onDelete: 'CASCADE'
     });
 
-    HolderModel.hasMany(DependentModel, {
+    HolderModel.INIT(sequelize).hasMany(DependentModel, {
       foreignKey: 'holder_id',
       as: 'dependent',
       onDelete: 'CASCADE'

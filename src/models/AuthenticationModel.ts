@@ -1,4 +1,4 @@
-import { Model, DataTypes, ModelStatic } from 'sequelize';
+import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import IAuthentication from '../interfaces/IAuthentication';
 import UserModel from './user/UserModel';
 import AccessHierarchyModel from './AccessHierarchyModel';
@@ -66,18 +66,18 @@ class AuthenticationModel extends Model<IAuthentication> {
 
         const AuthenticationModel = sequelize.models.AuthenticationModel
 
-        this.createAssociations(AuthenticationModel)
+        this.createAssociations(AuthenticationModel, sequelize)
 
         return AuthenticationModel
     }
 
-    static createAssociations(AuthenticationModel: TAuthenticationModel) {
-        AccessHierarchyModel.hasOne(AuthenticationModel, {
+    static createAssociations(AuthenticationModel: TAuthenticationModel, sequelize: Sequelize) {
+        AccessHierarchyModel.INIT(sequelize).hasOne(AuthenticationModel, {
             foreignKey: 'hierarchy_id',
             as: 'hierarchy'
         })
 
-        UserModel.hasOne(AuthenticationModel, {
+        UserModel.INIT(sequelize).hasOne(AuthenticationModel, {
             foreignKey: 'user_id',
             as: 'authentication',
             onDelete: 'CASCADE'

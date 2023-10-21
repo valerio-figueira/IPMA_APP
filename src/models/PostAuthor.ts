@@ -1,4 +1,4 @@
-import { Model, DataTypes, ModelStatic } from 'sequelize';
+import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import SSTModel from './SocialSecurityTeamModel';
 import BlogPostModel from './BlogPostModel';
 import IPostAuthor from '../interfaces/IPostAuthor';
@@ -46,24 +46,24 @@ class PostAuthorModel extends Model<IPostAuthor> {
         })
 
         const PostAuthorModel = sequelize.models.PostAuthorModel
-        this.createAssociations(PostAuthorModel)
+        this.createAssociations(PostAuthorModel, sequelize)
 
         return PostAuthorModel
     }
 
-    static createAssociations(PostAuthorModel: any) {
-        SSTModel.hasMany(PostAuthorModel, {
+    static createAssociations(PostAuthorModel: any, sequelize: Sequelize) {
+        SSTModel.INIT(sequelize).hasMany(PostAuthorModel, {
             foreignKey: 'sst_author_id',
             as: 'authors',
             onDelete: 'CASCADE'
         })
 
-        PostAuthorModel.belongsTo(SSTModel, {
+        PostAuthorModel.INIT(sequelize).belongsTo(SSTModel, {
             foreignKey: 'sst_member_id',
             as: 'socialTeam'
         })
 
-        BlogPostModel.hasMany(PostAuthorModel, {
+        BlogPostModel.INIT(sequelize).hasMany(PostAuthorModel, {
             foreignKey: 'post_id',
             as: 'authors',
         })

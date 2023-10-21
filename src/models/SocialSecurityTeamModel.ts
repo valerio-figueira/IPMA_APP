@@ -44,7 +44,7 @@ class SSTModel extends Model<ISocialSecurityTeam> {
 
         const SSTModel = sequelize.models.SSTModel
 
-        UserModel.hasOne(SSTModel, {
+        UserModel.INIT(sequelize).hasOne(SSTModel, {
             foreignKey: 'user_id',
             as: 'socialTeam',
             onDelete: 'CASCADE',

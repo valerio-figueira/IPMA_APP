@@ -1,4 +1,4 @@
-import { Model, DataTypes, ModelStatic } from 'sequelize';
+import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import UserModel from './user/UserModel';
 import { IHolderBase } from '../interfaces/IHolder';
 import { UserNestedProps } from '../interfaces/IUser';
@@ -55,13 +55,13 @@ class HolderModel extends Model<IHolderBase> {
         })
 
         const holderModel = sequelize.models.HolderModel
-        this.createAssociations(holderModel)
+        this.createAssociations(holderModel, sequelize)
 
         return holderModel
     }
 
-    static createAssociations(HolderModel: THolderModel) {
-        UserModel.hasOne(HolderModel, {
+    static createAssociations(HolderModel: THolderModel, sequelize: Sequelize) {
+        UserModel.INIT(sequelize).hasOne(HolderModel, {
             foreignKey: 'user_id',
             as: 'holder',
             onDelete: 'CASCADE'

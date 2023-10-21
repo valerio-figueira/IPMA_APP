@@ -67,7 +67,7 @@ class BlogPostModel extends Model<IBlogPost> {
 
         const BlogPostModel = sequelize.models.BlogPostModel
 
-        SSTModel.hasMany(BlogPostModel, {
+        SSTModel.INIT(sequelize).hasMany(BlogPostModel, {
             foreignKey: 'last_editor_id',
             as: 'post',
             onDelete: 'CASCADE'
