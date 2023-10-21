@@ -9,7 +9,7 @@ export default interface ISocialSecurityTeam {
 }
 
 export interface SST_Props {
-    authentication: IAuthentication
+    authentication?: IAuthentication
     user: IUser
     document: IDocument
     contact: IContact
