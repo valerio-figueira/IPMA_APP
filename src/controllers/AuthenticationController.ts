@@ -28,7 +28,7 @@ class AuthenticationController {
     @Get('/')
     async ReadAll(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.authenticationService.ReadAll(req.query))
+            res.status(200).json(await this.authenticationService.ReadAll())
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
