@@ -9,18 +9,22 @@ import DependentModel from "../models/DependentModel";
 
 export default class MemberRepository {
     private db: Database
-    private model
+    private models
 
     constructor(db: Database) {
         this.db = db
-        this.model = MemberModel.INIT(this.db.sequelize)
+        this.models = {
+            Member: MemberModel.INIT(this.db.sequelize),
+            Agreement: AgreementModel.INIT(this.db.sequelize),
+            Holder: HolderModel.INIT(this.db.sequelize)
+        }
     }
 
 
 
 
     async Create(query: IMember) {
-        return this.model.create(query, { raw: true })
+        return this.models.Member.create(query, { raw: true })
     }
 
 
@@ -44,7 +48,7 @@ export default class MemberRepository {
             agreement_name: query.agreement_name
         }
 
-        return this.model.findAll({
+        return this.models.Member.findAll({
             offset,
             limit: pageSize,
             where: whereClause,
@@ -79,7 +83,7 @@ export default class MemberRepository {
 
 
     async Update(body: IMember) {
-        return this.model.update(body, {
+        return this.models.Member.update(body, {
             where: { member_id: body.member_id }
         })
     }
@@ -88,7 +92,7 @@ export default class MemberRepository {
 
 
     async Delete(body: IMember) {
-        return this.model.destroy({
+        return this.models.Member.destroy({
             where: {
                 member_id: body.member_id,
                 agreement_id: body.agreement_id,
@@ -101,7 +105,7 @@ export default class MemberRepository {
 
 
     async ifMemberExists(query: IMember, dependent_id: number | null = null) {
-        return this.model.findOne({
+        return this.models.Member.findOne({
             where: {
                 holder_id: query.holder_id,
                 agreement_id: query.agreement_id,
@@ -122,7 +126,7 @@ export default class MemberRepository {
 
             let affectedCount = 0
             for (let dependent of dependents) {
-                let [count] = await this.model.update({ active: false }, {
+                let [count] = await this.models.Member.update({ active: false }, {
                     where: {
                         holder_id: query.holder_id,
                         dependent_id: dependent.dependent_id
@@ -131,7 +135,7 @@ export default class MemberRepository {
                 affectedCount += count
             }
 
-            let [count] = await this.model.update({ active: false }, {
+            let [count] = await this.models.Member.update({ active: false }, {
                 where: { holder_id: query.holder_id },
                 transaction
             })

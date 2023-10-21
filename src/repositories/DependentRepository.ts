@@ -26,16 +26,16 @@ export default class DependentRepository {
         const t: Transaction = await this.db.sequelize.transaction();
 
         try {
-            const { user, document, contact, location } = await this.userRepository.CreateWithTransaction(query, t);
+            await this.userRepository.CreateWithTransaction(query, t);
             const dependent = await this.model.create(query.dependent, { transaction: t, raw: true })
 
             query.contract!.dependent_id = dependent.dependent_id
 
-            const contract = await MemberModel.create(query.contract, { transaction: t, raw: true })
+            await MemberModel.create(query.contract, { transaction: t, raw: true })
 
             await t.commit();
 
-            return this.createNestedObj([dependent, user, document, contact, location, contract]);
+            return this.findByDependentId(dependent.dependent_id)
         } catch (error: any) {
             await t.rollback();
             throw new CustomError(`Erro ao cadastrar dependente: ${error}`, 500)
@@ -61,6 +61,15 @@ export default class DependentRepository {
         return this.model.findOne({
             where: { holder_id: holder, dependent_id },
             attributes: { exclude: ['user_id'] },
+            include: Queries.IncludeDependentUserData,
+            raw: true, nest: true
+        })
+    }
+
+
+
+    async findByDependentId(dependent_id: string | number) {
+        return this.model.findByPk(dependent_id, {
             include: Queries.IncludeDependentUserData,
             raw: true, nest: true
         })
