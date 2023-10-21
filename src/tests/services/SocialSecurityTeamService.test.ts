@@ -1,37 +1,24 @@
 import 'jest'
 import SocialSecurityTeamService from '../../services/SocialSecurityTeamService'
 import { UserMock, SSTUserMock } from '../../utils/mocks/SSTMock'
-import AccessHierarchyService from '../../services/AccessHierarchyService'
 import Database from '../../db/Database'
 import CustomError from '../../utils/CustomError'
 import SSTErrors from '../../utils/errors/SocialSecurityErrors'
 
+
 const db = new Database()
 const sstService = new SocialSecurityTeamService(db)
-const accessHierarchyService = new AccessHierarchyService(db)
+
 
 const resetDB = async () => {
     await db.syncModels()
     await db.clearDatabase()
 }
 
+
 describe('TEST for SST service', () => {
     beforeAll(async () => {
         await resetDB()
-        await accessHierarchyService.Create({
-            level_name: 'Root',
-            parent_level_id: null
-        })
-
-        await accessHierarchyService.Create({
-            level_name: 'Administrator',
-            parent_level_id: 1
-        })
-
-        await accessHierarchyService.Create({
-            level_name: 'Employee',
-            parent_level_id: 2
-        })
     })
 
 
