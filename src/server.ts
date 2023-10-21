@@ -11,9 +11,11 @@ import Cors from "./config/Cors";
 import Session from "./config/Session";
 
 // ROUTES
-import RegisterRoutes from "./utils/RegisterRoutes";
+import RegisterRoutes from "./routes/RegisterRoutes";
 
 import JWT from "./authentication/JWT";
+import Database from "./db/Database";
+import DependencyContainer from "./utils/DependencyContainer";
 
 declare module 'express-session' {
     interface SessionData { user: string; }
@@ -22,18 +24,25 @@ declare module 'express-session' {
 export default class Server {
     APP: Application;
     PORT: number;
+    database: Database
+    routes: RegisterRoutes
 
     constructor(PORT: number) {
         this.APP = express();
         this.PORT = PORT;
+        this.database = new Database();
+        this.routes = new RegisterRoutes(this.APP, this.database)
         this.setupMiddleware();
         this.setupRoutes();
     }
 
     public start() {
-        this.APP.listen(this.PORT, () => {
-            console.log("Server running on port " + this.PORT)
-        });
+        const message = `Server running on port ${this.PORT}`
+        this.APP.listen(this.PORT, () => console.log(message));
+    }
+
+    public dependencyInjection() {
+        new DependencyContainer().register('Database', this.database)
     }
 
     private setupMiddleware() {
@@ -54,7 +63,7 @@ export default class Server {
 
     private setupRoutes() {
         this.APP.get('/', this.rootHandler)
-        RegisterRoutes(this.APP)
+        this.routes.initialize()
     }
 
     private rootHandler(req: Request, res: Response) {
