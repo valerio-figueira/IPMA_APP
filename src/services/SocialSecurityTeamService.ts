@@ -82,6 +82,10 @@ class SocialSecurityTeamService {
 
 
 
+    async findMemberByUserId(user_id: string | number) {
+        return this.sstRepository.findMemberMyUserId(user_id)
+    }
+
 
 
     private bundleEntities(body: any) {

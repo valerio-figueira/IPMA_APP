@@ -133,6 +133,16 @@ export default class HolderRepository {
 
 
 
+    async findHolderByUserId(user_id: number | string) {
+        return this.models.Holder
+            .findOne({
+                where: { user_id }
+            })
+    }
+
+
+
+
     private async UpdateHolderInfo(query: any, transaction: Transaction) {
         return this.models.Holder
             .update(query.holder!, {

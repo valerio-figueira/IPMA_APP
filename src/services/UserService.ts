@@ -69,12 +69,18 @@ export default class UserService {
     }
 
 
+
+
+
     async Exists(query: DocumentEntity) {
         const userFound = await this.userRepository.Exists(query)
 
         if (userFound)
             throw new CustomError('Usuário já existe na base de dados', 400)
     }
+    
+
+
 
     async throwErrorIfNotExists(user_id: string | number) {
         const userFound = await this.userRepository

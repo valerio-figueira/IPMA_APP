@@ -94,6 +94,13 @@ export default class HolderService {
 
 
 
+    async findHolderByUserId(user_id: string | number) {
+        return this.holderRepository.findHolderByUserId(user_id)
+    }
+
+
+
+
     private bundleEntities(body: any) {
         return new HolderBundleEntities({
             holder: new HolderEntity(body),

@@ -123,6 +123,16 @@ class SocialSecurityTeamRepository {
             await transaction.rollback()
         }
     }
+
+
+
+
+    async findMemberMyUserId(user_id: ID) {
+        return this.models.SocialSecurityTeam
+            .findOne({
+                where: { user_id }
+            })
+    }
 }
 
 export default SocialSecurityTeamRepository
