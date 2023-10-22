@@ -44,10 +44,34 @@ class RegisterRoutes {
     }
 
     printRoutes() {
+        const routes: Record<string, any>[] = []
+
+        Object.entries(this.routes).forEach(([name, router]) => {
+            router.stack.forEach((layer, i) => {
+                routes.push({
+                    Name: name,
+                    Path: layer.route.path,
+                    Methods: Object.keys(layer.route.methods).join(', ')
+                })
+            })
+        })
+
+        routes.forEach(route => {
+            console.table(route)
+        })
+        console.table(routes)
+    }
+
+    printSummaryRoutes() {
         const routeInfo = Object.entries(this.routes).map(([name, router]) => {
-            return { Name: name, Path: router.stack[0].route.path }
+            const route = router.stack[0].route;
+            return {
+                Name: name,
+                Path: route.path,
+                Methods: Object.keys(route.methods).join(', ')
+            };
         });
-        console.table(routeInfo);
+        console.table(routeInfo)
     }
 }
 
