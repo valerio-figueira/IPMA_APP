@@ -15,7 +15,6 @@ import RegisterRoutes from "./routes/RegisterRoutes";
 
 import JWT from "./authentication/JWT";
 import Database from "./db/Database";
-import DependencyContainer from "./utils/DependencyContainer";
 
 declare module 'express-session' {
     interface SessionData { user: string; }
@@ -39,10 +38,6 @@ export default class Server {
     public start() {
         const message = `Server running on port ${this.PORT}`
         this.APP.listen(this.PORT, () => console.log(message));
-    }
-
-    public dependencyInjection() {
-        new DependencyContainer().register('Database', this.database)
     }
 
     private setupMiddleware() {
