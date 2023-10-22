@@ -1,4 +1,4 @@
-import { Model, DataTypes, ModelStatic } from 'sequelize';
+import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import UserModel from './UserModel';
 import { IDocument } from '../../interfaces/IUser';
 import { TDocumentModel } from '../../types/TModels';
@@ -61,13 +61,13 @@ class DocumentModel extends Model<IDocument> {
         })
 
         const documentModel = sequelize.models.DocumentModel
-        this.createAssociations(documentModel)
+        this.createAssociations(documentModel, sequelize)
 
         return documentModel
     }
 
-    private static createAssociations(DocumentModel: TDocumentModel) {
-        UserModel.hasOne(DocumentModel, {
+    private static createAssociations(DocumentModel: TDocumentModel, sequelize: Sequelize) {
+        UserModel.INIT(sequelize).hasOne(DocumentModel, {
             foreignKey: 'user_id',
             as: 'document',
             onDelete: 'CASCADE'

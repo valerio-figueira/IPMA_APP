@@ -1,4 +1,4 @@
-import { Model, DataTypes, ModelStatic } from 'sequelize';
+import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import UserModel from './UserModel';
 import { IContact } from '../../interfaces/IUser';
 import { TContactModel } from '../../types/TModels';
@@ -55,13 +55,13 @@ class ContactModel extends Model<IContact> {
     })
 
     const contactModel = sequelize.models.ContactModel
-    this.createAssociations(contactModel)
+    this.createAssociations(contactModel, sequelize)
 
     return contactModel
   }
 
-  private static createAssociations(ContactModel: TContactModel) {
-    UserModel.hasOne(ContactModel, {
+  private static createAssociations(ContactModel: TContactModel, sequelize: Sequelize) {
+    UserModel.INIT(sequelize).hasOne(ContactModel, {
       foreignKey: 'user_id',
       as: 'contact',
       onDelete: 'CASCADE'

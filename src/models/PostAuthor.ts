@@ -58,7 +58,7 @@ class PostAuthorModel extends Model<IPostAuthor> {
             onDelete: 'CASCADE'
         })
 
-        PostAuthorModel.INIT(sequelize).belongsTo(SSTModel, {
+        PostAuthorModel.belongsTo(SSTModel, {
             foreignKey: 'sst_member_id',
             as: 'socialTeam'
         })

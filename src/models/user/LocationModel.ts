@@ -1,4 +1,4 @@
-import { Model, DataTypes, ModelStatic } from 'sequelize';
+import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import UserModel from './UserModel';
 import { ILocation } from '../../interfaces/IUser';
 import { TLocationModel } from '../../types/TModels';
@@ -69,13 +69,13 @@ class LocationModel extends Model<ILocation> {
         })
 
         const locationModel = sequelize.models.LocationModel
-        this.createAssociations(locationModel)
+        this.createAssociations(locationModel, sequelize)
 
         return locationModel
     }
 
-    private static createAssociations(LocationModel: TLocationModel) {
-        UserModel.hasOne(LocationModel, {
+    private static createAssociations(LocationModel: TLocationModel, sequelize: Sequelize) {
+        UserModel.INIT(sequelize).hasOne(LocationModel, {
             foreignKey: 'user_id',
             as: 'location',
             onDelete: 'CASCADE'
