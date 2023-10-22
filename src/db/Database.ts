@@ -12,7 +12,7 @@ export default class Database {
 
     constructor() {
         const envTest = process.env.NODE_ENV as envProps
-        const environment = envTest || 'production'
+        const environment = envTest || 'test'
         const config = DB_Config[environment]
 
         this.sequelize = new Sequelize(
