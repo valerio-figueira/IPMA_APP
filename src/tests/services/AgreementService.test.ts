@@ -1,4 +1,3 @@
-import 'jest'
 import AgreementService from '../../services/AgreementService'
 import AgreementModel from '../../models/AgreementModel'
 import Database from '../../db/Database'
@@ -8,7 +7,7 @@ import CustomError from '../../utils/CustomError'
 const db = new Database()
 const agreementService = new AgreementService(db)
 
-describe('TEST for Access Hierarchy Service', () => {
+describe('SUITE TEST for Agreement Service', () => {
     beforeAll(async () => {
         await db.syncModels()
         await db.clearDatabase()
