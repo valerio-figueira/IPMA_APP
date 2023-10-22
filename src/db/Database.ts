@@ -12,7 +12,7 @@ export default class Database {
 
     constructor() {
         const envTest = process.env.NODE_ENV as envProps
-        const environment: envProps = envTest || 'production'
+        const environment = envTest || 'production'
         const config = DB_Config[environment]
 
         this.sequelize = new Sequelize(
@@ -45,6 +45,7 @@ export default class Database {
 
     async syncModels() {
         try {
+            await this.authenticate()
             return new Models(this.sequelize)
         } catch (error: any) {
             throw ERROR.DBSyncError
