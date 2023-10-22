@@ -4,23 +4,23 @@ import Database from "../db/Database";
 
 
 class AccessHierarchyRoutes {
-    private accessHierarchyController: AccessHierarchyController
+    private controller: AccessHierarchyController
     private db: Database
     public router: Router
 
     constructor(database: Database) {
         this.db = database
         this.router = Router()
-        this.accessHierarchyController = new AccessHierarchyController(this.db)
-        this.setupRoutes()
+        this.controller = new AccessHierarchyController(this.db)
+        this.initialize()
     }
 
-    setupRoutes() {
-        this.router.post('/', this.accessHierarchyController.Create)
-        this.router.get('/', this.accessHierarchyController.ReadAll)
-        this.router.get('/:id', this.accessHierarchyController.ReadOne)
-        this.router.put('/', this.accessHierarchyController.Update)
-        this.router.delete('/:id', this.accessHierarchyController.Delete)
+    initialize() {
+        this.router.post('/', this.controller.Create.bind(this.controller))
+        this.router.get('/', this.controller.ReadAll.bind(this.controller))
+        this.router.get('/:id', this.controller.ReadOne.bind(this.controller))
+        this.router.put('/', this.controller.Update.bind(this.controller))
+        this.router.delete('/:id', this.controller.Delete.bind(this.controller))
     }
 
 }

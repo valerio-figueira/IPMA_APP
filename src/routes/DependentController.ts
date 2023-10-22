@@ -4,23 +4,23 @@ import Database from "../db/Database";
 
 
 class DependentRoutes {
-    private dependentController: DependentController
+    private controller: DependentController
     private db: Database
     public router: Router
 
     constructor(database: Database) {
         this.db = database
         this.router = Router()
-        this.dependentController = new DependentController(this.db)
-        this.setupRoutes()
+        this.controller = new DependentController(this.db)
+        this.initialize()
     }
 
-    setupRoutes() {
-        this.router.post('/:holder', this.dependentController.Create)
-        this.router.get('/:holder', this.dependentController.ReadAll)
-        this.router.get('/:holder/:dependent', this.dependentController.ReadOne)
-        this.router.put('/:holder', this.dependentController.Update)
-        this.router.delete('/:holder/:dependent', this.dependentController.Delete)
+    initialize() {
+        this.router.post('/:holder', this.controller.Create.bind(this.controller))
+        this.router.get('/:holder', this.controller.ReadAll.bind(this.controller))
+        this.router.get('/:holder/:dependent', this.controller.ReadOne.bind(this.controller))
+        this.router.put('/:holder', this.controller.Update.bind(this.controller))
+        this.router.delete('/:holder/:dependent', this.controller.Delete.bind(this.controller))
     }
 
 }

@@ -4,23 +4,23 @@ import Database from "../db/Database";
 
 
 class MemberRoutes {
-    private MemberController: MemberController
+    private controller: MemberController
     private db: Database
     public router: Router
 
     constructor(database: Database) {
         this.db = database
         this.router = Router()
-        this.MemberController = new MemberController(this.db)
-        this.setupRoutes()
+        this.controller = new MemberController(this.db)
+        this.initialize()
     }
 
-    setupRoutes() {
-        this.router.post('/', this.MemberController.Create)
-        this.router.get('/', this.MemberController.ReadAll)
-        this.router.get('/:id', this.MemberController.ReadOne)
-        this.router.put('/', this.MemberController.Update)
-        this.router.delete('/:id', this.MemberController.Delete)
+    initialize() {
+        this.router.post('/', this.controller.Create.bind(this.controller))
+        this.router.get('/', this.controller.ReadAll.bind(this.controller))
+        this.router.get('/:id', this.controller.ReadOne.bind(this.controller))
+        this.router.put('/', this.controller.Update.bind(this.controller))
+        this.router.delete('/:id', this.controller.Delete.bind(this.controller))
     }
 
 }

@@ -4,24 +4,24 @@ import Database from "../db/Database";
 
 
 class AuthenticationRoutes {
-    private authenticationController: AuthenticationController
+    private controller: AuthenticationController
     private db: Database
     public router: Router
 
     constructor(database: Database) {
         this.db = database
         this.router = Router()
-        this.authenticationController = new AuthenticationController(this.db)
-        this.setupRoutes()
+        this.controller = new AuthenticationController(this.db)
+        this.initialize()
     }
 
-    setupRoutes() {
-        this.router.post('/', this.authenticationController.Create)
-        this.router.get('/', this.authenticationController.ReadAll)
-        this.router.get('/:id', this.authenticationController.ReadOne)
-        this.router.put('/', this.authenticationController.Update)
-        this.router.delete('/:id', this.authenticationController.Delete)
-        this.router.post('/login', this.authenticationController.Login)
+    initialize() {
+        this.router.post('/', this.controller.Create.bind(this.controller))
+        this.router.get('/', this.controller.ReadAll.bind(this.controller))
+        this.router.get('/:id', this.controller.ReadOne.bind(this.controller))
+        this.router.put('/', this.controller.Update.bind(this.controller))
+        this.router.delete('/:id', this.controller.Delete.bind(this.controller))
+        this.router.post('/login', this.controller.Login.bind(this.controller))
     }
 
 }
