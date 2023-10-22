@@ -54,22 +54,9 @@ class ContactModel extends Model<IContact> {
       timestamps: false,
     })
 
-    const contactModel = sequelize.models.ContactModel
-    this.createAssociations(contactModel, sequelize)
-
-    return contactModel
+    return sequelize.models.ContactModel
   }
 
-  private static createAssociations(ContactModel: TContactModel, sequelize: Sequelize) {
-    UserModel.INIT(sequelize).hasOne(ContactModel, {
-      foreignKey: 'user_id',
-      as: 'contact',
-      onDelete: 'CASCADE'
-    })
-    ContactModel.belongsTo(UserModel, {
-      foreignKey: 'user_id'
-    });
-  }
 }
 
 

@@ -68,22 +68,9 @@ class LocationModel extends Model<ILocation> {
             timestamps: false,
         })
 
-        const locationModel = sequelize.models.LocationModel
-        this.createAssociations(locationModel, sequelize)
-
-        return locationModel
+        return sequelize.models.LocationModel
     }
 
-    private static createAssociations(LocationModel: TLocationModel, sequelize: Sequelize) {
-        UserModel.INIT(sequelize).hasOne(LocationModel, {
-            foreignKey: 'user_id',
-            as: 'location',
-            onDelete: 'CASCADE'
-        })
-        LocationModel.belongsTo(UserModel, {
-            foreignKey: 'user_id'
-        });
-    }
 }
 
 

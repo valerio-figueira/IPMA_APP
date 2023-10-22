@@ -60,21 +60,7 @@ class DocumentModel extends Model<IDocument> {
             timestamps: false,
         })
 
-        const documentModel = sequelize.models.DocumentModel
-        this.createAssociations(documentModel, sequelize)
-
-        return documentModel
-    }
-
-    private static createAssociations(DocumentModel: TDocumentModel, sequelize: Sequelize) {
-        UserModel.INIT(sequelize).hasOne(DocumentModel, {
-            foreignKey: 'user_id',
-            as: 'document',
-            onDelete: 'CASCADE'
-        })
-        DocumentModel.belongsTo(UserModel, {
-            foreignKey: 'user_id'
-        });
+        return sequelize.models.DocumentModel
     }
 }
 

@@ -1,5 +1,10 @@
-import { Model, DataTypes, ModelStatic } from 'sequelize';
+import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import { IUser } from '../../interfaces/IUser';
+import AuthenticationModel from '../AuthenticationModel';
+import { TUserModel } from '../../types/TModels';
+import ContactModel from './ContactModel';
+import DocumentModel from './DocumentModel';
+import LocationModel from './LocationModel';
 
 
 class UserModel extends Model<IUser> {
@@ -13,7 +18,7 @@ class UserModel extends Model<IUser> {
     declare created_at: Date;
 
     static INIT(sequelize: any)
-    : ModelStatic<UserModel> {
+        : ModelStatic<UserModel> {
         super.init({
             user_id: {
                 type: DataTypes.INTEGER,
@@ -55,7 +60,54 @@ class UserModel extends Model<IUser> {
             timestamps: false,
         })
 
-        return sequelize.models.UserModel
+        const UserModel = sequelize.models.UserModel
+
+        this.createAssociations(UserModel, sequelize)
+
+        return UserModel
+    }
+
+    static createAssociations(UserModel: TUserModel, sequelize: Sequelize) {
+        UserModel.hasOne(AuthenticationModel.INIT(sequelize), {
+            foreignKey: 'user_id',
+            as: 'authentication',
+            onDelete: 'CASCADE'
+        })
+
+        AuthenticationModel.belongsTo(UserModel, {
+            foreignKey: 'user_id',
+            as: 'user'
+        })
+
+        UserModel.hasOne(ContactModel.INIT(sequelize), {
+            foreignKey: 'user_id',
+            as: 'contact',
+            onDelete: 'CASCADE'
+        })
+
+        ContactModel.belongsTo(UserModel, {
+            foreignKey: 'user_id'
+        });
+
+        UserModel.hasOne(DocumentModel.INIT(sequelize), {
+            foreignKey: 'user_id',
+            as: 'document',
+            onDelete: 'CASCADE'
+        })
+
+        DocumentModel.belongsTo(UserModel, {
+            foreignKey: 'user_id'
+        });
+
+        UserModel.hasOne(LocationModel.INIT(sequelize), {
+            foreignKey: 'user_id',
+            as: 'location',
+            onDelete: 'CASCADE'
+        })
+
+        LocationModel.belongsTo(UserModel, {
+            foreignKey: 'user_id'
+        });
     }
 }
 

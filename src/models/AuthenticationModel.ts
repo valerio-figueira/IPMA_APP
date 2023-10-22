@@ -74,18 +74,8 @@ class AuthenticationModel extends Model<IAuthentication> {
     static createAssociations(AuthenticationModel: TAuthenticationModel, sequelize: Sequelize) {
         AccessHierarchyModel.INIT(sequelize).hasOne(AuthenticationModel, {
             foreignKey: 'hierarchy_id',
-            as: 'hierarchy'
-        })
-
-        UserModel.INIT(sequelize).hasOne(AuthenticationModel, {
-            foreignKey: 'user_id',
-            as: 'authentication',
+            as: 'hierarchy',
             onDelete: 'CASCADE'
-        })
-
-        AuthenticationModel.belongsTo(UserModel, {
-            foreignKey: 'user_id',
-            as: 'user'
         })
 
         AuthenticationModel.belongsTo(AccessHierarchyModel, {
