@@ -28,9 +28,7 @@ class RegisterRoutes {
             Member: new MemberRoutes(this.database).router,
             MonthlyFee: new MonthlyFeeRoutes(this.database).router
         }
-
-        this.initialize()
-        this.printRoutes()
+        // this.printRoutes()
     }
 
     initialize() {
@@ -54,10 +52,6 @@ class RegisterRoutes {
                     Methods: Object.keys(layer.route.methods).join(', ')
                 })
             })
-        })
-
-        routes.forEach(route => {
-            console.table(route)
         })
         console.table(routes)
     }
