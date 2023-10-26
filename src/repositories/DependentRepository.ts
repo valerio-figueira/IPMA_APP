@@ -16,7 +16,7 @@ export default class DependentRepository {
     constructor(db: Database) {
         this.db = db
         this.userRepository = new UserRepository(this.db);
-        this.model = DependentModel
+        this.model = DependentModel.INIT(db.sequelize)
     }
 
 

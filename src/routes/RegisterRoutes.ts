@@ -2,11 +2,11 @@ import { Application } from "express";
 import AccessHierarchyRoutes from "./AccessHierarchyRoutes";
 import AgreementRoutes from "./AgreementRoutes";
 import AuthenticationRoutes from "./AuthenticationRoutes";
-import DependentRoutes from "./DependentController";
+import DependentRoutes from "./DependentRoutes";
 import DoctorRoutes from "./DoctorRoutes";
 import HolderRoutes from "./HolderRoutes";
 import MemberRoutes from "./MemberRoutes";
-import MonthlyFeeRoutes from "./MonthlyFeeController";
+import MonthlyFeeRoutes from "./MonthlyFeeRoutes";
 import Database from "../db/Database";
 
 
