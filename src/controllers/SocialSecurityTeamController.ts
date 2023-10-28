@@ -64,12 +64,6 @@ class SocialSecurityTeamController {
         }
     }
 
-
-
-    async Login(req: Request, res: Response) {
-        JWT.Login(req, res)
-    }
-
 }
 
 export default SocialSecurityTeamController
