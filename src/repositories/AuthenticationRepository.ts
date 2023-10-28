@@ -23,7 +23,7 @@ export default class AuthenticationRepository {
     async Create(query: IAuthentication) {
         const auth = await this.models.Authentication.create(query, { raw: true })
 
-        return this.models.Authentication.findByPk(auth.user_id)
+        return this.ReadOne(auth.authentication_id)
     }
 
 
