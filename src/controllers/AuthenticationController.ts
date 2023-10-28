@@ -67,7 +67,12 @@ class AuthenticationController {
 
 
     async Login(req: Request, res: Response) {
-        JWT.Login(req, res)
+        try {
+            res.status(200).json(await JWT.Login(req, res, this.db))
+        } catch (error: any) {
+            res.status(error.status || 500)
+                .json({ error: error.message });
+        }
     }
 
 }
