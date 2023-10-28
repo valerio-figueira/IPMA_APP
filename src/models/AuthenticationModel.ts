@@ -12,6 +12,7 @@ class AuthenticationModel extends Model<IAuthentication> {
     declare password: string;
     declare user_photo: string | null;
     declare created_at: Date;
+    hierarchy?: AccessHierarchyModel
 
     static INIT(sequelize: any)
     : ModelStatic<AuthenticationModel> {
