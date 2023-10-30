@@ -2,82 +2,111 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import AuthenticationModel from "../models/AuthenticationModel";
 import AccessHierarchyModel from "../models/AccessHierarchyModel";
+import Database from "../db/Database";
+import CustomError from "../utils/CustomError";
 require("dotenv").config();
 
-type TUser = { user_id: number; username: string; role: string; };
+type TUser = { user_id: number; username: string; role: string };
 
 declare global {
-    namespace Express {
-        interface Request { user?: TUser }
+  namespace Express {
+    interface Request {
+      user?: TUser;
     }
+  }
 }
 
 export default class JWT {
-    private static SECRET_KEY = (process.env.SECRET_KEY as string)
-    static AllUsersAccess = ['SUPERUSUARIO', 'ADMINISTRADOR', 'FUNCIONARIO', 'USUARIO_COMUM']
-    static ADMAccess = ['SUPERUSUARIO', 'ADMINISTRADOR']
-    static ROOTAccess = ['SUPERUSUARIO']
+  private static SECRET_KEY = process.env.SECRET_KEY as string;
 
-    static async verifyToken(req: Request, res: Response, next: NextFunction) {
-        const token = req.header('x-auth-token');
 
-        if (!token) {
-            return res.status(401).json({ message: 'Token não fornecido. Autenticação negada.' });
+
+  static verifyToken(req: Request) {
+    const header = req.headers['authorization']
+
+    if (!header) throw new CustomError('Token não fornecido. Autenticação negada.', 401)
+
+    const token = header.split(' ')[1]
+
+    try {
+      const decoded = jwt.verify(token, this.SECRET_KEY) as { user: TUser };
+      req.user = decoded.user;
+      return
+    } catch (error) {
+      throw new CustomError('Token inválido. Autenticação negada.', 401)
+    }
+  }
+
+
+
+
+  static isAuthorized(permissions: string[]) {
+    return (req: Request, res: Response, next: NextFunction) => {
+      try {
+        this.verifyToken(req);
+        const user = req.user;
+
+        if (!(user && permissions.includes(user.role))) {
+          const message = 'Acesso proibido. Você não tem permissão para acessar esta rota.'
+          throw new CustomError(message, 403)
         }
 
-        try {
-            const decoded = jwt.verify(token, this.SECRET_KEY) as { user: TUser };
-            req.user = decoded.user;
-            next();
-        } catch (error) {
-            res.status(401).json({ message: 'Token inválido. Autenticação negada.' });
-        }
+        next()
+      } catch (error: any) {
+        const message = { error: 'Token inválido. Autenticação negada.' }
+        res.status(error.status || 401).json({ error: error.message || message });
+      }
+    }
+  }
+
+
+
+
+  static async Login(req: Request, res: Response, db: Database) {
+    const { username, password } = req.body;
+
+    const userFound = await this.findUserInDatabase(username, db)
+
+    if (!userFound) throw new CustomError('Usuário não encontrado.', 400)
+    if (!userFound.hierarchy) {
+      throw new CustomError('Falha ao processar o nível de permissão.', 400)
     }
 
-    static isAuthorized(permissions: string[]) {
-        return async (req: Request, res: Response, next: NextFunction) => {
-            await this.verifyToken(req, res, next)
-            const user = req.user;
-
-            if (user && permissions.includes(user.role)) {
-                next();
-            } else {
-                res.status(403).json({ message: 'Acesso proibido. Você não tem permissão para acessar esta rota.' });
-            }
-        };
+    if (password !== userFound.password) {
+      throw new CustomError('Credenciais inválidas. Autenticação negada.', 401)
     }
 
-    static async Login(req: Request, res: Response) {
-        const { username, password } = req.body;
+    if(!userFound.user_photo) userFound.user_photo = 'http://localhost:9292/imgs/blank-profile.webp'
 
-        const userFound = await this.findUserInDatabase(username, password)
+    const user = {
+      user_id: userFound.user_id,
+      username: userFound.username,
+      photo: userFound.user_photo,
+      created_at: userFound.created_at,
+      role: userFound.hierarchy.level_name,
+    };
 
-        if (username === userFound?.username && password === userFound?.password) {
-            const user = {
-                user_id: userFound!.user_id,
-                username: userFound!.username,
-                role: userFound!.hierarchy_id
-            };
-            const token = jwt.sign({ user }, this.SECRET_KEY, { expiresIn: '1h' });
+    // RETURN TOKEN
+    return { token: jwt.sign({ user }, this.SECRET_KEY, { expiresIn: "1h" }) }
+  }
 
-            res.json({ token });
-        } else {
-            res.status(401).json({ message: 'Credenciais inválidas. Autenticação negada.' });
-        }
-    }
 
-    static async findUserInDatabase(username: string, password: string) {
-        return AuthenticationModel.findOne({
-            where: {
-                username,
-                password
-            },
-            include: [{
-                model: AccessHierarchyModel,
-                as: 'hierarchy'
-            }],
-            raw: true, nest: true
-        })
-    }
 
+
+
+  static async findUserInDatabase(username: string, db: Database) {
+    return AuthenticationModel.INIT(db.sequelize).findOne({
+      where: {
+        username
+      },
+      include: [
+        {
+          model: AccessHierarchyModel,
+          as: "hierarchy",
+        },
+      ],
+      raw: true,
+      nest: true,
+    });
+  }
 }
