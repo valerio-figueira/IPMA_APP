@@ -5,6 +5,7 @@ export default class Session {
     static config = {
         secret: `${process.env.SESSION_SECRET}`,
         resave: false,
-        saveUninitialized: false
+        saveUninitialized: false,
+        cookie: { sameSite: true, secure: true }
     }
 }
