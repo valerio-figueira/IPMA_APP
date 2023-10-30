@@ -28,9 +28,10 @@ export default class DependentService {
         UserDataSanitizer.sanitizeBody(body)
         const dependentData = this.bundleEntities(body)
 
-        if (body.username && body.password) {
-            dependentData.setAuthentication(body)
-        }
+        // CHECK IF DEPENDENT ALREADY EXISTS
+        // CHECK IF HOLDER EXISTS
+        // CHECK IF HOLDER IS MEMBER OF ANY AGREEMENT
+        // CREATE DEPENDENT
 
         return await this.dependentRepository.Create(dependentData)
     }
