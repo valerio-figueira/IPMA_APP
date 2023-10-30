@@ -13,7 +13,6 @@ import Session from "./config/Session";
 // ROUTES
 import RegisterRoutes from "./routes/RegisterRoutes";
 
-import JWT from "./authentication/JWT";
 import Database from "./db/Database";
 
 declare module 'express-session' {
@@ -50,10 +49,6 @@ export default class Server {
         this.APP.use(fileUpload())
 
         this.APP.use(express.static(path.join("public")));
-    }
-
-    private isAuthenticate(req: Request, res: Response, next: NextFunction) {
-        JWT.verifyToken(req, res, next)
     }
 
     private setupRoutes() {
