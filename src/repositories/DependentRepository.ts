@@ -3,7 +3,6 @@ import Database from "../db/Database";
 import { IUserAttributes } from "../interfaces/IUser";
 import CustomError from "../utils/CustomError";
 import UserRepository from "./UserRepository";
-import MemberModel from "../models/MemberModel";
 import Queries from "../db/Queries";
 import DependentModel from "../models/DependentModel";
 
@@ -28,10 +27,6 @@ export default class DependentRepository {
         try {
             await this.userRepository.CreateWithTransaction(query, t);
             const dependent = await this.model.create(query.dependent, { transaction: t, raw: true })
-
-            query.contract!.dependent_id = dependent.dependent_id
-
-            await MemberModel.create(query.contract, { transaction: t, raw: true })
 
             await t.commit();
 
@@ -97,22 +92,4 @@ export default class DependentRepository {
 
     async Delete() { }
 
-
-
-
-
-    createNestedObj(data: any[]) {
-        return {
-            dependent: {
-                ...data[0].toJSON(),
-                user: {
-                    ...data[1].toJSON(),
-                    document: data[2].toJSON(),
-                    contact: data[3].toJSON(),
-                    location: data[4].toJSON(),
-                },
-                contract: data[5].toJSON()
-            }
-        }
-    }
 }
