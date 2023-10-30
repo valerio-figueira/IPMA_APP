@@ -3,13 +3,14 @@ import UserRepository from "./UserRepository";
 import HolderModel from "../models/HolderModel";
 import Database from "../db/Database";
 import CustomError from '../utils/CustomError';
-import { Transaction } from 'sequelize';
+import { Op, Transaction } from 'sequelize';
 import Queries from "../db/Queries";
 import MemberModel from "../models/MemberModel";
 import AccessHierarchyModel from "../models/AccessHierarchyModel";
 import AuthenticationModel from "../models/AuthenticationModel";
 import DocumentEntity from "../entities/DocumentEntity";
 import RES from "../utils/messages/HolderResponses";
+import UserModel from "../models/user/UserModel";
 
 export default class HolderRepository {
     private db: Database;
@@ -49,10 +50,30 @@ export default class HolderRepository {
 
 
 
-    async ReadAll() {
+    async ReadAll(query: any) {
+        const whereClause: any = {}
+
+        if (query.name) whereClause.name = { [Op.like]: `%${query.name}%` }
+
         return this.models.Holder
             .findAll({
-                include: Queries.IncludeUserData,
+                include: [{
+                    model: UserModel.INIT(this.db.sequelize),
+                    as: 'user',
+                    where: whereClause,
+                    attributes: { exclude: ['user_id'] },
+                    include: [
+                        {
+                            model: AuthenticationModel,
+                            as: 'authentication',
+                            attributes: { exclude: ['user_id', 'password'] },
+                            include: [{
+                                model: AccessHierarchyModel,
+                                as: 'hierarchy'
+                            }]
+                        }
+                    ]
+                }],
                 raw: true, nest: true
             })
     }

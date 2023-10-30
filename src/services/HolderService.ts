@@ -36,8 +36,8 @@ export default class HolderService {
 
 
 
-    async ReadAll() {
-        const holders = await this.holderRepository.ReadAll()
+    async ReadAll(query: any) {
+        const holders = await this.holderRepository.ReadAll(query)
 
         if (holders.length === 0) throw new CustomError('Nenhum titular foi encontrado', 400)
 
