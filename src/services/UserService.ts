@@ -6,6 +6,8 @@ import ContactEntity from "../entities/ContactEntity";
 import LocationEntity from "../entities/LocationEntity";
 import UserAttributes from "../entities/UserAttributes";
 import Database from "../db/Database";
+import { BadRequest } from "../utils/messages/APIResponse";
+import UserDataSanitizer from "../helpers/UserDataSanitizer";
 
 export default class UserService {
     userRepository: UserRepository;
@@ -48,16 +50,23 @@ export default class UserService {
 
 
     async Update(body: any) {
+        UserDataSanitizer.sanitizeBody(body)
         const user = new UserEntity(body)
         const document = new DocumentEntity(body)
         const contact = new ContactEntity(body)
         const location = new LocationEntity(body)
         const userData = new UserAttributes({ user, document, contact, location });
+        console.log(body)
+        if (!user.user_id) throw new CustomError('Verifique a identificação de usuário', 400)
 
         try {
-            return this.userRepository.Update(user.user_id!, userData)
+            const affectedCount = await this.userRepository.Update(user.user_id, userData)
+
+            if (!affectedCount) throw new CustomError('Não houve alterações', 400)
+
+            return this.ReadOne(user.user_id)
         } catch (error: any) {
-            throw new CustomError('Não foi possível registrar o usuário', 400)
+            throw new CustomError(error.message || BadRequest.MESSAGE, BadRequest.STATUS)
         }
     }
 
@@ -78,7 +87,7 @@ export default class UserService {
         if (userFound)
             throw new CustomError('Usuário já existe na base de dados', 400)
     }
-    
+
 
 
 

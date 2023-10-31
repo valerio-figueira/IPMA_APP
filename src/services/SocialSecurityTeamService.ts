@@ -37,8 +37,8 @@ class SocialSecurityTeamService {
 
 
 
-    async ReadAll() {
-        return this.sstRepository.ReadAll()
+    async ReadAll(query: any) {
+        return this.sstRepository.ReadAll(query)
     }
 
 

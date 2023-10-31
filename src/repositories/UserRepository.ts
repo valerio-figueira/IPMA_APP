@@ -9,6 +9,8 @@ import CustomError from "../utils/CustomError";
 import UserModel from "../models/user/UserModel";
 import { ID } from "../types/ID";
 import DocumentEntity from "../entities/DocumentEntity";
+import AuthenticationModel from "../models/AuthenticationModel";
+import AccessHierarchyModel from "../models/AccessHierarchyModel";
 
 type OptionalTransaction = Transaction | undefined;
 
@@ -45,8 +47,33 @@ export default class UserRepository {
 
     async ReadAll() {
         return this.models.UserModel.findAll({
-            include: Queries.IncludeUserData,
-            raw: true
+            include: [
+                {
+                    model: AuthenticationModel.INIT(this.db.sequelize),
+                    as: 'authentication',
+                    attributes: { exclude: ['user_id', 'password'] },
+                    include: [{
+                        model: AccessHierarchyModel.INIT(this.db.sequelize),
+                        as: 'hierarchy'
+                    }]
+                },
+                {
+                    model: ContactModel,
+                    as: 'contact',
+                    attributes: { exclude: ['user_id', 'contact_id'] }
+                },
+                {
+                    model: DocumentModel,
+                    as: 'document',
+                    attributes: { exclude: ['user_id', 'document_id'] },
+                },
+                {
+                    model: LocationModel,
+                    as: 'location',
+                    attributes: { exclude: ['user_id', 'location_id'] }
+                }
+            ],
+            raw: true, nest: true
         })
     }
 
@@ -71,7 +98,7 @@ export default class UserRepository {
                     as: 'location',
                     attributes: { exclude: ['user_id', 'location_id'] }
                 }
-            ], plain: true, raw: true
+            ], raw: true, nest: true
         })
     }
 
@@ -80,7 +107,7 @@ export default class UserRepository {
 
     async ReadOneSummary(user_id: ID) {
         return this.models.UserModel.findByPk(user_id, {
-            plain: true, raw: true
+            raw: true, nest: true
         })
     }
 
@@ -92,9 +119,13 @@ export default class UserRepository {
         const transaction = await this.db.sequelize.transaction()
 
         try {
-            return this.UpdateWithTransaction(user_id, query, transaction)
+            const affectedCount = await this.UpdateWithTransaction(user_id, query, transaction)
+
+            await transaction.commit()
+
+            return affectedCount
         } catch (error: any) {
-            transaction.rollback()
+            await transaction.rollback()
             throw new CustomError('Não foi possível atualizar os dados do usuário', 500)
         }
     }

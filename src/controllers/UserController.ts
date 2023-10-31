@@ -1,24 +1,23 @@
 import { Request, Response } from "express";
-import SocialSecurityTeamService from "../services/SocialSecurityTeamService";
-import JWT from "../authentication/JWT";
+import UserService from "../services/UserService";
 import Database from "../db/Database";
 
 
 
-class SocialSecurityTeamController {
-    private socialSecurityTeamService: SocialSecurityTeamService;
+class UserController {
     private db: Database
+    private userService: UserService
 
     constructor(database: Database) {
         this.db = database
-        this.socialSecurityTeamService = new SocialSecurityTeamService(this.db);
+        this.userService = new UserService(this.db);
     }
 
 
 
     async Create(req: Request, res: Response) {
         try {
-            res.status(201).json(await this.socialSecurityTeamService.Create(req.body))
+            res.status(201).json(await this.userService.Create(req.body))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
@@ -28,7 +27,7 @@ class SocialSecurityTeamController {
 
     async ReadAll(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.socialSecurityTeamService.ReadAll(req.query))
+            res.status(200).json(await this.userService.ReadAll())
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
@@ -38,7 +37,7 @@ class SocialSecurityTeamController {
 
     async ReadOne(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.socialSecurityTeamService.ReadOne(req.params.id))
+            res.status(200).json(await this.userService.ReadOne(req.params.id))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
@@ -48,7 +47,7 @@ class SocialSecurityTeamController {
 
     async Update(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.socialSecurityTeamService.Update(req.body))
+            res.status(200).json(await this.userService.Update(req.body))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
@@ -58,7 +57,7 @@ class SocialSecurityTeamController {
 
     async Delete(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.socialSecurityTeamService.Delete(req.params.id))
+            res.status(200).json(await this.userService.Delete(req.params.id))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
@@ -66,4 +65,5 @@ class SocialSecurityTeamController {
 
 }
 
-export default SocialSecurityTeamController
+
+export default UserController

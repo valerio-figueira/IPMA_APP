@@ -28,6 +28,26 @@ export default class Queries {
         }]
     }]
 
+    static IncludeSummaryUser(where: Record<string, any>) {
+        return [{
+            model: UserModel,
+            as: 'user',
+            where,
+            attributes: { exclude: ['user_id'] },
+            include: [
+                {
+                    model: AuthenticationModel,
+                    as: 'authentication',
+                    attributes: { exclude: ['user_id', 'password'] },
+                    include: [{
+                        model: AccessHierarchyModel,
+                        as: 'hierarchy'
+                    }]
+                }
+            ]
+        }]
+    }
+
     static IncludeUserData = [{
         model: UserModel,
         as: 'user',

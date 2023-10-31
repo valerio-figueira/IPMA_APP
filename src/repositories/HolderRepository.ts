@@ -57,23 +57,7 @@ export default class HolderRepository {
 
         return this.models.Holder
             .findAll({
-                include: [{
-                    model: UserModel.INIT(this.db.sequelize),
-                    as: 'user',
-                    where: whereClause,
-                    attributes: { exclude: ['user_id'] },
-                    include: [
-                        {
-                            model: AuthenticationModel,
-                            as: 'authentication',
-                            attributes: { exclude: ['user_id', 'password'] },
-                            include: [{
-                                model: AccessHierarchyModel,
-                                as: 'hierarchy'
-                            }]
-                        }
-                    ]
-                }],
+                include: Queries.IncludeSummaryUser(whereClause),
                 raw: true, nest: true
             })
     }

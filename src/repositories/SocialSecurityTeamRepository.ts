@@ -52,8 +52,13 @@ class SocialSecurityTeamRepository {
 
 
 
-    async ReadAll() {
+    async ReadAll(query: any) {
+        const whereClause: any = {}
+
+        if (query.user_id) whereClause.user_id = query.user_id
+
         return this.models.SocialSecurityTeam.findAll({
+            where: whereClause,
             include: Queries.IncludeUserData,
             raw: true, nest: true
         })
