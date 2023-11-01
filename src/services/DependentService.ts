@@ -51,15 +51,14 @@ export default class DependentService {
             if (!holderData[holderID]) {
                 const holderFinded: any = await this.holderRepository
                     .ReadOne(holderID)
-                holderFinded['dependents'] = {}
+                holderFinded['dependents'] = []
                 holderData[holderID] = holderFinded
             }
 
-            const dependentName = dependent['user']['name']
-            holderData[holderID]['dependents'][dependentName] = { ...dependent }
+            holderData[holderID]['dependents'].push({ ...dependent })
         }
 
-        return Object.values(holderData)
+        return Object.values(holderData)[0]
     }
 
 
