@@ -7,6 +7,7 @@ import LocationModel from "../models/user/LocationModel";
 import UserModel from "../models/user/UserModel";
 import AccessHierarchyModel from "../models/AccessHierarchyModel";
 import AuthenticationModel from "../models/AuthenticationModel";
+import MemberModel from "../models/MemberModel";
 
 
 export default class Queries {
@@ -118,6 +119,13 @@ export default class Queries {
                 attributes: { exclude: ['user_id', 'location_id'] }
             }
         ]
+    }, {
+        model: MemberModel,
+        as: 'subscription',
+        include: [{
+            model: AgreementModel,
+            as: 'agreement'
+        }]
     }]
 
     static IncludeDependentSummary = [{
