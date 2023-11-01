@@ -40,6 +40,7 @@ class RegisterRoutes {
         this.APP.use('/api/v1/agreements', this.routes.Agreement)
         this.APP.use('/api/v1/authentications', this.routes.Authentication)
         this.APP.use('/api/v1/dependents', this.routes.Dependent)
+        this.APP.use('/api/v1/doctors', this.routes.Doctor)
         this.APP.use('/api/v1/holders', this.routes.Holder)
         this.APP.use('/api/v1/members', this.routes.Member)
         this.APP.use('/api/v1/monthly-fee', this.routes.MonthlyFee)
