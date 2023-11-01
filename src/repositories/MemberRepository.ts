@@ -16,7 +16,8 @@ export default class MemberRepository {
         this.models = {
             Member: MemberModel.INIT(this.db.sequelize),
             Agreement: AgreementModel.INIT(this.db.sequelize),
-            Holder: HolderModel.INIT(this.db.sequelize)
+            Holder: HolderModel.INIT(this.db.sequelize),
+            Dependent: DependentModel.INIT(this.db.sequelize)
         }
     }
 
@@ -35,11 +36,21 @@ export default class MemberRepository {
         const pageSize = query.pageSize || 10;
         const offset = (page - 1) * pageSize;
 
-        const whereClause: any = { active: query.active || true }
+        const whereClause: any = {
+            active: query.active || true
+        }
+        //dependent_id: null
         const includeClause: any = [{
             model: AgreementModel,
             as: 'agreement',
             attributes: { exclude: ['agreement_id'] }
+        }, {
+            model: this.models.Holder,
+            as: 'holder',
+            include: [{
+                model: UserModel,
+                as: 'user'
+            }]
         }]
 
         if (query.holder_id) whereClause.holder_id = query.holder_id
@@ -53,6 +64,12 @@ export default class MemberRepository {
             limit: pageSize,
             where: whereClause,
             include: includeClause,
+            group: ['holder.holder_id'],
+            order: [[
+                { model: this.models.Holder, as: 'holder' },
+                { model: UserModel, as: 'user' }
+                , 'name', 'ASC'
+            ]],
             raw: true, nest: true
         })
     }
