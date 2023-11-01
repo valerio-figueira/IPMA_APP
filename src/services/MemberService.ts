@@ -63,13 +63,12 @@ export default class MemberService {
         const subscriptions: MemberModel[] = await this.memberRepository.ReadAll(query);
 
         if (!subscriptions || subscriptions.length === 0) throw new CustomError('Nenhum registro encontrado!', 400)
-
-        const holders: Record<number, any> = await this.addUsersToResponse(subscriptions)
+        //const holders: Record<number, any> = await this.addUsersToResponse(subscriptions)
 
         const totalCount = subscriptions.length
         const totalPages = Math.ceil(totalCount / query.pageSize || 10)
-        const response = Object.values(holders)
-        response.push({
+        const response = []
+        response.push(subscriptions, {
             currentPage: query.page || 1,
             pageSize: query.pageSize || 10,
             totalCount: totalCount,
@@ -209,9 +208,10 @@ export default class MemberService {
             const dependentID = subscription.dependent_id
 
             if (!holders[holderID]) {
-                const holder = await this.holderService.ReadOneSummary(holderID)
-                //holder['subscriptions'] = {}
+                const holder: any = await this.holderService.ReadOneSummary(holderID)
+                holder['subscriptions'] = {}
                 holders[holderID] = holder
+                console.log(holders)
                 index = 1
             }
             const dependent = dependentID ? await this.dependentService.ReadOneSummary(holderID, dependentID) : null
