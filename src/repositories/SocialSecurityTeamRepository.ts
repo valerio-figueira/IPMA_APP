@@ -9,6 +9,8 @@ import UserModel from "../models/user/UserModel"
 import { ID } from "../types/ID"
 import CustomError from "../utils/CustomError"
 import UserRepository from "./UserRepository"
+import UserAttributes from "../entities/UserAttributes"
+import SSTBundleEntities from "../entities/SSTBundleEntities"
 
 
 class SocialSecurityTeamRepository {
@@ -87,16 +89,16 @@ class SocialSecurityTeamRepository {
 
 
 
-    async Update(query: any) {
+    async Update(query: SSTBundleEntities) {
         const t = await this.db.sequelize.transaction()
 
         try {
             const userAffectedCount = await this.userRepository
-                .UpdateWithTransaction(query.user_id, query, t)
+                .UpdateWithTransaction(query.user.user_id!, query, t)
 
-            const [affectedCount] = await this.models.SocialSecurityTeam.update(query, {
+            const [affectedCount] = await this.models.SocialSecurityTeam.update(query.sstEntity, {
                 where: {
-                    sst_member_id: query.sst_member_id
+                    sst_member_id: query.sstEntity.sst_member_id
                 }, transaction: t
             })
 

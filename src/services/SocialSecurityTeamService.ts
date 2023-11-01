@@ -52,14 +52,17 @@ class SocialSecurityTeamService {
 
     @validateUser('SSTeam')
     async Update(query: any) {
+        UserDataSanitizer.sanitizeBody(query)
         const memberFound = await this.ReadOne(query.sst_member_id)
 
         if (!memberFound) throw new CustomError(SSTErrors.NotFound, 400)
         query.user_id = memberFound.user_id
 
-        const [userAffectedCount, affectedCount] = await this.sstRepository.Update(query)
+        const sstData = this.bundleEntities(query)
 
-        if (!affectedCount && userAffectedCount) throw new CustomError(SSTErrors.NotAffected, 400)
+        const [userAffectedCount, affectedCount] = await this.sstRepository.Update(sstData)
+
+        if (!affectedCount && !userAffectedCount) throw new CustomError(SSTErrors.NotAffected, 400)
 
         return { message: SSTErrors.UpdatedSuccessfully }
     }
