@@ -35,15 +35,15 @@ class MemberModel extends Model<IMember> {
             },
             dependent_id: {
                 type: DataTypes.INTEGER,
-                defaultValue: null
+                defaultValue: null,
+                references: {
+                    model: DependentModel,
+                    key: 'dependent_id',
+                }
             },
             agreement_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
-                references: {
-                    model: AgreementModel,
-                    key: 'agreement_id',
-                }
             },
             agreement_card: {
                 type: DataTypes.INTEGER,
@@ -77,37 +77,39 @@ class MemberModel extends Model<IMember> {
     }
 
     private static createAssociations(MemberModel: TMemberModel, sequelize: Sequelize) {
-        HolderModel.INIT(sequelize).hasMany(MemberModel, {
+        HolderModel.INIT(sequelize).hasOne(MemberModel, {
             foreignKey: 'holder_id',
             as: 'subscription',
             onDelete: 'CASCADE'
         });
-
-        DependentModel.INIT(sequelize).hasMany(MemberModel, {
-            foreignKey: 'dependent_id',
-            onDelete: 'CASCADE'
-        })
-
-        AgreementModel.INIT(sequelize).hasMany(MemberModel, {
-            foreignKey: 'agreement_id',
-            as: 'subscription',
-            onDelete: 'CASCADE'
-        })
 
         MemberModel.belongsTo(HolderModel, {
             foreignKey: 'holder_id',
             as: 'holder'
-        });
+        })
 
-        MemberModel.belongsTo(DependentModel, {
-            foreignKey: 'dependent_id',
-            as: 'dependent'
-        });
+        AgreementModel.INIT(sequelize).hasOne(MemberModel, {
+            foreignKey: 'agreement_id',
+            as: 'subscription',
+            onDelete: 'CASCADE'
+        })
 
         MemberModel.belongsTo(AgreementModel, {
             foreignKey: 'agreement_id',
             as: 'agreement'
-        });
+        })
+        /*
+        DependentModel.INIT(sequelize).hasOne(MemberModel, {
+            foreignKey: 'dependent_id',
+            as: 'subscription',
+            onDelete: 'CASCADE'
+        })
+
+        MemberModel.belongsTo(DependentModel, {
+            foreignKey: 'dependent_id',
+            as: 'dependent'
+        })
+        */
     }
 }
 
