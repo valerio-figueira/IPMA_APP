@@ -45,7 +45,13 @@ class DependentController {
 
 
 
-    async Update(req: Request, res: Response) { }
+    async Update(req: Request, res: Response) {
+        try {
+            res.status(200).json(await this.dependentService.Update(req.body))
+        } catch (error: any) {
+            res.status(error.status || 500).json({ error: error.message })
+        }
+    }
 
 
 

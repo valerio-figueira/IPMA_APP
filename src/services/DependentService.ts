@@ -9,6 +9,7 @@ import DependentBundleEntities from "../entities/DependentBundleEntities";
 import DependentEntity from "../entities/DependentEntity";
 import MemberEntity from "../entities/MemberEntity";
 import Database from "../db/Database";
+import CustomError from "../utils/CustomError";
 
 type ID = number | string
 
@@ -80,7 +81,30 @@ export default class DependentService {
 
 
 
-    async Update() { }
+    async Update(body: any) {
+        UserDataSanitizer.sanitizeBody(body)
+        const dependentData = this.bundleEntities(body)
+        const holderID = dependentData.dependent.holder_id
+        const dependentID = dependentData.dependent.dependent_id
+        const userID = dependentData.user.user_id
+
+        if (!userID) throw new CustomError('Identificação de usuário inválida', 400)
+        if (!dependentID) throw new CustomError('Identificação de dependente inválida', 400)
+        if (!holderID) throw new CustomError('Identificação de titular inválida', 400)
+
+        // CHECK IF DEPENDENT EXISTS
+        const exists = await this.ReadOne(holderID, dependentID)
+        if (!exists) throw new CustomError('Dependente não existe na base de dados', 400)
+
+        // UPDATE DEPENDENT
+        const affectedCount = await this.dependentRepository.Update(dependentData)
+
+        if (!affectedCount[0] && !affectedCount[0]) {
+            throw new CustomError('Não houve alterações', 400)
+        }
+
+        return this.ReadOne(holderID, dependentID)
+    }
 
 
 

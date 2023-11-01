@@ -5,6 +5,8 @@ import CustomError from "../utils/CustomError";
 import UserRepository from "./UserRepository";
 import Queries from "../db/Queries";
 import DependentModel from "../models/DependentModel";
+import DependentBundleEntities from "../entities/DependentBundleEntities";
+import { ID } from "../types/ID";
 
 
 export default class DependentRepository {
@@ -21,7 +23,7 @@ export default class DependentRepository {
 
 
 
-    async Create(query: IUserAttributes) {
+    async Create(query: DependentBundleEntities) {
         const t: Transaction = await this.db.sequelize.transaction();
 
         try {
@@ -43,7 +45,6 @@ export default class DependentRepository {
     async ReadAll(holder: string) {
         return this.model.findAll({
             where: { holder_id: holder },
-            attributes: { exclude: ['user_id'] },
             include: Queries.IncludeDependentUserData,
             raw: true, nest: true
         })
@@ -52,9 +53,9 @@ export default class DependentRepository {
 
 
 
-    async ReadOne(holder: string | number, dependent_id: string | number) {
+    async ReadOne(holder_id: ID, dependent_id: ID) {
         return this.model.findOne({
-            where: { holder_id: holder, dependent_id },
+            where: { holder_id, dependent_id },
             attributes: { exclude: ['user_id'] },
             include: Queries.IncludeDependentUserData,
             raw: true, nest: true
@@ -63,7 +64,7 @@ export default class DependentRepository {
 
 
 
-    async findByDependentId(dependent_id: string | number) {
+    async findByDependentId(dependent_id: ID) {
         return this.model.findByPk(dependent_id, {
             include: Queries.IncludeDependentUserData,
             raw: true, nest: true
@@ -73,7 +74,7 @@ export default class DependentRepository {
 
 
 
-    async ReadOneSummary(holder: string | number, dependent_id: string | number) {
+    async ReadOneSummary(holder: ID, dependent_id: ID) {
         return this.model.findOne({
             where: { holder_id: holder, dependent_id },
             attributes: { exclude: ['user_id'] },
@@ -85,7 +86,28 @@ export default class DependentRepository {
 
 
 
-    async Update() { }
+    async Update(query: DependentBundleEntities) {
+        const t: Transaction = await this.db.sequelize.transaction()
+        const dependent_id = query.dependent.dependent_id!
+        const user_id = query.user.user_id!
+
+        try {
+            const userData = await this.userRepository
+                .UpdateWithTransaction(user_id, query, t)
+
+            const [dependent] = await this.model
+                .update(query.dependent, {
+                    where: { dependent_id }, transaction: t
+                })
+
+            await t.commit()
+
+            return [userData, dependent]
+        } catch (error: any) {
+            await t.rollback()
+            throw new CustomError(`Erro ao atualizar dependente: ${error}`, 500)
+        }
+    }
 
 
 
