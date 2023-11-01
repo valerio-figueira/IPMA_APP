@@ -98,7 +98,7 @@ class MemberModel extends Model<IMember> {
             foreignKey: 'agreement_id',
             as: 'agreement'
         })
-        /*
+
         DependentModel.INIT(sequelize).hasOne(MemberModel, {
             foreignKey: 'dependent_id',
             as: 'subscription',
@@ -109,7 +109,7 @@ class MemberModel extends Model<IMember> {
             foreignKey: 'dependent_id',
             as: 'dependent'
         })
-        */
+
     }
 }
 
