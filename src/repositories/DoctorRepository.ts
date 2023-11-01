@@ -32,6 +32,9 @@ export default class DoctorRepository {
 
 
     async ReadAll(query: any) {
+        const page = query.page || 1;
+        const pageSize = query.pageSize || 10;
+        const offset = (page - 1) * pageSize;
         const whereClause: any = {}
 
         if (query.speciality) {
@@ -39,6 +42,8 @@ export default class DoctorRepository {
         }
 
         return this.model.findAll({
+            offset,
+            limit: pageSize,
             where: whereClause, raw: true
         })
     }

@@ -38,7 +38,20 @@ export default class DoctorService {
 
 
     async ReadAll(query: any) {
-        return this.doctorRepository.ReadAll(query)
+        const doctors = await this.doctorRepository.ReadAll(query)
+
+        const totalCount = doctors.length
+        const totalPages = Math.ceil(totalCount / query.pageSize || 10)
+        const response = []
+
+        response.push(doctors, {
+            currentPage: query.page || 1,
+            pageSize: query.pageSize || 10,
+            totalCount: totalCount,
+            totalPages: totalPages
+        })
+
+        return response
     }
 
 
