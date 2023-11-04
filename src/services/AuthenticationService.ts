@@ -62,7 +62,7 @@ export default class AuthenticationService {
 
 
 
-    @validate // FUTURAMENTE: VERIFICAR MAIS LÓGICAS DE SERVIÇO NESTA FUNÇÃO
+    //@validate
     async Update(query: IAuthentication) {
         if (!query.authentication_id) throw ERROR.UserIdRequired
 
