@@ -2,6 +2,7 @@ import DoctorModel from "../models/DoctorModel"
 import { IDoctor } from "../interfaces/IDoctor"
 import Doctors from '../json/doctors.json'
 import Database from "../db/Database"
+import { Op } from "sequelize"
 
 export default class DoctorRepository {
     private db: Database
@@ -36,14 +37,12 @@ export default class DoctorRepository {
         const pageSize = query.pageSize || 10;
         const offset = (page - 1) * pageSize;
         const whereClause: any = {}
-
-        if (query.speciality) {
-            whereClause['speciality'] = query.speciality
-        }
+        this.setParams(query, whereClause)
 
         return this.model.findAll({
             offset,
             limit: pageSize,
+            order: [['speciality', 'ASC']],
             where: whereClause, raw: true
         })
     }
@@ -76,4 +75,19 @@ export default class DoctorRepository {
         })
     }
 
+
+
+    async totalCount(query: any) {
+        const whereClause: any = {}
+        this.setParams(query, whereClause)
+        return this.model.count({ where: whereClause })
+    }
+
+
+
+    private setParams(query: any, whereClause: any) {
+        if (query.speciality) {
+            whereClause['speciality'] = { [Op.like]: `%${query.speciality}%` }
+        }
+    }
 }
