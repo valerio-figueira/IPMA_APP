@@ -33,7 +33,7 @@ class UserModel extends Model<IUser> {
                 type: DataTypes.ENUM('Masculino', 'Feminino', 'Outro'),
             },
             marital_status: {
-                type: DataTypes.STRING(10),
+                type: DataTypes.STRING(13),
                 defaultValue: null
             },
             birth_date: {

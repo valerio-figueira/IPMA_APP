@@ -68,7 +68,7 @@ class DependentModel extends Model<IDependentBase> {
       onDelete: 'CASCADE'
     });
 
-    HolderModel.INIT(sequelize).hasMany(DependentModel, {
+    HolderModel.INIT(sequelize).hasOne(DependentModel, {
       foreignKey: 'holder_id',
       as: 'dependent',
       onDelete: 'CASCADE'
