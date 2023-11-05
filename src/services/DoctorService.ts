@@ -95,6 +95,17 @@ export default class DoctorService {
 
 
 
+    async BulkDelete() {
+        const deletedDoctor = await this.doctorRepository.BulkDelete()
+
+        if (deletedDoctor === 0) throw new CustomError('Nenhum médico foi removido', 400)
+
+        return { message: `Todos os médicos foram removidos do sistema` }
+    }
+
+
+
+
     async ExtractData(files: FileArray | undefined | null) {
         if (!files || Object.keys(files).length === 0) throw new CustomError('Nenhuma planilha foi enviada', 400)
 

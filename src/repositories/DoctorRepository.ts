@@ -2,7 +2,7 @@ import DoctorModel from "../models/DoctorModel"
 import { IDoctor } from "../interfaces/IDoctor"
 import Doctors from '../json/doctors.json'
 import Database from "../db/Database"
-import { Op } from "sequelize"
+import { Op, where } from "sequelize"
 
 export default class DoctorRepository {
     private db: Database
@@ -73,6 +73,12 @@ export default class DoctorRepository {
         return this.model.destroy({
             where: { doctor_id: id_doctor }
         })
+    }
+
+
+
+    async BulkDelete() {
+        return this.model.destroy({ where: {} })
     }
 
 

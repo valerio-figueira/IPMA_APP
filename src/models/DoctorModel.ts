@@ -50,7 +50,7 @@ class DoctorModel extends Model<IDoctor> {
                 allowNull: false,
             },
             phone_number: {
-                type: DataTypes.STRING(40),
+                type: DataTypes.STRING(70),
                 allowNull: false,
             },
             created_at: {

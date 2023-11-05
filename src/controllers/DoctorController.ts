@@ -75,6 +75,16 @@ class DoctorController {
 
 
 
+    async BulkDelete(req: Request, res: Response) {
+        try {
+            res.status(200).json(await this.doctorService.BulkDelete())
+        } catch (error: any) {
+            res.status(error.status || 500).json({ error: error.message })
+        }
+    }
+
+
+
     async ExtractData(req: Request, res: Response) {
         try {
             res.status(200).json(await this.doctorService.ExtractData(req.files))
