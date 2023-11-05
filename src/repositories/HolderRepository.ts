@@ -8,9 +8,8 @@ import Queries from "../db/Queries";
 import MemberModel from "../models/MemberModel";
 import AccessHierarchyModel from "../models/AccessHierarchyModel";
 import AuthenticationModel from "../models/AuthenticationModel";
-import DocumentEntity from "../entities/DocumentEntity";
 import RES from "../utils/messages/HolderResponses";
-import UserModel from "../models/user/UserModel";
+import HolderBundleEntities from "../entities/HolderBundleEntities";
 
 export default class HolderRepository {
     private db: Database;
@@ -30,9 +29,9 @@ export default class HolderRepository {
 
 
 
-    async Create(query: IUserAttributes) {
+    async Create(query: HolderBundleEntities) {
         const t: Transaction = await this.db.sequelize.transaction();
-
+        console.log(query)
         try {
             await this.userRepository.CreateWithTransaction(query, t);
 
@@ -43,6 +42,7 @@ export default class HolderRepository {
             return this.ReadOne(holder.holder_id)
         } catch (error: any) {
             await t.rollback();
+            console.log(error)
             throw new CustomError(RES.ServerError, 500)
         }
     }

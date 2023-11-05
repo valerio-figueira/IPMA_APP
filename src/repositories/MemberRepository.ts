@@ -6,6 +6,7 @@ import AgreementModel from "../models/AgreementModel";
 import CustomError from "../utils/CustomError";
 import Database from "../db/Database";
 import DependentModel from "../models/DependentModel";
+import { Op, col } from "sequelize";
 
 export default class MemberRepository {
     private db: Database
@@ -36,11 +37,12 @@ export default class MemberRepository {
         const pageSize = query.pageSize || 10;
         const offset = (page - 1) * pageSize;
 
-        const whereClause: any = {
-            active: query.active || true
+        const where: any = {
+            active: query.active || true,
+            dependent_id: null,
         }
-        //dependent_id: null
-        const includeClause: any = [{
+
+        const include: any = [{
             model: AgreementModel,
             as: 'agreement',
             attributes: { exclude: ['agreement_id'] }
@@ -53,23 +55,16 @@ export default class MemberRepository {
             }]
         }]
 
-        if (query.holder_id) whereClause.holder_id = query.holder_id
-
-        if (query.agreement_name) includeClause[0].where = {
-            agreement_name: query.agreement_name
-        }
+        if (query.active) where.active = query.active
+        if (query.holder_id) where.holder_id = query.holder_id
+        if (query.name) where['$holder.user.name$'] = { [Op.like]: `%${query.name}%` }
+        if (query.agreement_name) include[0].where = { agreement_name: query.agreement_name }
 
         return this.models.Member.findAll({
             offset,
             limit: pageSize,
-            where: whereClause,
-            include: includeClause,
-            group: ['holder.holder_id'],
-            order: [[
-                { model: this.models.Holder, as: 'holder' },
-                { model: UserModel, as: 'user' }
-                , 'name', 'ASC'
-            ]],
+            where, include,
+            order: [['created_at', 'DESC']],
             raw: true, nest: true
         })
     }
@@ -78,17 +73,14 @@ export default class MemberRepository {
 
 
     async ReadOne(subscription_id: string | number) {
-        return HolderModel.findOne({
+        return this.models.Holder.findOne({
             include: [{
-                model: UserModel,
-                as: 'user'
-            }, {
-                model: MemberModel,
+                model: this.models.Member,
                 as: 'subscription',
                 where: { member_id: subscription_id },
                 attributes: { exclude: ['holder_id'] },
                 include: [{
-                    model: AgreementModel,
+                    model: this.models.Agreement,
                     as: 'agreement',
                     attributes: { exclude: ['agreement_id'] }
                 }]

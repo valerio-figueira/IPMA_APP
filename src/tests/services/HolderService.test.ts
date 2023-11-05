@@ -42,7 +42,7 @@ describe('TEST for Holder Service layer', () => {
 
     it('should NOT FIND any holder in all list', async () => {
         try {
-            await holderService.ReadAll()
+            await holderService.ReadAll('')
         } catch (error: any) {
             expect(error).toBeInstanceOf(CustomError)
             expect(error.message).toBe('Nenhum titular foi encontrado')
@@ -150,7 +150,7 @@ describe('TEST for Holder Service layer', () => {
 
 
     it('should READ ALL holders', async () => {
-        const res = await holderService.ReadAll()
+        const res = await holderService.ReadAll('')
 
         expect(res).toBeInstanceOf(Array)
     })
@@ -226,7 +226,7 @@ describe('TEST for Holder Service layer', () => {
 
 
     it('should READ ALL holders', async () => {
-        const res = await holderService.ReadAll()
+        const res = await holderService.ReadAll('')
         expect(res).toBeInstanceOf(Array)
     })
 

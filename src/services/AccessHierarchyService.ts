@@ -27,10 +27,7 @@ export default class AccessHierarchyService {
 
 
     async ReadAll() {
-        const hierarchies = await this.accessHierarchyRepository.ReadAll()
-        const hierarchyTree = new AccessHierarchyTree(hierarchies)
-
-        return hierarchyTree.buildHierarchyTree()
+        return this.accessHierarchyRepository.ReadAll()
     }
 
 

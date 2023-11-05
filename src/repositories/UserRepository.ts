@@ -11,6 +11,7 @@ import { ID } from "../types/ID";
 import DocumentEntity from "../entities/DocumentEntity";
 import AuthenticationModel from "../models/AuthenticationModel";
 import AccessHierarchyModel from "../models/AccessHierarchyModel";
+import { Op } from "sequelize";
 
 type OptionalTransaction = Transaction | undefined;
 
@@ -207,7 +208,9 @@ export default class UserRepository {
         if (query.identity) whereClause.identity = query.identity
 
         return this.models.DocumentModel.findOne({
-            where: whereClause
+            where: {
+                [Op.or]: whereClause
+            }
         })
     }
 
