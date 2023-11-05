@@ -2,6 +2,26 @@ import CustomError from "../CustomError";
 import { BadRequest } from "../messages/APIResponse";
 
 
+export function validateAgreements(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const originalMethod = descriptor.value;
+
+    descriptor.value = function (...args: any[]) {
+        const param = args[0]
+
+        if (typeof param !== 'object') {
+            throw new Error(`Validation failed, parameter must be an object.`);
+        }
+
+        validateStringOrNumber(param)
+        validateAgreement(param)
+        validateAmount(param.amount)
+        validateID(param.holder_id)
+
+        return originalMethod.apply(this, args);
+    };
+
+    return descriptor;
+}
 
 
 export function validateUser(userType: string) {
@@ -30,6 +50,22 @@ export function validateUser(userType: string) {
 }
 
 
+
+function validateAgreement(data: Record<string, string | number>) {
+    const mandatory = ['UNIMED', 'ODONTO COMPANY', 'UNIODONTO']
+
+    if (mandatory.includes(data.agreement_name as string)) {
+        throw new CustomError('Verifique o nome do convênio', 400)
+    }
+}
+
+
+function validateAmount(amount: number | string) {
+    if (typeof amount !== 'number') return
+    if (typeof amount === 'string') amount = Number(amount).toFixed(2)
+
+    throw new CustomError('Verifique a mensalidade!', 400)
+}
 
 
 
@@ -103,7 +139,9 @@ function validateID(value: number) {
     const ERROR = new CustomError(BadRequest.MESSAGE, BadRequest.STATUS)
 
     if (!value) throw ERROR
-    if (typeof value !== 'number') throw ERROR
+    if (typeof value === 'number') return
+    if (typeof value === 'string') return
+    throw ERROR
 }
 
 

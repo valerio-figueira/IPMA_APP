@@ -7,7 +7,7 @@ export default class MemberValidator {
         // Verifique se os campos obrigatórios estão presentes
         if (!data.agreement_id && !data.holder_id) throw new CustomError('Verifique os campos obrigatórios', 400)
 
-        this.isNumber(data)
+        //this.isNumber(data)
     }
 
     static validateMember(data: IMember) {

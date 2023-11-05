@@ -36,6 +36,7 @@ class MemberModel extends Model<IMember> {
             dependent_id: {
                 type: DataTypes.INTEGER,
                 defaultValue: null,
+                allowNull: true,
                 references: {
                     model: DependentModel,
                     key: 'dependent_id',
@@ -107,7 +108,7 @@ class MemberModel extends Model<IMember> {
 
         MemberModel.belongsTo(DependentModel, {
             foreignKey: 'dependent_id',
-            as: 'dependent'
+            as: 'dependent',
         })
 
     }

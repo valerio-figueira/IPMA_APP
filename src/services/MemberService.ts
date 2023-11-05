@@ -12,6 +12,7 @@ import HolderModel from "../models/HolderModel";
 import DependentModel from "../models/DependentModel";
 import MemberModel from "../models/MemberModel";
 import Database from "../db/Database";
+import { validateAgreements } from "../utils/decorators/validateBody";
 
 
 export default class MemberService {
@@ -31,18 +32,13 @@ export default class MemberService {
 
 
 
-
+    @validateAgreements
     async Create(body: IMember & IMonthlyFee) {
+        console.log(body)
         const dependent = await this.findDependent(body)
         await this.checkIfExists(body, dependent)
         const holder = await this.findHolder(body)
         const agreement = await this.findAgreement(body)
-
-        if (agreement.agreement_name.match('ODONTO COMPANY')) {
-            if (!body.amount || typeof body.amount !== 'number') {
-                throw new CustomError('Verifique o valor da mensalidade', 400)
-            }
-        }
 
         const subscription = await this.memberRepository.Create(body);
 

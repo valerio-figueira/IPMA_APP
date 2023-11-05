@@ -58,7 +58,8 @@ export default class HolderRepository {
         return this.models.Holder
             .findAll({
                 include: Queries.IncludeSummaryUser(whereClause),
-                raw: true, nest: true
+                raw: true, nest: true,
+                order: [['created_at', 'DESC']]
             })
     }
 
