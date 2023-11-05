@@ -1,9 +1,11 @@
 import StringSanitizer from "./StringSanitizer"
+import format from "date-fns/format"
 
 export default class UserDataSanitizer {
     static sanitizeBody(data: any) {
         for (const key in data) {
-            data[key] = this.filterDate(data[key])
+            data[key] = key === 'birth_date' ? this.filterDate(data[key]) : data[key]
+            data[key] = key === 'issue_date' ? this.filterDate(data[key]) : data[key]
             data[key] = this.sanitizeFields(key, data[key])
             data[key] = StringSanitizer.convertToUpperCase(key, data[key])
             data[key] = StringSanitizer.sanitizeEmptyFields(data[key])
@@ -67,13 +69,33 @@ export default class UserDataSanitizer {
         if (obj.location_id) delete obj.location_id
     }
 
-    static filterDate(obj: any) {
+    static filterDate(value: any) {
         const regex = /^\d{4}-\d{2}-\d{2}$/;
+        console.log(value)
+        if (!value) return null
+        if (value === '0000-00-00') return null
+        if (regex.test(value)) return new Date(value)
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(value)) { // CONVERT FROM DD/MM/YYYY FORMAT TO YYYY/MM/DD
+            const date = this.formatDate(value)
+            return date ? format(date, 'yyyy-MM-dd') : null
+        }
 
-        if (!obj) return null
-        if (obj === '0000-00-00') return null
-        if (regex.test(obj)) return obj.replace(/-/g, '/')
+        return null
+    }
 
-        return obj
+    static formatDate(str: string) {
+        const pieces = str.split('/')
+        const day = parseInt(pieces[0], 10);
+        const month = parseInt(pieces[1], 10) - 1; // O mês começa em 0 (janeiro) no objeto Date
+        const year = parseInt(pieces[2], 10);
+
+        const data = new Date(year, month, day);
+
+        // Verifica se a data resultante é válida
+        if (isNaN(data.getTime())) {
+            return null; // Data inválida
+        }
+
+        return data;
     }
 }
