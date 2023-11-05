@@ -10,6 +10,7 @@ import MonthlyFeeRoutes from "./MonthlyFeeRoutes";
 import SocialSecurityTeamRoutes from "./SocialSecurityTeamRoutes";
 import Database from "../db/Database";
 import UserRoutes from "./UserRoutes";
+import DatabaseRoutes from "./DatabaseRoutes";
 
 
 class RegisterRoutes {
@@ -30,7 +31,8 @@ class RegisterRoutes {
             Member: new MemberRoutes(this.database).router,
             MonthlyFee: new MonthlyFeeRoutes(this.database).router,
             SSTMember: new SocialSecurityTeamRoutes(this.database).router,
-            User: new UserRoutes(this.database).router
+            User: new UserRoutes(this.database).router,
+            Database: new DatabaseRoutes(this.database).router
         }
         // this.printRoutes()
     }
@@ -45,7 +47,8 @@ class RegisterRoutes {
         this.APP.use('/api/v1/members', this.routes.Member)
         this.APP.use('/api/v1/monthly-fee', this.routes.MonthlyFee)
         this.APP.use('/api/v1/social-security-team', this.routes.SSTMember)
-        this.APP.use('/api/v1/users', this.routes.User)
+        this.APP.use('/api/v1/users', this.routes.User),
+        this.APP.use('/api/v1/database', this.routes.Database)
     }
 
     printRoutes() {

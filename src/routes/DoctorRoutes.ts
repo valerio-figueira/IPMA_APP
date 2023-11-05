@@ -21,6 +21,7 @@ class DoctorRoutes {
         this.router.get('/', this.controller.ReadAll.bind(this.controller))
         this.router.get('/:id', this.controller.ReadOne.bind(this.controller))
         this.router.put('/', this.controller.Update.bind(this.controller))
+        this.router.delete('/bulk-delete', this.controller.BulkDelete.bind(this.controller))
         this.router.delete('/:id', this.controller.Delete.bind(this.controller))
         this.router.post('/extract-data', this.controller.ExtractData.bind(this.controller))
     }
