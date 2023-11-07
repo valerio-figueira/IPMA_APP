@@ -40,7 +40,6 @@ export function validateUser(userType: string) {
             validateStringOrNumber(param)
             validateCPF(param.cpf)
             validateDate(param.birth_date)
-            validateDate(param.issue_date)
 
             return originalMethod.apply(this, args);
         };
@@ -85,13 +84,17 @@ function validateCPF(cpf: string) {
 
 
 function validateDate(date: string | null) {
-    const regex = [/^\d{4}-\d{2}-\d{2}$/, /^\d{4}\/\d{2}\/\d{2}$/];
+    const regex = [/^\d{2}-\d{2}-\d{4}$/,
+        /^\d{4}\/\d{2}\/\d{2}$/,
+        /^\d{4}-\d{2}-\d{2}$/];
+
     if (date === '') return
     if (date !== null) {
+        if (regex[0].test(date)) return
         if (regex[1].test(date)) return
-        if (!regex[0].test(date)) {
-            throw new CustomError('Data inválida', 400)
-        }
+        if (regex[2].test(date)) return
+
+        throw new CustomError('Data inválida', 400)
     }
 }
 
