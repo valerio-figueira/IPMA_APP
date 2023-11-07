@@ -5,9 +5,9 @@ export default class UserValidator {
 
     static validate(data: TBody) {
         // Verifique se os campos obrigatórios estão presentes
-        if (!data.name || !data.cpf || !data.identity) {
-            throw new CustomError('Verifique os campos obrigatórios', 400)
-        }
+        if (!data.name) throw new CustomError('Digite o nome', 400)
+        if (!data.cpf) throw new CustomError('Digite o número do CPF', 400)
+        if (!data.identity) throw new CustomError('Digite o número do RG', 400)
 
         this.validateStatus(data.status)
         this.validateStringOrNumber(data)
