@@ -52,11 +52,16 @@ export default class HolderRepository {
 
     async ReadAll(query: any) {
         const whereClause: any = {}
+        const holderWhereClause: any = {}
 
         if (query.name) whereClause.name = { [Op.like]: `%${query.name}%` }
+        if (query.subscription_number) {
+            holderWhereClause.subscription_number = query.subscription_number
+        }
 
         return this.models.Holder
             .findAll({
+                where: holderWhereClause,
                 include: Queries.IncludeSummaryUser(whereClause),
                 raw: true, nest: true,
                 order: [['created_at', 'DESC']]

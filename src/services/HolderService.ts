@@ -30,6 +30,15 @@ export default class HolderService {
 
         await this.userService.Exists(holderData.document)
 
+        if (holderData.holder.subscription_number) {
+            const exists = await this.holderRepository.ReadAll({
+                subscription_number: holderData.holder.subscription_number
+            })
+            const message = 'Já existe um titular com esta matrícula!'
+            if (exists.length > 0) throw new CustomError(message, 400)
+        }
+
+
         return this.holderRepository.Create(holderData)
     }
 
