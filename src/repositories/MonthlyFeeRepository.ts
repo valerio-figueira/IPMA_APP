@@ -3,7 +3,7 @@ import MonthlyFee from "../models/MonthlyFeeModel";
 import HolderModel from "../models/HolderModel";
 import UserModel from "../models/user/UserModel";
 import AgreementModel from "../models/AgreementModel";
-import { Op } from "sequelize";
+import { Op, Transaction } from "sequelize";
 import Queries from "../db/Queries";
 import MemberModel from "../models/MemberModel";
 import Database from "../db/Database";
@@ -23,9 +23,9 @@ export default class MonthlyFeeRepository {
 
 
 
-    async Create(query: IMonthlyFee) {
+    async Create(query: IMonthlyFee, transaction: Transaction | undefined = undefined) {
         return this.models.MonthlyFee
-            .create(query, { raw: true })
+            .create(query, { raw: true, transaction })
     }
 
 

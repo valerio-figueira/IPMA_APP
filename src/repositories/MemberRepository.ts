@@ -6,7 +6,7 @@ import AgreementModel from "../models/AgreementModel";
 import CustomError from "../utils/CustomError";
 import Database from "../db/Database";
 import DependentModel from "../models/DependentModel";
-import { Op, col } from "sequelize";
+import { Op, Transaction, col } from "sequelize";
 
 export default class MemberRepository {
     private db: Database
@@ -25,8 +25,8 @@ export default class MemberRepository {
 
 
 
-    async Create(query: IMember) {
-        return this.models.Member.create(query, { raw: true })
+    async Create(query: IMember, transaction: Transaction) {
+        return this.models.Member.create(query, { raw: true, transaction })
     }
 
 
@@ -37,10 +37,7 @@ export default class MemberRepository {
         const pageSize = query.pageSize || 10;
         const offset = (page - 1) * pageSize;
 
-        const where: any = {
-            active: query.active || true,
-            dependent_id: null,
-        }
+        const where: any = { dependent_id: null }
 
         const include: any = [{
             model: AgreementModel,
@@ -113,6 +110,15 @@ export default class MemberRepository {
 
 
 
+    async totalCount(query: any) {
+        const whereClause: any = {}
+        this.setParams(query, whereClause)
+        return this.models.Member.count({ where: whereClause })
+    }
+
+
+
+
     async ifMemberExists(query: IMember, dependent_id: number | null = null) {
         return this.models.Member.findOne({
             where: {
@@ -126,12 +132,24 @@ export default class MemberRepository {
 
 
 
-    async updateExclusionOfDependents(query: IMember) {
-        const transaction = await this.db.sequelize.transaction()
-        const dependents = await DependentModel.findAll({ where: { holder_id: query.holder_id } })
+    private setParams(query: any, whereClause: any) {
+        whereClause.dependent_id = null
 
+        if (query.active) whereClause.active = query.active
+        if (query.holder_id) whereClause.holder_id = query.holder_id
+        if (query.name) whereClause['$holder.user.name$'] = { [Op.like]: `%${query.name}%` }
+    }
+
+
+
+
+    async updateExclusionOfDependents(query: IMember) {
+        const dependents = await DependentModel.findAll({ where: { holder_id: query.holder_id } })
+        if (dependents.length === 0) return
+
+        const transaction = await this.db.sequelize.transaction()
         try {
-            if (dependents.length === 0) return
+
 
             let affectedCount = 0
             for (let dependent of dependents) {

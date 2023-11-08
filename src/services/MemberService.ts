@@ -3,7 +3,7 @@ import IMember from "../interfaces/IMember";
 import CustomError from "../utils/CustomError";
 import HolderService from "./HolderService";
 import AgreementService from "./AgreementService";
-import MemberSchema from "../entities/MemberEntity";
+import MemberEntity from "../entities/MemberEntity";
 import UserDataSanitizer from "../helpers/UserDataSanitizer";
 import MonthlyFeeService from "./MonthlyFeeService";
 import IMonthlyFee from "../interfaces/IMonthlyFee";
@@ -16,6 +16,7 @@ import { validateAgreements } from "../utils/decorators/validateBody";
 
 
 export default class MemberService {
+    db: Database;
     memberRepository: MemberRepository;
     holderService: HolderService;
     agreementService: AgreementService;
@@ -23,7 +24,8 @@ export default class MemberService {
     dependentService: DependentService;
 
     constructor(db: Database) {
-        this.memberRepository = new MemberRepository(db);
+        this.db = db
+        this.memberRepository = new MemberRepository(db)
         this.holderService = new HolderService(db)
         this.dependentService = new DependentService(db)
         this.agreementService = new AgreementService(db)
@@ -34,17 +36,22 @@ export default class MemberService {
 
     @validateAgreements
     async Create(body: IMember & IMonthlyFee) {
-        console.log(body)
         const dependent = await this.findDependent(body)
         await this.checkIfExists(body, dependent)
         const holder = await this.findHolder(body)
         const agreement = await this.findAgreement(body)
 
-        const subscription = await this.memberRepository.Create(body);
+        const transaction = await this.db.sequelize.transaction()
 
-        if (!subscription) throw new CustomError('Não foi possível registrar o usuário no convênio', 500)
-        body.member_id = subscription.member_id
-        await this.monthlyFeeService.Create(body)
+        try {
+            const subscription = await this.memberRepository.Create(body, transaction)
+            body.member_id = subscription.member_id
+            await this.monthlyFeeService.Create(body, transaction)
+            await transaction.commit()
+        } catch (error: any) {
+            await transaction.rollback()
+            throw new CustomError('Não foi possível concluir: ' + error.message, 500)
+        }
 
         const name = dependent?.user?.name || holder.user!.name
 
@@ -56,13 +63,13 @@ export default class MemberService {
 
 
     async ReadAll(query: any) {
-        const subscriptions: MemberModel[] = await this.memberRepository.ReadAll(query);
+        const subscriptions: MemberModel[] = await this.memberRepository.ReadAll(query)
 
         if (!subscriptions || subscriptions.length === 0) throw new CustomError('Nenhum registro encontrado!', 400)
         //const holders: Record<number, any> = await this.addUsersToResponse(subscriptions)
 
-        const totalCount = subscriptions.length
-        const totalPages = Math.ceil(totalCount / query.pageSize || 10)
+        const totalCount = subscriptions.length + 1
+        const totalPages = Math.ceil(totalCount / (query.pageSize || 10))
         const response = []
         response.push(subscriptions, {
             currentPage: query.page || 1,
@@ -91,21 +98,26 @@ export default class MemberService {
 
 
     async Update(body: IMember) {
-        const subscription = new MemberSchema(body)
+        const subscription = new MemberEntity(body)
 
         if (!subscription.member_id) throw new CustomError('Verifique a identificação do conveniado', 400)
 
         await this.checkIfMemberExists(body)
 
-        if (!subscription.active && !subscription.exclusion_date) subscription.exclusion_date = new Date(Date.now())
+        if (!subscription.active && !subscription.exclusion_date) subscription.exclusion_date = new Date()
         if (subscription.active && subscription.exclusion_date) subscription.exclusion_date = null
 
         if (!subscription.active) {
             if (subscription.holder_id && !subscription.dependent_id) {
-                const affectedCount = await this.memberRepository.updateExclusionOfDependents(body)
-                if (affectedCount === 0) throw new CustomError('Nenhum dado foi alterado', 400)
-                if (affectedCount && affectedCount > 1) {
-                    return { message: `Houve ${affectedCount} exclus${affectedCount > 1 ? + 'ões' : 'ão'}` }
+                const dependentExists = await this.findAllDependents(subscription)
+
+                if (dependentExists) {
+                    return this.memberRepository.updateExclusionOfDependents(body)
+                } else {
+                    const [affectedCount] = await this.memberRepository.Update(subscription)
+
+                    if (affectedCount) return this.ReadOne(subscription.member_id)
+                    else return affectedCount
                 }
             }
         } else {
@@ -146,7 +158,15 @@ export default class MemberService {
     }
 
 
+    private async findAllDependents(body: IMember) {
+        if (!body.dependent_id) return
 
+        const dependent: any[] = await this.dependentService.ReadAll(String(body.holder_id))
+
+        if (dependent.length === 0) throw new CustomError('Não foi possível localizar os dados do dependente', 400)
+
+        return dependent
+    }
 
 
     private async findHolder(body: IMember) {

@@ -4,6 +4,8 @@ import IMonthlyFee from "../interfaces/IMonthlyFee";
 import CustomError from "../utils/CustomError";
 import MonthlyFeeModel from "../models/MonthlyFeeModel";
 import Database from "../db/Database";
+import { validateMonthlyFee } from "../utils/decorators/validateBody";
+import { Transaction } from "sequelize";
 
 export default class MonthlyFeeService {
     monthlyFeeRepository: MonthlyFeeRepository;
@@ -14,15 +16,16 @@ export default class MonthlyFeeService {
 
 
 
-
-    async Create(body: IMonthlyFee) {
+    @validateMonthlyFee
+    async Create(body: IMonthlyFee, transaction: Transaction | undefined = undefined) {
         const billing = new MonthlyFeeSchema(body)
 
         this.verifyDate(billing)
+        this.verifyAmount(billing)
 
         await this.findDuplicateBilling(billing)
 
-        const createdBilling = await this.monthlyFeeRepository.Create(billing);
+        const createdBilling = await this.monthlyFeeRepository.Create(billing, transaction);
 
         if (!createdBilling) throw new CustomError('Não foi possível salvar a mensalidade', 500)
 
@@ -66,9 +69,14 @@ export default class MonthlyFeeService {
 
 
     verifyDate(billing: IMonthlyFee) {
-        if (!billing.reference_date) billing.reference_date = new Date(Date.now())
         if (!billing.reference_year) billing.reference_year = new Date().getFullYear()
-        if (!billing.reference_month) billing.reference_month = new Date().getMonth()
+        if (!billing.reference_month) billing.reference_month = Number(billing.reference_month)
+    }
+
+    verifyAmount(billing: IMonthlyFee) {
+        if (typeof billing.amount === 'string') {
+            billing.amount = Number(billing.amount)
+        }
     }
 
 
