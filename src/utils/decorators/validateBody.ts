@@ -50,6 +50,36 @@ export function validateUser(userType: string) {
 
 
 
+export function validateMonthlyFee(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const originalMethod = descriptor.value;
+
+    descriptor.value = function (...args: any[]) {
+        const param = args[0]
+
+        if (typeof param !== 'object') {
+            throw new Error(`Validation failed, parameter must be an object.`);
+        }
+
+        validateMonth(param.reference_month)
+        validateAmount(param.amount)
+
+        return originalMethod.apply(this, args);
+    };
+
+    return descriptor;
+}
+
+
+function validateMonth(month: number | string) {
+    month = Number(month)
+    console.log(month)
+    if (month >= 0 && month <= 11) return
+
+    throw new CustomError('Mês de referência não é válido!', 400)
+}
+
+
+
 function validateAgreement(data: Record<string, string | number>) {
     const mandatory = ['UNIMED', 'ODONTO COMPANY', 'UNIODONTO']
 
@@ -60,10 +90,13 @@ function validateAgreement(data: Record<string, string | number>) {
 
 
 function validateAmount(amount: number | string) {
+    const message = 'Verifique a mensalidade!'
+
+    if (!amount) throw new CustomError(message, 400)
     if (typeof amount !== 'number') return
     if (typeof amount === 'string') amount = Number(amount).toFixed(2)
 
-    throw new CustomError('Verifique a mensalidade!', 400)
+    throw new CustomError(message, 400)
 }
 
 
