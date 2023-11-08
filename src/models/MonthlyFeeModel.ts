@@ -11,7 +11,6 @@ class MonthlyFeeModel extends Model<IMonthlyFee> {
     declare reference_month: number;
     declare reference_year: number;
     declare status: 'PENDENTE' | 'PAGO' | 'ANULADO';
-    declare reference_date: Date;
     declare payment_date?: Date;
     declare created_at: Date;
 
@@ -55,10 +54,6 @@ class MonthlyFeeModel extends Model<IMonthlyFee> {
                 type: DataTypes.ENUM('PENDENTE', 'PAGO', 'ANULADO'),
                 allowNull: false,
                 defaultValue: 'PENDENTE',
-            },
-            reference_date: {
-                type: DataTypes.DATE,
-                allowNull: false,
             },
             payment_date: {
                 type: DataTypes.DATE,
