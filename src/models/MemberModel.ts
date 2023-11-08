@@ -29,7 +29,7 @@ class MemberModel extends Model<IMember> {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: HolderModel,
+                    model: HolderModel.INIT(sequelize),
                     key: 'holder_id',
                 }
             },
@@ -38,13 +38,17 @@ class MemberModel extends Model<IMember> {
                 defaultValue: null,
                 allowNull: true,
                 references: {
-                    model: DependentModel,
+                    model: DependentModel.INIT(sequelize),
                     key: 'dependent_id',
                 }
             },
             agreement_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
+                references: {
+                    model: AgreementModel.INIT(sequelize),
+                    key: 'agreement_id'
+                }
             },
             agreement_card: {
                 type: DataTypes.INTEGER,
@@ -78,7 +82,7 @@ class MemberModel extends Model<IMember> {
     }
 
     private static createAssociations(MemberModel: TMemberModel, sequelize: Sequelize) {
-        HolderModel.INIT(sequelize).hasOne(MemberModel, {
+        HolderModel.hasOne(MemberModel, {
             foreignKey: 'holder_id',
             as: 'subscription',
             onDelete: 'CASCADE'
@@ -89,7 +93,7 @@ class MemberModel extends Model<IMember> {
             as: 'holder'
         })
 
-        AgreementModel.INIT(sequelize).hasOne(MemberModel, {
+        AgreementModel.hasOne(MemberModel, {
             foreignKey: 'agreement_id',
             as: 'subscription',
             onDelete: 'CASCADE'
@@ -100,7 +104,7 @@ class MemberModel extends Model<IMember> {
             as: 'agreement'
         })
 
-        DependentModel.INIT(sequelize).hasOne(MemberModel, {
+        DependentModel.hasOne(MemberModel, {
             foreignKey: 'dependent_id',
             as: 'subscription',
             onDelete: 'CASCADE'
