@@ -46,7 +46,8 @@ export default class Database {
     async syncModels() {
         try {
             await this.authenticate()
-            return new Models(this.sequelize)
+            new Models(this.sequelize)
+            await this.sequelize.sync()
         } catch (error: any) {
             throw ERROR.DBSyncError
         }
