@@ -15,6 +15,7 @@ import SSTModel from "./SocialSecurityTeamModel";
 import BlogPostModel from "./BlogPostModel";
 import PostAuthorModel from "./PostAuthor";
 import * as ModelTypes from "../types/TModels";
+import QuoteModel from "./QuoteModel";
 
 
 class Models {
@@ -33,6 +34,7 @@ class Models {
     SocialSecurityTeam: ModelTypes.TSSTModel
     BlogPost: ModelTypes.TBlogPostModel
     PostAuthor: ModelTypes.TPostAuthorModel
+    Quotes: ModelTypes.TQuotesModel
 
     constructor(sequelize: Sequelize) {
         this.User = UserModel.INIT(sequelize)
@@ -50,6 +52,7 @@ class Models {
         this.SocialSecurityTeam = SSTModel.INIT(sequelize)
         this.BlogPost = BlogPostModel.INIT(sequelize)
         this.PostAuthor = PostAuthorModel.INIT(sequelize)
+        this.Quotes = QuoteModel.INIT(sequelize)
     }
 
 
