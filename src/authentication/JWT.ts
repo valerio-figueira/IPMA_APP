@@ -87,7 +87,7 @@ export default class JWT {
     };
 
     // RETURN TOKEN
-    return { token: jwt.sign({ user }, this.SECRET_KEY, { expiresIn: "1h" }) }
+    return { token: jwt.sign({ user }, this.SECRET_KEY, { expiresIn: "15m" }) }
   }
 
 

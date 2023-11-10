@@ -1,60 +1,69 @@
-import express, { Application, Request, Response, NextFunction } from "express";
+import express, { Application, Request, Response } from "express";
 import path from "path";
 import cors from 'cors';
-import BodyParser, { json } from 'body-parser';
+import https from 'https'
+import http from 'http';
+import BodyParser from 'body-parser';
 import session from "express-session";
 import fileUpload from "express-fileupload";
-import 'reflect-metadata'
+import Database from "./db/Database";
+import 'reflect-metadata';
 
 // CONFIG
 import Cors from "./config/Cors";
 import Session from "./config/Session";
+import Certificate from "./config/Certificate";
 
 // ROUTES
 import RegisterRoutes from "./routes/RegisterRoutes";
 
-import Database from "./db/Database";
-
-declare module 'express-session' {
-    interface SessionData { user: string; }
-}
 
 export default class Server {
-    APP: Application;
-    PORT: number;
+    APP: Application
+    PORT_HTTP: number
+    PORT_HTTPS: number
     database: Database
     routes: RegisterRoutes
 
-    constructor(PORT: number) {
-        this.APP = express();
-        this.PORT = PORT;
-        this.database = new Database();
+
+    constructor(PORT_HTTP: number, PORT_HTTPS: number) {
+        this.APP = express()
+        this.PORT_HTTP = PORT_HTTP
+        this.PORT_HTTPS = PORT_HTTPS
+        this.database = new Database()
         this.routes = new RegisterRoutes(this.APP, this.database)
-        this.setupMiddleware();
-        this.setupRoutes();
+        this.setupMiddleware()
+        this.initializeRoutes()
     }
+
 
     public start() {
-        const message = `Server running on port ${this.PORT}`
-        this.APP.listen(this.PORT, () => console.log(message));
+        https.createServer(Certificate.config(__dirname), this.APP)
+            .listen(this.PORT_HTTPS, () => console.log(`Server HTTPS running on port ${this.PORT_HTTPS}`))
+
+        http.createServer(this.APP)
+            .listen(this.PORT_HTTP, () => console.log(`Server HTTP running on port ${this.PORT_HTTP}`))
     }
 
-    private setupMiddleware() {
-        this.APP.use(cors(Cors.config));
 
-        this.APP.use(BodyParser.urlencoded({ extended: false }));
-        this.APP.use(BodyParser.json());
+    private setupMiddleware() {
+        this.APP.use(cors(Cors.config))
+
+        this.APP.use(BodyParser.urlencoded({ extended: false }))
+        this.APP.use(BodyParser.json())
 
         this.APP.use(session(Session.config))
         this.APP.use(fileUpload())
 
-        this.APP.use(express.static(path.join("public")));
+        this.APP.use(express.static(path.join("public")))
     }
 
-    private setupRoutes() {
+
+    private initializeRoutes() {
         this.APP.get('/', this.rootHandler)
         this.routes.initialize()
     }
+
 
     private rootHandler(req: Request, res: Response) {
         res.status(200).json({ message: 'Hello world!' })

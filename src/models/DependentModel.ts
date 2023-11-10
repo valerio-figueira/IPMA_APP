@@ -26,7 +26,7 @@ class DependentModel extends Model<IDependentBase> {
         allowNull: false,
         unique: true,
         references: {
-          model: UserModel,
+          model: UserModel.INIT(sequelize),
           key: 'user_id',
         },
       },
@@ -34,7 +34,7 @@ class DependentModel extends Model<IDependentBase> {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: HolderModel,
+          model: HolderModel.INIT(sequelize),
           key: 'holder_id',
         },
       },
@@ -54,35 +54,29 @@ class DependentModel extends Model<IDependentBase> {
       timestamps: false,
     })
 
-    const dependentModel = sequelize.models.DependentModel
-
-    this.createAssociations(dependentModel, sequelize)
-
-    return dependentModel
-  }
-
-  static createAssociations(DependentModel: TDependentModel, sequelize: Sequelize) {
-    UserModel.INIT(sequelize).hasOne(DependentModel, {
+    UserModel.hasOne(this, {
       foreignKey: 'user_id',
       as: 'dependent',
       onDelete: 'CASCADE'
     });
 
-    HolderModel.INIT(sequelize).hasOne(DependentModel, {
+    HolderModel.hasOne(this, {
       foreignKey: 'holder_id',
       as: 'dependent',
       onDelete: 'CASCADE'
     });
 
-    DependentModel.belongsTo(UserModel, {
+    this.belongsTo(UserModel, {
       foreignKey: 'user_id',
       as: 'user',
     });
 
-    DependentModel.belongsTo(HolderModel, {
+    this.belongsTo(HolderModel, {
       foreignKey: 'holder_id',
       as: 'holder',
     });
+
+    return sequelize.models.DependentModel
   }
 }
 

@@ -29,7 +29,7 @@ class HolderModel extends Model<IHolderBase> {
                 allowNull: false,
                 unique: true,
                 references: {
-                    model: UserModel,
+                    model: UserModel.INIT(sequelize),
                     key: 'user_id',
                 },
             },
@@ -54,22 +54,18 @@ class HolderModel extends Model<IHolderBase> {
             timestamps: false,
         })
 
-        const holderModel = sequelize.models.HolderModel
-        this.createAssociations(holderModel, sequelize)
 
-        return holderModel
-    }
-
-    static createAssociations(HolderModel: THolderModel, sequelize: Sequelize) {
-        UserModel.INIT(sequelize).hasOne(HolderModel, {
+        UserModel.hasOne(this, {
             foreignKey: 'user_id',
             as: 'holder',
             onDelete: 'CASCADE'
         })
-        HolderModel.belongsTo(UserModel, {
+        this.belongsTo(UserModel, {
             foreignKey: 'user_id',
             as: 'user'
         })
+
+        return sequelize.models.HolderModel
     }
 }
 

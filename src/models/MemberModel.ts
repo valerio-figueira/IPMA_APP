@@ -5,6 +5,7 @@ import AgreementModel from './AgreementModel';
 import IMember from '../interfaces/IMember';
 import { TMemberModel } from '../types/TModels';
 import sequelize from 'sequelize';
+import MonthlyFeeModel from './MonthlyFeeModel';
 
 
 class MemberModel extends Model<IMember> {
@@ -76,12 +77,12 @@ class MemberModel extends Model<IMember> {
         })
 
         const memberModel = sequelize.models.MemberModel
-        this.createAssociations(memberModel, sequelize)
+        this.createAssociations(memberModel)
 
         return memberModel
     }
 
-    private static createAssociations(MemberModel: TMemberModel, sequelize: Sequelize) {
+    private static createAssociations(MemberModel: TMemberModel) {
         HolderModel.hasOne(MemberModel, {
             foreignKey: 'holder_id',
             as: 'subscription',

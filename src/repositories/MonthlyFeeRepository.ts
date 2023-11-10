@@ -16,8 +16,8 @@ export default class MonthlyFeeRepository {
     constructor(db: Database) {
         this.db = db
         this.models = {
-            MonthlyFee: MonthlyFeeModel.INIT(this.db.sequelize),
-            Member: MemberModel.INIT(this.db.sequelize)
+            Member: MemberModel.INIT(this.db.sequelize),
+            MonthlyFee: MonthlyFeeModel.INIT(this.db.sequelize)
         }
     }
 
@@ -32,16 +32,19 @@ export default class MonthlyFeeRepository {
 
 
     async ReadAll(query: any) {
-        const month = new Date().getMonth();
         const whereClause: any = {
             active: query.active || 1,
-            '$billing.member_id$': { [Op.not]: null },
-            '$billing.reference_month$': query.reference_month || month
+            '$billing.member_id$': { [Op.not]: null }
         }
 
-        if (query.agreement_name) {
-            whereClause['$agreement.agreement_name$'] = query.agreement_name
-        }
+        if (query.agreement_name)
+            whereClause['$agreement.agreement_name$'] = { [Op.like]: `%${query.agreement_name}%` };
+
+        if (query.reference_year)
+            whereClause['$billing.reference_month$'] = query.reference_year;
+
+        if (query.reference_month)
+            whereClause['$billing.reference_month$'] = query.reference_month;
 
         return this.models.Member.findAll({
             where: whereClause,

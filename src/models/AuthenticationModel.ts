@@ -15,7 +15,7 @@ class AuthenticationModel extends Model<IAuthentication> {
     hierarchy?: AccessHierarchyModel
 
     static INIT(sequelize: any)
-    : ModelStatic<AuthenticationModel> {
+        : ModelStatic<AuthenticationModel> {
         super.init({
             authentication_id: {
                 type: DataTypes.INTEGER,
@@ -36,7 +36,7 @@ class AuthenticationModel extends Model<IAuthentication> {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: AccessHierarchyModel,
+                    model: AccessHierarchyModel.INIT(sequelize),
                     key: 'hierarchy_id'
                 }
             },
@@ -65,21 +65,19 @@ class AuthenticationModel extends Model<IAuthentication> {
             timestamps: false
         })
 
-        const AuthenticationModel = sequelize.models.AuthenticationModel
+        this.createAssociations()
 
-        this.createAssociations(AuthenticationModel, sequelize)
-
-        return AuthenticationModel
+        return sequelize.models.AuthenticationModel
     }
 
-    static createAssociations(AuthenticationModel: TAuthenticationModel, sequelize: Sequelize) {
-        AccessHierarchyModel.INIT(sequelize).hasOne(AuthenticationModel, {
+    static createAssociations() {
+        AccessHierarchyModel.hasOne(this, {
             foreignKey: 'hierarchy_id',
             as: 'hierarchy',
             onDelete: 'CASCADE'
         })
 
-        AuthenticationModel.belongsTo(AccessHierarchyModel, {
+        this.belongsTo(AccessHierarchyModel, {
             foreignKey: 'hierarchy_id',
             as: 'hierarchy',
         });

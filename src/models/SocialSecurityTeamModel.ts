@@ -22,7 +22,7 @@ class SSTModel extends Model<ISocialSecurityTeam> {
                 allowNull: false,
                 unique: true,
                 references: {
-                    model: UserModel,
+                    model: UserModel.INIT(sequelize),
                     key: 'user_id'
                 }
             },
@@ -42,21 +42,19 @@ class SSTModel extends Model<ISocialSecurityTeam> {
             timestamps: false, // Se não precisa de colunas 'createdAt' e 'updatedAt'
         })
 
-        const SSTModel = sequelize.models.SSTModel
-
-        UserModel.INIT(sequelize).hasOne(SSTModel, {
+        UserModel.hasOne(this, {
             foreignKey: 'user_id',
             as: 'socialTeam',
             onDelete: 'CASCADE',
             hooks: true
         });
 
-        SSTModel.belongsTo(UserModel, {
+        this.belongsTo(UserModel, {
             foreignKey: 'user_id',
             as: 'user'
         });
 
-        return SSTModel
+        return sequelize.models.SSTModel
     }
 }
 

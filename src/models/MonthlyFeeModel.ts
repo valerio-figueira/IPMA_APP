@@ -26,7 +26,7 @@ class MonthlyFeeModel extends Model<IMonthlyFee> {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: MemberModel,
+                    model: MemberModel.INIT(sequelize),
                     key: 'member_id',
                 }
             },
@@ -72,24 +72,18 @@ class MonthlyFeeModel extends Model<IMonthlyFee> {
             timestamps: false, // Define como false se você não quiser usar colunas de timestamp created_at e updated_at
         })
 
-        const monthlyFeeModel = sequelize.models.MonthlyFeeModel
-
-        this.createAssociations(monthlyFeeModel, sequelize)
-
-        return monthlyFeeModel
-    }
-
-    static createAssociations(MonthlyFeeModel: TMonthlyFeeModel, sequelize: Sequelize) {
-        MonthlyFeeModel.belongsTo(MemberModel, {
-            foreignKey: 'member_id',
-            as: 'subscription'
-        })
-
-        MemberModel.INIT(sequelize).hasMany(MonthlyFeeModel, {
+        MemberModel.hasOne(this, {
             foreignKey: 'member_id',
             as: 'billing',
             onDelete: 'CASCADE'
         })
+
+        this.belongsTo(MemberModel, {
+            foreignKey: 'member_id',
+            as: 'subscription'
+        })
+
+        return sequelize.models.MonthlyFeeModel
     }
 }
 
