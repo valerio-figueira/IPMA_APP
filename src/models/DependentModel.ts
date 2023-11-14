@@ -39,7 +39,7 @@ class DependentModel extends Model<IDependentBase> {
         },
       },
       relationship_degree: {
-        type: DataTypes.STRING(11),
+        type: DataTypes.STRING(14),
         defaultValue: null
       },
       created_at: {
