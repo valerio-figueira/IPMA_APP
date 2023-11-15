@@ -120,13 +120,14 @@ export default class MemberRepository {
 
 
     async ifMemberExists(query: IMember, dependent_id: number | null = null) {
-        return this.models.Member.findOne({
-            where: {
-                holder_id: query.holder_id,
-                agreement_id: query.agreement_id,
-                dependent_id: dependent_id
-            }
-        })
+        const where: any = {
+            holder_id: query.holder_id,
+            agreement_id: query.agreement_id
+        }
+
+        if (dependent_id) where.dependent_id = dependent_id
+
+        return this.models.Member.findOne({ where })
     }
 
 

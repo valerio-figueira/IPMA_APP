@@ -15,7 +15,7 @@ export default class MonthlyFeeEntity {
         this.member_id = body.member_id;
         this.amount = body.amount;
         this.reference_month = body.reference_month;
-        this.reference_year = body.reference_year;
+        this.reference_year = body.reference_year || new Date().getFullYear();
         this.status = body.status;
         this.payment_date = body.payment_date;
         this.created_at = body.created_at;

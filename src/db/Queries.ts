@@ -8,24 +8,102 @@ import UserModel from "../models/user/UserModel";
 import AccessHierarchyModel from "../models/AccessHierarchyModel";
 import AuthenticationModel from "../models/AuthenticationModel";
 import MemberModel from "../models/MemberModel";
+import DependentModel from "../models/DependentModel";
 
 
 export default class Queries {
 
-    static MemberIncludeAll = [{
+    static MonthlyFeeRawQuery = `
+    SELECT
+      m.holder_id,
+      u.name,
+      a.agreement_name AS AGREEMENT,
+      SUM(billing.amount) AS total_billing,
+      billing.reference_month,
+      billing.reference_year
+    FROM
+      MONTHLY_FEE billing
+      INNER JOIN MEMBER m ON billing.member_id = m.member_id
+      INNER JOIN AGREEMENT a ON m.agreement_id = a.agreement_id
+      INNER JOIN HOLDER h ON m.holder_id = h.holder_id
+      INNER JOIN USER u ON h.user_id = u.user_id
+    WHERE
+      /* Adicione condição WHERE aqui, se necessário */
+    GROUP BY
+      m.holder_id,
+      u.name,
+      billing.reference_month,
+      billing.reference_year,
+      a.agreement_id
+  `;
+
+
+    /*
+           {
+              where: whereClause,
+              attributes: [
+                  'holder.holder_id',
+                  [this.db.sequelize.fn('SUM', this.db.sequelize.col('billing.amount')), 'total_billing'],
+                  'holder.user.name',
+                  'agreement.agreement_id',
+                  'billing.reference_month',
+                  'billing.reference_year'
+              ],
+              include: Queries.MemberIncludeAll,
+              group: [
+                  'holder.holder_id',
+                  'holder.user.name',
+                  'billing.reference_month',
+                  'billing.reference_year',
+                  'agreement.agreement_id'],
+              raw: true, nest: true
+            }
+    */
+
+    static MonthlyFeeSummary = [{
         model: MonthlyFeeModel,
         as: 'billing',
-        attributes: { exclude: ['member_id'] }
+        attributes: ['monthly_fee_id', 'amount', 'reference_month', 'reference_year', 'created_at'],
     }, {
         model: AgreementModel,
-        as: 'agreement'
+        as: 'agreement',
+        attributes: ['agreement_name']
     }, {
         model: HolderModel,
         as: 'holder',
-        attributes: { exclude: ['user_id'] },
+        attributes: [],
         include: [{
             model: UserModel,
-            as: 'user'
+            as: 'user',
+            attributes: ['name']
+        }]
+    }, {
+        model: DependentModel,
+        as: 'dependent',
+        attributes: ['relationship_degree'],
+        include: [{
+            model: UserModel,
+            as: 'user',
+            attributes: ['name']
+        }]
+    }]
+
+    static MemberIncludeAll = [{
+        model: MonthlyFeeModel,
+        as: 'billing',
+        attributes: [],
+    }, {
+        model: AgreementModel,
+        as: 'agreement',
+        attributes: ['agreement_name']
+    }, {
+        model: HolderModel,
+        as: 'holder',
+        attributes: [],
+        include: [{
+            model: UserModel,
+            as: 'user',
+            attributes: []
         }]
     }]
 

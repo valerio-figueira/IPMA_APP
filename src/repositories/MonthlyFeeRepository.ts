@@ -48,7 +48,7 @@ export default class MonthlyFeeRepository {
 
         return this.models.Member.findAll({
             where: whereClause,
-            include: Queries.MemberIncludeAll,
+            include: Queries.MonthlyFeeSummary,
             raw: true, nest: true
         })
     }

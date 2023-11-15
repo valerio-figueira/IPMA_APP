@@ -37,6 +37,7 @@ export function validateUser(userType: string) {
 
             if (userType === 'Holder') validateStatus(param.status)
             if (userType === 'SSTeam') validateRole(param.role)
+            if (userType === 'Dependent') validateID(param.holder_id)
             validateStringOrNumber(param)
             validateCPF(param.cpf)
             validateDate(param.birth_date)
@@ -169,6 +170,7 @@ function validateRole(value: string) {
 }
 
 
+function validateRelationshipDegree(value: string | null) {}
 
 
 function validateID(value: number) {

@@ -23,20 +23,9 @@ export default class DependentRepository {
 
 
 
-    async Create(query: DependentBundleEntities) {
-        const t: Transaction = await this.db.sequelize.transaction();
-
-        try {
-            await this.userRepository.CreateWithTransaction(query, t);
-            const dependent = await this.model.create(query.dependent, { transaction: t, raw: true })
-
-            await t.commit();
-
-            return this.findByDependentId(dependent.dependent_id)
-        } catch (error: any) {
-            await t.rollback();
-            throw new CustomError(`Erro ao cadastrar dependente: ${error}`, 500)
-        }
+    async Create(query: DependentBundleEntities, t: Transaction) {
+        await this.userRepository.CreateWithTransaction(query, t);
+        return this.model.create(query.dependent, { transaction: t, raw: true })
     }
 
 

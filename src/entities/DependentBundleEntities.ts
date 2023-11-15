@@ -6,6 +6,7 @@ import DependentEntity from "./DependentEntity";
 import DocumentEntity from "./DocumentEntity";
 import LocationEntity from "./LocationEntity";
 import MemberEntity from "./MemberEntity";
+import MonthlyFeeEntity from "./MonthlyFeeEntity";
 import UserEntity from "./UserEntity";
 
 
@@ -17,6 +18,7 @@ class DependentBundleEntities {
     contact: ContactEntity;
     location: LocationEntity;
     member: MemberEntity;
+    monthly_fee: MonthlyFeeEntity;
 
     constructor(props: IDependentProps) {
         this.dependent = props.dependent
@@ -25,6 +27,7 @@ class DependentBundleEntities {
         this.contact = props.contact
         this.location = props.location
         this.member = props.member
+        this.monthly_fee = props.monthly_fee
     }
 
     setAuthentication(auth: IAuthentication) {
