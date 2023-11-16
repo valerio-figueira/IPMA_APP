@@ -28,7 +28,9 @@ export default class Queries {
       INNER JOIN HOLDER h ON m.holder_id = h.holder_id
       INNER JOIN USER u ON h.user_id = u.user_id
     WHERE
-      /* Adicione condição WHERE aqui, se necessário */
+      m.holder_id = :holderId AND
+      billing.reference_month = :reference_month AND
+      billing.reference_year = :reference_year
     GROUP BY
       m.holder_id,
       u.name,

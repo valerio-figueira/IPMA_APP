@@ -95,9 +95,7 @@ export default class HolderService {
 
 
     async Delete(holder_id: string | number) {
-        const holder = await this.ReadOneSummary(holder_id)
-
-        return this.holderRepository.Delete(holder);
+        return this.holderRepository.Delete(holder_id)
     }
 
 

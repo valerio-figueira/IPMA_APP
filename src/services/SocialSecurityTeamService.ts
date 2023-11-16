@@ -75,11 +75,7 @@ class SocialSecurityTeamService {
 
         if (!member) throw new CustomError(SSTErrors.NotFound, 400)
 
-        const affectedCount = await this.sstRepository.Delete(member.user_id)
-
-        if (!affectedCount) throw new CustomError(SSTErrors.NotRemoved, 400)
-        if (affectedCount === 1) return { message: SSTErrors.Removed }
-        if (affectedCount > 1) return { message: SSTErrors.MultipleDelete }
+        return this.sstRepository.Delete(member.user_id)
     }
 
 

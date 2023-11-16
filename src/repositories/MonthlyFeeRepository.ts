@@ -3,7 +3,7 @@ import MonthlyFee from "../models/MonthlyFeeModel";
 import HolderModel from "../models/HolderModel";
 import UserModel from "../models/user/UserModel";
 import AgreementModel from "../models/AgreementModel";
-import { Op, Transaction } from "sequelize";
+import { Op, QueryTypes, Transaction } from "sequelize";
 import Queries from "../db/Queries";
 import MemberModel from "../models/MemberModel";
 import Database from "../db/Database";
@@ -50,6 +50,22 @@ export default class MonthlyFeeRepository {
             where: whereClause,
             include: Queries.MonthlyFeeSummary,
             raw: true, nest: true
+        })
+    }
+
+
+
+    async ReadAllSummary(params: any, query: any) {
+        console.log(query)
+        console.log(params)
+        return this.db.sequelize.query(Queries.MonthlyFeeRawQuery, {
+            replacements: {
+                holderId: params.holder_id,
+                reference_month: query.reference_month,
+                reference_year: query.reference_year
+            },
+            type: QueryTypes.SELECT,
+            raw: true
         })
     }
 

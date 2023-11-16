@@ -195,9 +195,23 @@ export default class UserRepository {
 
 
     async DeleteWithTransaction(user_id: ID, transaction: OptionalTransaction) {
-        return this.models.UserModel.destroy({
+        const contact = await this.models.ContactModel.destroy({
             where: { user_id }, transaction
-        });
+        })
+
+        const document = await this.models.DocumentModel.destroy({
+            where: { user_id }, transaction
+        })
+
+        const location = await this.models.LocationModel.destroy({
+            where: { user_id }, transaction
+        })
+
+        const user = await this.models.UserModel.destroy({
+            where: { user_id }, transaction
+        })
+
+        return this.checkAffectedCount({ user, contact, document, location })
     }
 
 

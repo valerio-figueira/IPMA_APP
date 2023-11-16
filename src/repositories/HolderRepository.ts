@@ -10,6 +10,7 @@ import AccessHierarchyModel from "../models/AccessHierarchyModel";
 import AuthenticationModel from "../models/AuthenticationModel";
 import RES from "../utils/messages/HolderResponses";
 import HolderBundleEntities from "../entities/HolderBundleEntities";
+import MonthlyFeeModel from "../models/MonthlyFeeModel";
 
 export default class HolderRepository {
     private db: Database;
@@ -116,28 +117,43 @@ export default class HolderRepository {
 
 
 
-    async Delete(holder: HolderModel) {
+    async Delete(holder_id: string | number) {
         const t: Transaction = await this.db.sequelize.transaction();
 
         try {
+            const subscriptions = await MemberModel.INIT(this.db.sequelize)
+                .findAll({ where: { holder_id } })
+
+            subscriptions.forEach(async subscription => {
+                await MonthlyFeeModel.destroy({
+                    where: { member_id: subscription.member_id }
+                })
+            })
+
             await MemberModel.destroy({
-                where: { holder_id: holder.holder_id },
+                where: { holder_id },
                 transaction: t,
             })
+
+            const holder = await this.ReadOneSummary(holder_id)
+            if (!holder) throw new Error('Falha ao buscar dados do titular')
+
+            const user = await this.userRepository.ReadOneSummary(holder.user_id)
+            if (!user) throw new Error('Falha ao buscar dados de usuário')
 
             await this.models.Holder.destroy({
-                where: { user_id: holder.user_id },
+                where: { holder_id },
                 transaction: t,
             })
 
-            await this.userRepository.DeleteWithTransaction(holder.user_id, t)
+            await this.userRepository.DeleteWithTransaction(user.user_id, t)
 
             await t.commit()
 
             return { message: `O titular foi removido com todas as suas dependências` }
         } catch (error: any) {
             await t.rollback();
-            throw new CustomError(RES.NotRemoved, 500)
+            throw new CustomError(error, 500)
         }
     }
 

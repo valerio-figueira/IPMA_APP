@@ -62,7 +62,7 @@ class MonthlyFeeModel extends Model<IMonthlyFee> {
             },
             created_at: {
                 type: DataTypes.DATE,
-                defaultValue: DataTypes.NOW,
+                defaultValue: Sequelize.fn('NOW'),
                 allowNull: false,
             },
         }, {

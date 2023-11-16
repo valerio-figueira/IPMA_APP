@@ -42,6 +42,13 @@ export default class MonthlyFeeService {
 
 
 
+    
+    async ReadAllSummary(params: any, query: any) {
+        return this.monthlyFeeRepository.ReadAllSummary(params, query);
+    }
+
+
+
 
     async ReadOne(billing_id: string | number) {
         return this.monthlyFeeRepository.ReadOne(billing_id);

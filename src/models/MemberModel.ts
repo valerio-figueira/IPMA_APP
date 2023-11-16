@@ -18,6 +18,9 @@ class MemberModel extends Model<IMember> {
     declare created_at: Date;
     declare exclusion_date?: Date | null;
     declare agreement?: AgreementModel;
+    declare dependent?: any;
+    declare holder?: any;
+    declare billing?: any;
 
     static INIT(sequelize: any): ModelStatic<MemberModel> {
         super.init({
