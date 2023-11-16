@@ -36,6 +36,9 @@ export default class MonthlyFeeRepository {
             active: query.active || 1,
             '$billing.member_id$': { [Op.not]: null }
         }
+        console.log(query)
+        if (query.name)
+            whereClause['$holder.user.name$'] = { [Op.like]: `%${query.name}%` };
 
         if (query.agreement_name)
             whereClause['$agreement.agreement_name$'] = { [Op.like]: `%${query.agreement_name}%` };
@@ -49,6 +52,7 @@ export default class MonthlyFeeRepository {
         return this.models.Member.findAll({
             where: whereClause,
             include: Queries.MonthlyFeeSummary,
+            order: [['created_at', 'DESC']],
             raw: true, nest: true
         })
     }
