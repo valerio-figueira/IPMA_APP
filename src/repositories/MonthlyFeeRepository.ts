@@ -36,7 +36,7 @@ export default class MonthlyFeeRepository {
             active: query.active || 1,
             '$billing.member_id$': { [Op.not]: null }
         }
-        console.log(query)
+
         if (query.name)
             whereClause['$holder.user.name$'] = { [Op.like]: `%${query.name}%` };
 
@@ -44,7 +44,7 @@ export default class MonthlyFeeRepository {
             whereClause['$agreement.agreement_name$'] = { [Op.like]: `%${query.agreement_name}%` };
 
         if (query.reference_year)
-            whereClause['$billing.reference_month$'] = query.reference_year;
+            whereClause['$billing.reference_year$'] = query.reference_year;
 
         if (query.reference_month)
             whereClause['$billing.reference_month$'] = query.reference_month;
@@ -60,8 +60,6 @@ export default class MonthlyFeeRepository {
 
 
     async ReadAllSummary(params: any, query: any) {
-        console.log(query)
-        console.log(params)
         return this.db.sequelize.query(Queries.MonthlyFeeRawQuery, {
             replacements: {
                 holderId: params.holder_id,
@@ -114,4 +112,39 @@ export default class MonthlyFeeRepository {
             })
     }
 
+
+
+
+    async BillingReport(query: any) {
+        const whereClause: any = {
+            active: query.active || 1,
+            '$billing.member_id$': { [Op.not]: null }
+        }
+
+        if (query.reference_year)
+            whereClause['$billing.reference_year$'] = query.reference_year;
+
+        if (query.reference_month)
+            whereClause['$billing.reference_month$'] = query.reference_month;
+
+        return this.models.Member.findAll({
+            where: whereClause,
+            attributes: [
+                'holder.holder_id',
+                [this.db.sequelize.fn('SUM', this.db.sequelize.col('billing.amount')), 'total_billing'],
+                'holder.user.name',
+                'agreement.agreement_id',
+                'billing.reference_month',
+                'billing.reference_year'
+            ],
+            include: Queries.MemberIncludeAll,
+            group: [
+                'holder.holder_id',
+                'holder.user.name',
+                'billing.reference_month',
+                'billing.reference_year',
+                'agreement.agreement_id'],
+            raw: true, nest: true
+        })
+    }
 }

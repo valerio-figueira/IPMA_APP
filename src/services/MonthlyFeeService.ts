@@ -6,6 +6,10 @@ import MonthlyFeeModel from "../models/MonthlyFeeModel";
 import Database from "../db/Database";
 import { validateMonthlyFee } from "../utils/decorators/validateBody";
 import { Transaction } from "sequelize";
+import PDFDocument from 'pdfkit';
+import * as fs from 'fs'
+import * as path from 'path'
+import createTable, { createHeader } from "../utils/CreateTable";
 
 export default class MonthlyFeeService {
     monthlyFeeRepository: MonthlyFeeRepository;
@@ -42,7 +46,7 @@ export default class MonthlyFeeService {
 
 
 
-    
+
     async ReadAllSummary(params: any, query: any) {
         return this.monthlyFeeRepository.ReadAllSummary(params, query);
     }
@@ -75,12 +79,41 @@ export default class MonthlyFeeService {
 
 
 
-    verifyDate(billing: IMonthlyFee) {
+    async BillingReport(query: any) {
+        if (!query.reference_month) throw new Error('Insira o mês de referência!')
+        if (!query.reference_year) throw new Error('Insira o ano de referência!')
+
+        const billingsReport: any[] | null = await this.monthlyFeeRepository.BillingReport(query)
+        if (!billingsReport) throw new Error('Nenhuma informação encontrada!')
+
+        const doc = new PDFDocument();
+        const month = Number(query.reference_month) + 1;
+        const year = query.reference_year;
+        const dir = path.join(__dirname, `../temp/relatorio-${month}-${year}.pdf`)
+
+        doc.pipe(fs.createWriteStream(dir))
+        createHeader(doc, query)
+
+        createTable(doc, billingsReport, query)
+
+        doc.end()
+
+        return fs.createReadStream(dir)
+    }
+
+
+
+
+
+    private verifyDate(billing: IMonthlyFee) {
         if (!billing.reference_year) billing.reference_year = new Date().getFullYear()
         if (!billing.reference_month) billing.reference_month = Number(billing.reference_month)
     }
 
-    verifyAmount(billing: IMonthlyFee) {
+
+
+
+    private verifyAmount(billing: IMonthlyFee) {
         if (typeof billing.amount === 'string') {
             billing.amount = Number(billing.amount)
         }
@@ -89,7 +122,7 @@ export default class MonthlyFeeService {
 
 
 
-    async findDuplicateBilling(body: IMonthlyFee) {
+    private async findDuplicateBilling(body: IMonthlyFee) {
         const billing: any = await MonthlyFeeModel.findOne({
             where: { member_id: body.member_id },
             raw: true
