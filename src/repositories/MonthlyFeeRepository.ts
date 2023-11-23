@@ -130,6 +130,7 @@ export default class MonthlyFeeRepository {
         return this.models.Member.findAll({
             where: whereClause,
             attributes: [
+                'holder.subscription_number',
                 'holder.holder_id',
                 [this.db.sequelize.fn('SUM', this.db.sequelize.col('billing.amount')), 'total_billing'],
                 'holder.user.name',
@@ -139,6 +140,7 @@ export default class MonthlyFeeRepository {
             ],
             include: Queries.MemberIncludeAll,
             group: [
+                'holder.subscription_number',
                 'holder.holder_id',
                 'holder.user.name',
                 'billing.reference_month',

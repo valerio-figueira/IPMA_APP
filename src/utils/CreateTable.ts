@@ -8,9 +8,9 @@ function createTable(doc: PDFKit.PDFDocument, data: any, query: any) {
     let startY = 130
 
     // Definir larguras das colunas
-    const col1Width = 200
-    const col2Width = 70
-    const col3Width = 100
+    const col1Width = 55
+    const col2Width = 200
+    const col3Width = 60
     // Definir altura da linha
     const rowHeight = 15
 
@@ -19,14 +19,15 @@ function createTable(doc: PDFKit.PDFDocument, data: any, query: any) {
     doc.fontSize(10)
 
     // Adicionar cabeçalhos da tabela
-    doc.text('Nome', startX, startY)
-    doc.text('Unimed', startX + col1Width, startY)
-    doc.text('Odonto Company', startX + col1Width + col2Width, startY)
+    doc.text('Matrícula', startX, startY)
+    doc.text('Nome', startX + col1Width, startY)
+    doc.text('Unimed', startX + col1Width + col2Width, startY)
+    doc.text('Odonto Company', startX + col1Width + col2Width + col3Width, startY)
 
     const height = 15
 
     // Desenhar linha horizontal abaixo do cabeçalho
-    doc.moveTo(startX, startY + height).lineTo(startX + col1Width + col2Width + col2Width, startY + height).stroke()
+    doc.moveTo(startX, startY + height).lineTo(startX + 510, startY + height).stroke()
 
     // Adicionar dados da tabela
     doc.font('Helvetica')
@@ -55,27 +56,27 @@ function createTable(doc: PDFKit.PDFDocument, data: any, query: any) {
             doc.moveTo(startX, startY + 20).lineTo(startX + col1Width + col2Width + col2Width, startY + 20).stroke()
         }*/
 
-        doc.text(billing.name, startX, currentY)
-        billing.agreements.forEach((agreement: any) => {
-            if (agreement.agreement_name === 'ODONTO COMPANY') {
-                doc.text('R$ ' + Number(agreement.total_billing).toFixed(2), startX + col1Width, currentY)
-            }
+        doc.text(billing.subscription_number, startX, currentY)
+        doc.text(billing.name, startX + col1Width, currentY)
 
+        billing.agreements.forEach((agreement: any) => {
             if (agreement.agreement_name === 'UNIMED') {
                 doc.text('R$ ' + Number(agreement.total_billing).toFixed(2), startX + col1Width + col2Width, currentY)
             }
 
-            //doc.text('R$ ' + Number(agreement.total_billing || 0).toFixed(2), startX + col1Width + col2Width + col3Width, currentY)
+            if (agreement.agreement_name === 'ODONTO COMPANY') {
+                doc.text('R$ ' + Number(agreement.total_billing).toFixed(2), startX + col1Width + col2Width + col3Width, currentY)
+            }
         })
         //doc.text(`R$ ${billing.total_billing}`, startX + col1Width + col2Width, currentY)
-        doc.moveTo(startX, currentY + 10).lineTo(startX + col1Width + col2Width + col3Width, currentY + 10).lineWidth(0.1).stroke()
+        doc.moveTo(startX, currentY + 10).lineTo(startX + 510, currentY + 10).lineWidth(0.1).stroke()
     })
 }
 
 
 export function createHeader(doc: PDFKit.PDFDocument, query: any) {
-    const month = Number(query.reference_month) + 1;
-    const year = query.reference_year;
+    const month = Number(query.reference_month) + 1
+    const year = query.reference_year
 
     doc.image(path.join(__dirname, `../../public/imgs/brasão.png`), 100, 60, { width: 40 })
     doc.fontSize(16).text(`IPMA - Relatório de Mensalidades ${month}/${year}`, { align: 'center' })
