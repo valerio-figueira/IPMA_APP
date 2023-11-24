@@ -10,6 +10,7 @@ import PDFDocument from 'pdfkit';
 import * as fs from 'fs'
 import * as path from 'path'
 import createTable, { createHeader } from "../utils/CreateTable";
+import { groupDetailedBillings } from "../utils/GroupBillings";
 
 export default class MonthlyFeeService {
     monthlyFeeRepository: MonthlyFeeRepository;
@@ -41,7 +42,9 @@ export default class MonthlyFeeService {
 
 
     async ReadAll(query: any) {
-        return this.monthlyFeeRepository.ReadAll(query);
+        const billings = await this.monthlyFeeRepository.ReadAll(query)
+
+        return groupDetailedBillings(billings)
     }
 
 
@@ -90,8 +93,9 @@ export default class MonthlyFeeService {
         const month = Number(query.reference_month) + 1;
         const year = query.reference_year;
         const dir = path.join(__dirname, `../temp/relatorio-${month}-${year}.pdf`)
+        const writeStream = fs.createWriteStream(dir)
 
-        doc.pipe(fs.createWriteStream(dir))
+        doc.pipe(writeStream)
         createHeader(doc, query)
 
         createTable(doc, billingsReport, query)

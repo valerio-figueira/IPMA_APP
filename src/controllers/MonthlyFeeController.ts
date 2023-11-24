@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import MonthlyFeeService from "../services/MonthlyFeeService";
 import Database from "../db/Database";
-
+import CustomError from "../utils/CustomError";
 
 
 class MonthlyFeeController {
@@ -77,7 +77,9 @@ class MonthlyFeeController {
 
     async BillingReport(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.monthlyFeeService.BillingReport(req.query))
+            const PDFDoc = await this.monthlyFeeService.BillingReport(req.query)
+
+            res.sendFile(PDFDoc.path.toString())
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
