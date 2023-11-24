@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import MonthlyFeeService from "../services/MonthlyFeeService";
 import Database from "../db/Database";
 import CustomError from "../utils/CustomError";
+import * as fs from "fs";
 
 
 class MonthlyFeeController {
@@ -77,9 +78,12 @@ class MonthlyFeeController {
 
     async BillingReport(req: Request, res: Response) {
         try {
-            const PDFDoc = await this.monthlyFeeService.BillingReport(req.query)
+            const data = await this.monthlyFeeService.BillingReport(req.query)
 
-            res.sendFile(PDFDoc.path.toString())
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename=${data.filename}`)
+
+            fs.createReadStream(data.path).pipe(res)
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }

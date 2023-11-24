@@ -32,7 +32,7 @@ function createTable(doc: PDFKit.PDFDocument, data: any, query: any) {
     // Adicionar dados da tabela
     doc.font('Helvetica')
     const group = groupBillings(data)
-    console.log(...group)
+
     group.forEach((billing: any, index: number) => {
         const currentY = startY + height + (index + 1) * rowHeight
 

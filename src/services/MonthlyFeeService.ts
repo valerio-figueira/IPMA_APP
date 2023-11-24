@@ -89,20 +89,22 @@ export default class MonthlyFeeService {
         const billingsReport: any[] | null = await this.monthlyFeeRepository.BillingReport(query)
         if (!billingsReport) throw new Error('Nenhuma informação encontrada!')
 
-        const doc = new PDFDocument();
-        const month = Number(query.reference_month) + 1;
-        const year = query.reference_year;
-        const dir = path.join(__dirname, `../temp/relatorio-${month}-${year}.pdf`)
+        const doc = new PDFDocument()
+        const month = Number(query.reference_month) + 1
+        const year = query.reference_year
+
+        const filename = `relatorio-${month}-${year}.pdf`
+        const dir = path.join(__dirname, `../temp/${filename}`)
         const writeStream = fs.createWriteStream(dir)
 
         doc.pipe(writeStream)
-        createHeader(doc, query)
 
+        createHeader(doc, query)
         createTable(doc, billingsReport, query)
 
         doc.end()
 
-        return fs.createReadStream(dir)
+        return { path: dir, filename }
     }
 
 
