@@ -102,9 +102,7 @@ export default class MonthlyFeeService {
         createHeader(doc, query)
         createTable(doc, billingsReport, query)
 
-        doc.end()
-
-        return { path: dir, filename }
+        return { filename, doc }
     }
 
 

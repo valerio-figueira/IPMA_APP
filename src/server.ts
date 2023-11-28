@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application, NextFunction, Request, Response } from "express";
 import path from "path";
 import cors from 'cors';
 import https from 'https'
@@ -16,6 +16,7 @@ import Certificate from "./config/Certificate";
 
 // ROUTES
 import RegisterRoutes from "./routes/RegisterRoutes";
+import { loggerMessage } from "./utils/Logger";
 
 
 export default class Server {
@@ -56,6 +57,13 @@ export default class Server {
         this.APP.use(fileUpload())
 
         this.APP.use(express.static(path.join("public")))
+        this.APP.use(this.logger)
+    }
+
+
+    private logger(req: Request, res: Response, next: NextFunction) {
+        loggerMessage(req)
+        next()
     }
 
 

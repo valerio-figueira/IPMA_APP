@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
 import MonthlyFeeService from "../services/MonthlyFeeService";
 import Database from "../db/Database";
-import CustomError from "../utils/CustomError";
-import * as fs from "fs";
 
 
 class MonthlyFeeController {
@@ -83,7 +81,14 @@ class MonthlyFeeController {
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', `attachment; filename=${data.filename}`)
 
-            fs.createReadStream(data.path).pipe(res)
+            data.doc.on('error', (err) => {
+                console.error('Erro ao criar o documento PDF:', err)
+                throw new Error('Erro ao criar o documento PDF.')
+            })
+
+            data.doc.compress
+            data.doc.pipe(res)
+            data.doc.end()
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }

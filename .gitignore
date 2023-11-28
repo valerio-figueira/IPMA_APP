@@ -1,5 +1,6 @@
 /node_modules
 /coverage
 /src/temp
+/src/logs
 .env
 dist

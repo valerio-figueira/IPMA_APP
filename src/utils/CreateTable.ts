@@ -8,21 +8,23 @@ function createTable(doc: PDFKit.PDFDocument, data: any, query: any) {
     let startY = 130
 
     // Definir larguras das colunas
-    const col1Width = 55
-    const col2Width = 200
-    const col3Width = 60
+    const col1Width = 50
+    const col2Width = 180
+    const col3Width = 55
+    const col4Width = 65
     // Definir altura da linha
     const rowHeight = 15
 
     // Definir estilo da tabela
     doc.font('Helvetica-Bold')
-    doc.fontSize(10)
+    doc.fontSize(9)
 
     // Adicionar cabeçalhos da tabela
     doc.text('Matrícula', startX, startY)
     doc.text('Nome', startX + col1Width, startY)
     doc.text('Unimed', startX + col1Width + col2Width, startY)
-    doc.text('Odonto Company', startX + col1Width + col2Width + col3Width, startY)
+    doc.text('Od. Company', startX + col1Width + col2Width + col3Width, startY)
+    doc.text('Uniodonto', startX + col1Width + col2Width + col3Width + col4Width, startY)
 
     const height = 15
 
@@ -66,6 +68,10 @@ function createTable(doc: PDFKit.PDFDocument, data: any, query: any) {
 
             if (agreement.agreement_name === 'ODONTO COMPANY') {
                 doc.text('R$ ' + Number(agreement.total_billing).toFixed(2), startX + col1Width + col2Width + col3Width, currentY)
+            }
+
+            if (agreement.agreement_name === 'UNIODONTO') {
+                doc.text('R$ ' + Number(agreement.total_billing).toFixed(2), startX + col1Width + col2Width + col3Width + col4Width, currentY)
             }
         })
         //doc.text(`R$ ${billing.total_billing}`, startX + col1Width + col2Width, currentY)

@@ -20,6 +20,16 @@ export default class JWT {
   private static SECRET_KEY = process.env.SECRET_KEY as string;
 
 
+  static getToken(req: Request) {
+    const header = req.headers['authorization']
+
+    if (!header) return null
+
+    const token = header.split(' ')[1]
+
+    return jwt.verify(token, this.SECRET_KEY) as { user: TUser }
+  }
+
 
   static verifyToken(req: Request) {
     const header = req.headers['authorization']
@@ -76,7 +86,7 @@ export default class JWT {
       throw new CustomError('Credenciais inválidas. Autenticação negada.', 401)
     }
 
-    if(!userFound.user_photo) userFound.user_photo = 'http://localhost:9292/imgs/blank-profile.webp'
+    if (!userFound.user_photo) userFound.user_photo = 'http://localhost:9292/imgs/blank-profile.webp'
 
     const user = {
       user_id: userFound.user_id,
@@ -87,7 +97,7 @@ export default class JWT {
     };
 
     // RETURN TOKEN
-    return { token: jwt.sign({ user }, this.SECRET_KEY, { expiresIn: "15m" }) }
+    return { token: jwt.sign({ user }, this.SECRET_KEY, { expiresIn: "1m" }) }
   }
 
 
