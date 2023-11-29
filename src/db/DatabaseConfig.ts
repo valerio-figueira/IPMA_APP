@@ -12,13 +12,7 @@ type DB_Props = {
     port?: number
 }
 
-export type DB_ConfigProps = {
-    development: DB_Props,
-    test: DB_Props
-    production: DB_Props,
-}
-
-const DB_Config: DB_ConfigProps = {
+const DB_Config: Record<string, DB_Props> = {
     development: {
         username: 'root',
         password: 'root',

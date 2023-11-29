@@ -132,6 +132,7 @@ export default class MonthlyFeeRepository {
             attributes: [
                 'holder.subscription_number',
                 'holder.holder_id',
+                'holder.status',
                 [this.db.sequelize.fn('SUM', this.db.sequelize.col('billing.amount')), 'total_billing'],
                 'holder.user.name',
                 'agreement.agreement_id',
@@ -142,6 +143,7 @@ export default class MonthlyFeeRepository {
             group: [
                 'holder.subscription_number',
                 'holder.holder_id',
+                'holder.status',
                 'holder.user.name',
                 'billing.reference_month',
                 'billing.reference_year',

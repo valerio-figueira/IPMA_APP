@@ -1,27 +1,29 @@
 import { QueryTypes, Sequelize } from "sequelize";
 import DB_Config from "./DatabaseConfig";
-import dotenv from "dotenv";
+import * as dotenv from "dotenv";
 import Models from "../models";
 import { DBErrors as ERROR } from "../utils/errors/Errors";
 dotenv.config();
 
-type envProps = 'development' | 'test' | 'production'
+type envProps = undefined | 'test' | 'development' | 'production'
 
 export default class Database {
+    private environment
+    private config
     sequelize: Sequelize
 
     constructor() {
-        const envTest = process.env.NODE_ENV as envProps
-        const environment = envTest || 'test'
-        const config = DB_Config[environment]
+        const DB_ENV = process.env.DB_ENV as envProps
+        this.environment = DB_ENV || 'test'
+        this.config = DB_Config[this.environment]
 
         this.sequelize = new Sequelize(
-            config.database,
-            config.username,
-            config.password, {
-            host: config.host,
-            port: null || config.port,
-            dialect: config.dialect,
+            this.config.database,
+            this.config.username,
+            this.config.password, {
+            host: this.config.host,
+            port: null || this.config.port,
+            dialect: this.config.dialect,
             define: {
                 charset: 'utf8mb4',
                 collate: 'utf8mb4_unicode_ci',
@@ -57,11 +59,13 @@ export default class Database {
 
     async clearDatabase() {
         try {
+            if (this.environment !== 'test') throw Error('Não é o ambiente de teste!')
+
             await this.authenticate()
             await this.sequelize.sync({ force: true })
-            console.log('Banco de dados limpo com sucesso.');
+            console.log('Banco de dados limpo com sucesso.')
         } catch (error: any) {
-            throw ERROR.ClearDBError
+            throw ERROR.ClearDBError + ': ' + error.message
         }
     }
 
