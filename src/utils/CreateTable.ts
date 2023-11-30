@@ -97,7 +97,7 @@ function createFooter(sum: any, doc: PDFKit.PDFDocument, ...args: number[]) {
     doc.text(`Total Odonto Company: R$ ${Number(sum.odontoCompany).toFixed(2)}`, args[0])
     doc.text(`Total Uniodonto: R$ ${Number(sum.uniodonto).toFixed(2)}`, args[0])
     doc.fontSize(9).font('Helvetica')
-        .text(`Relatório Criado em: ${format(new Date(), 'dd/MM/yyyy HH:mm:ss')}`, { align: 'right' })
+        .text(`Data de Criação: ${format(new Date(), 'dd/MM/yyyy HH:mm:ss')}`, { align: 'right' })
 }
 
 
