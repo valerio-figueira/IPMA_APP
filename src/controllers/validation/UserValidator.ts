@@ -7,7 +7,6 @@ export default class UserValidator {
         // Verifique se os campos obrigatórios estão presentes
         if (!data.name) throw new CustomError('Digite o nome', 400)
         if (!data.cpf) throw new CustomError('Digite o número do CPF', 400)
-        if (!data.identity) throw new CustomError('Digite o número do RG', 400)
 
         this.validateStatus(data.status)
         this.validateStringOrNumber(data)
