@@ -4,6 +4,7 @@ import format from "date-fns/format"
 export default class UserDataSanitizer {
     static sanitizeBody(data: any) {
         for (const key in data) {
+            data[key] = key === 'cpf' ? this.formatCPF(data[key]) : data[key]
             data[key] = key === 'birth_date' ? this.filterDate(data[key]) : data[key]
             data[key] = key === 'issue_date' ? this.filterDate(data[key]) : data[key]
             data[key] = this.sanitizeFields(key, data[key])
@@ -11,7 +12,6 @@ export default class UserDataSanitizer {
             data[key] = StringSanitizer.sanitizeEmptyFields(data[key])
             data[key] = StringSanitizer.sanitizeLetters(data[key])
         }
-        console.log(data)
     }
 
     static sanitizeQuery(data: any) {
@@ -37,12 +37,20 @@ export default class UserDataSanitizer {
     }
 
     static formatCPF(cpf: string) {
-        return cpf.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        const digits = cpf.replace(/\D/g, '')
+
+        if (digits.length !== 11) throw new Error('CPF deve conter 11 dígitos.')
+
+        const firstGroup = digits.slice(0, 3)
+        const secondGroup = digits.slice(3, 6)
+        const thirdGroup = digits.slice(6, 9)
+        const fourthGroup = digits.slice(9)
+
+        return `${firstGroup}.${secondGroup}.${thirdGroup}-${fourthGroup}`
     }
 
     static sanitizeFields(key: string, data: any) {
         if (!data) return null
-        if (key.match('cpf')) return data.replace(/\D/g, '');
         if (key.match('identity')) return data.replace(/\W/g, '');
         if (key.match('phone_number')) return data.replace(/\D/g, '');
         if (key.match('residential_phone')) return data.replace(/\D/g, '');
@@ -71,7 +79,7 @@ export default class UserDataSanitizer {
 
     static filterDate(value: any) {
         const regex = /^\d{4}-\d{2}-\d{2}$/;
-        console.log(value)
+
         if (!value) return null
         if (value === '0000-00-00') return null
         if (regex.test(value)) return new Date(value)
