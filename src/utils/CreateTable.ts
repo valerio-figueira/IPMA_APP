@@ -3,7 +3,7 @@ import * as path from 'path';
 import groupBillings from './GroupBillings';
 
 // Função para criar uma tabela no PDF
-function createTable(doc: PDFKit.PDFDocument, data: any, query: any) {
+function createTable(doc: PDFKit.PDFDocument, data: any) {
     // Definir as coordenadas iniciais da tabela
     const startX = 50
     let startY = 100
