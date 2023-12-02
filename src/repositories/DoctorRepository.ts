@@ -1,6 +1,5 @@
 import DoctorModel from "../models/DoctorModel"
 import { IDoctor } from "../interfaces/IDoctor"
-import Doctors from '../json/doctors.json'
 import Database from "../db/Database"
 import { Op, where } from "sequelize"
 
@@ -22,11 +21,29 @@ export default class DoctorRepository {
 
 
 
-    async BulkCreate() {
-        const doctors: IDoctor[] | null = Doctors
+    async BulkCreate(query: any[]) {
+        query.forEach(async doctor => {
+            const doctorFound = await this.model.findOne({
+                where: {
+                    provider_code: doctor.provider_code,
+                    doctor_name: doctor.doctor_name,
+                    speciality: doctor.speciality,
+                    address: doctor.address,
+                    neighborhood: doctor.neighborhood,
+                    zip_code: doctor.zip_code,
+                    location: doctor.location,
+                    phone_number: doctor.phone_number
+                }
+            })
 
-        if (doctors) return await this.model.bulkCreate(doctors)
-        else return null
+            if (doctorFound) {
+                await this.model.update(doctor, { where: { doctor_id: doctorFound.doctor_id } })
+            } else {
+                await this.model.create(doctor)
+            }
+        })
+
+        return { message: 'O banco de dados foi atualizado!' }
     }
 
 

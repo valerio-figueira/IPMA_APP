@@ -25,16 +25,6 @@ class DoctorController {
 
 
 
-    async BulkCreate(req: Request, res: Response) {
-        try {
-            res.status(201).json(await this.doctorService.BulkCreate())
-        } catch (error: any) {
-            res.status(error.status || 500).json({ error: error.message })
-        }
-    }
-
-
-
     async ReadAll(req: Request, res: Response) {
         try {
             res.status(200).json(await this.doctorService.ReadAll(req.query))
@@ -87,7 +77,7 @@ class DoctorController {
 
     async ExtractData(req: Request, res: Response) {
         try {
-            res.status(200).json(await this.doctorService.ExtractData(req.files))
+            res.status(200).json(await this.doctorService.ExtractData(req))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
