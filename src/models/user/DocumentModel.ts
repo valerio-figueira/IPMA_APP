@@ -31,13 +31,13 @@ class DocumentModel extends Model<IDocument> {
                 },
             },
             cpf: {
-                type: DataTypes.STRING(11),
+                type: DataTypes.STRING(14),
                 allowNull: false,
                 unique: true,
             },
             identity: {
                 type: DataTypes.STRING(10),
-                allowNull: false,
+                allowNull: true,
                 unique: true,
             },
             issue_date: {
