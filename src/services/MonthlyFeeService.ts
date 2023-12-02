@@ -82,11 +82,12 @@ export default class MonthlyFeeService {
 
 
 
-    async BillingReport(query: any) {
+    async BillingReport(query: Record<string, any>) {
         if (!query.reference_month) throw new Error('Insira o mês de referência!')
         if (!query.reference_year) throw new Error('Insira o ano de referência!')
+        if (!query.report_type) throw new Error('Insira o tipo de relatório!')
 
-        const billingsReport: any[] | null = await this.monthlyFeeRepository.BillingReport(query)
+        const billingsReport: any[] | null = await this.fetchDataForReport(query)
         if (!billingsReport) throw new Error('Nenhuma informação encontrada!')
 
         const doc = new PDFDocument()
@@ -100,9 +101,23 @@ export default class MonthlyFeeService {
         doc.pipe(writeStream)
 
         createHeader(doc, query)
-        createTable(doc, billingsReport, query)
+        createTable(doc, billingsReport)
 
         return { filename, doc }
+    }
+
+
+
+
+    private fetchDataForReport<T extends Record<string, string | number>>(query: T) {
+        if (query.report_type === 'monthlyFees') return this.monthlyFeeRepository.BillingReport(query)
+        if (query.report_type === 'appointments') return null
+        if (query.report_type === 'odontoCompanyMembers') return null
+        if (query.report_type === 'odontoCompanyInstallments') return null
+        if (query.report_type === 'uniodontoInstallments') return null
+        if (query.report_type === 'townhall') return null
+
+        return null
     }
 
 
