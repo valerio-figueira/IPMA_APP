@@ -51,9 +51,42 @@ export default class HolderRepository {
 
 
 
+    async BulkCreate(query: HolderBundleEntities[]) {
+        for (let user of query) {
+            const transaction: Transaction = await this.db.sequelize.transaction()
+
+            try {
+                const result = await this.userRepository.CreateOrUpdate(user, transaction)
+
+                if (result && result.status === 'UPDATE') {
+                    const user_id = user.holder.user_id = result.user_id
+                    await this.models.Holder.update(user.holder, { where: { user_id }, transaction })
+                } else {
+                    if (result && result.status === 'CREATE') {
+                        await this.models.Holder.create(user.holder, { transaction })
+                    }
+                }
+
+                await transaction.commit()
+            } catch (error: any) {
+                await transaction.rollback()
+                console.error(error)
+                throw new Error(error.message)
+            }
+        }
+
+        return { message: 'O banco de dados foi atualizado!' }
+    }
+
+
+
+
     async ReadAll(query: any) {
         const whereClause: any = {}
         const holderWhereClause: any = {}
+        const page = query.page || 1
+        const pageSize = query.pageSize || 10
+        const offset = (page - 1) * pageSize
 
         if (query.name) whereClause.name = { [Op.like]: `%${query.name}%` }
         if (query.subscription_number) {
@@ -62,6 +95,8 @@ export default class HolderRepository {
 
         return this.models.Holder
             .findAll({
+                offset,
+                limit: pageSize,
                 where: holderWhereClause,
                 include: Queries.IncludeSummaryUser(whereClause),
                 raw: true, nest: true,
@@ -156,6 +191,21 @@ export default class HolderRepository {
             throw new CustomError(error, 500)
         }
     }
+
+
+
+
+
+    async totalCount(query: any) {
+        const whereClause: any = {}
+
+        if (query.name) whereClause.name = { [Op.like]: `%${query.name}%` }
+
+        return this.models.Holder.count({
+            include: Queries.IncludeSummaryUser(whereClause)
+        })
+    }
+
 
 
 

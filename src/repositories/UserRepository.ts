@@ -2,7 +2,7 @@ import { IUserAttributes } from "../interfaces/IUser";
 import ContactModel from "../models/user/ContactModel";
 import DocumentModel from "../models/user/DocumentModel";
 import LocationModel from "../models/user/LocationModel";
-import { Transaction } from 'sequelize';
+import { ModelStatic, Transaction, where } from 'sequelize';
 import Database from "../db/Database";
 import Queries from "../db/Queries";
 import CustomError from "../utils/CustomError";
@@ -217,6 +217,56 @@ export default class UserRepository {
 
 
 
+    async CreateOrUpdate(query: IUserAttributes, transaction: Transaction) {
+        this.deleteUnnecessaryFields(query)
+
+        const doc = await this.models.DocumentModel.findOne({ where: { cpf: query.document.cpf } })
+        let identity;
+
+        if (query.document.identity) {
+            identity = await this.models.DocumentModel.findOne({ where: { identity: query.document.identity } })
+        }
+
+        if (doc) {
+            await this.models.UserModel.update(query.user, {
+                where: { user_id: doc.user_id }, transaction, fields: [
+                    'birth_date', 'father_name', 'gender', 'marital_status', 'mother_name', 'name'
+                ]
+            })
+
+            this.insertIdValues(query, doc.user_id)
+
+            await this.models.DocumentModel.update(query.document, {
+                where: { user_id: doc.user_id }, transaction, fields: [
+                    'health_card', 'issue_date'
+                ]
+            })
+            await this.models.ContactModel.update(query.contact, {
+                where: { user_id: doc.user_id }, transaction, fields: [
+                    'phone_number', 'residential_phone'
+                ]
+            })
+            await this.models.LocationModel.update(query.location, { where: { user_id: doc.user_id }, transaction })
+
+            return { user_id: doc.user_id, status: 'UPDATE' }
+        } else {
+            if (!identity) {
+                const newUser = await this.models.UserModel.create(query.user, { transaction, raw: true })
+
+                this.insertIdValues(query, newUser.user_id)
+
+                await this.models.DocumentModel.create(query.document, { transaction, raw: true })
+                await this.models.ContactModel.create(query.contact, { transaction, raw: true })
+                await this.models.LocationModel.create(query.location, { transaction, raw: true })
+
+                return { user_id: newUser.user_id, status: 'CREATE' }
+            }
+        }
+    }
+
+
+
+
     async Exists(query: DocumentEntity) {
         const whereClause: any = { cpf: query.cpf }
         if (query.identity) whereClause.identity = query.identity
@@ -243,6 +293,21 @@ export default class UserRepository {
             if (typeof data[key] === 'object') data[key].user_id = user_id
         }
     }
+
+
+
+
+    private deleteUnnecessaryFields(entitiesBundled: IUserAttributes) {
+        delete entitiesBundled.user.user_id
+        delete entitiesBundled.user.created_at
+        delete entitiesBundled.document.created_at
+        delete entitiesBundled.document.document_id
+        delete entitiesBundled.location.created_at
+        delete entitiesBundled.location.location_id
+        delete entitiesBundled.contact.contact_id
+        delete entitiesBundled.contact.created_at
+    }
+
 
 
 

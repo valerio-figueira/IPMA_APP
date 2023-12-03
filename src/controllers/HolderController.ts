@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import HolderService from "../services/HolderService";
 import UserValidator from "./validation/UserValidator";
 import Database from "../db/Database";
+import * as fs from "fs";
 
 
 class HolderController {
@@ -28,7 +29,9 @@ class HolderController {
 
     async BulkCreate(req: Request, res: Response) {
         try {
-            res.status(201).json(await this.holderService.BulkCreate(req))
+            const data = await this.holderService.BulkCreate(req)
+            fs.unlinkSync(data.filePath)
+            res.status(201).json({ message: data.message })
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }

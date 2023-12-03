@@ -11,6 +11,12 @@ import MemberEntity from "../entities/MemberEntity";
 import Database from "../db/Database";
 import { validateUser } from "../utils/decorators/validateBody";
 import UserService from "./UserService";
+import { Request } from "express";
+import * as path from "path";
+import { UploadedFile } from "express-fileupload";
+import { format } from "date-fns";
+import { readFile, utils } from "xlsx";
+import { getJsDateFromExcel } from "../helpers/ConvertDate";
 
 
 export default class HolderService {
@@ -45,12 +51,64 @@ export default class HolderService {
 
 
 
+    async BulkCreate(req: Request) {
+        const error = new CustomError('Nenhuma planilha foi enviada', 400)
+        if (!req.files || Object.keys(req.files).length === 0) throw error
+
+        const table = req.files.table as UploadedFile
+
+        try {
+            const currentTime = format(new Date(), 'dd-MM-yyyy')
+            const fileName = `holders-table-${currentTime}.xlsx`
+            const filePath = path.join(__dirname, '../temp', fileName)
+
+            await new Promise<void>((resolve, reject) => {
+                table.mv(filePath, (err) => {
+                    if (err) reject(err)
+                    else resolve()
+                })
+            })
+
+            const workbook = readFile(filePath)
+            const sheetName = workbook.SheetNames[0]
+            const sheet = workbook.Sheets[sheetName]
+            const rows = utils.sheet_to_json(sheet, { header: 1 })
+            const columns: any = rows[0]
+
+            const jsonResult: any = this.createJsonFromTable(columns, rows)
+
+            if (jsonResult.length > 0) {
+                const { message } = await this.holderRepository.BulkCreate(jsonResult)
+                return { message, fileName, filePath }
+            } else {
+                throw new Error('Ocorreu um erro ao processar os dados!')
+            }
+        } catch (error: any) {
+            console.log(error)
+            throw new CustomError('Erro ao processar a planilha.', 500)
+        }
+    }
+
+
+
+
     async ReadAll(query: any) {
         const holders = await this.holderRepository.ReadAll(query)
 
         if (holders.length === 0) throw new CustomError('Nenhum titular foi encontrado', 400)
 
-        return holders
+        const totalCount = await this.holderRepository.totalCount(query)
+        const totalPages = Math.ceil(totalCount / (query.pageSize || 10))
+        const response = []
+
+        response.push(holders, {
+            currentPage: query.page || 1,
+            pageSize: query.pageSize || 10,
+            totalCount: totalCount,
+            totalPages: totalPages
+        })
+
+        return response
     }
 
 
@@ -119,4 +177,34 @@ export default class HolderService {
         })
     }
 
+
+
+
+    private createJsonFromTable(columns: any, rows: any[]) {
+        return rows.slice(1).map((row: any) => {
+            const user: Record<string, any> = {}
+
+            row.forEach((value: any, index: any) => {
+                const column = columns[index]
+                if (column === 'birth_date') {
+                    value = format(getJsDateFromExcel(value), 'yyyy-MM-dd')
+                }
+                if (column === 'marital_status') {
+                    if (value.match('Solteiro')) value = 'Solteiro(a)'
+                    if (value.match('Casado')) value = 'Casado(a)'
+                    if (value.match('Viúvo')) value = 'Viúvo(a)'
+                    if (value.match('Divorciado')) value = 'Divorciado(a)'
+                }
+                user[column] = value
+            })
+
+            if (user.name) {
+                user.status = 'APOSENTADO(A)'
+                UserDataSanitizer.sanitizeBody(user)
+                return this.bundleEntities(user)
+            }
+
+            return null
+        }).filter(Boolean)
+    }
 }
