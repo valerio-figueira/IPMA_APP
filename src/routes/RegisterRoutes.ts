@@ -12,7 +12,7 @@ import Database from "../db/Database";
 import UserRoutes from "./UserRoutes";
 import DatabaseRoutes from "./DatabaseRoutes";
 import QuoteRoutes from "./QuoteRoutes";
-
+import ReportRoutes from "./ReportRoutes";
 
 class RegisterRoutes {
     private APP: Application
@@ -34,7 +34,8 @@ class RegisterRoutes {
             SSTMember: new SocialSecurityTeamRoutes(this.database).router,
             User: new UserRoutes(this.database).router,
             Database: new DatabaseRoutes(this.database).router,
-            Quote: new QuoteRoutes(this.database).router
+            Quote: new QuoteRoutes(this.database).router,
+            ReportRoutes: new ReportRoutes(this.database).router
         }
         // this.printRoutes()
     }
@@ -51,7 +52,8 @@ class RegisterRoutes {
         this.APP.use('/api/v1/social-security-team', this.routes.SSTMember)
         this.APP.use('/api/v1/users', this.routes.User),
         this.APP.use('/api/v1/database', this.routes.Database),
-        this.APP.use('/api/v1/quotes', this.routes.Quote)
+        this.APP.use('/api/v1/quotes', this.routes.Quote),
+        this.APP.use('/api/v1/report', this.routes.ReportRoutes)
     }
 
     printRoutes() {
