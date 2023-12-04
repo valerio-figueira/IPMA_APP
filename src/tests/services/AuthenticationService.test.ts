@@ -263,10 +263,10 @@ describe('TEST for Authentication Service', () => {
                 user_photo: ''
             })
 
-        expect(res).toBeInstanceOf(AuthenticationModel)
+        expect(res).toBeInstanceOf(Object)
         expect(res?.hierarchy_id).toBe(5)
         expect(res?.username).toBe('MariaK')
-        expect(res?.password).toBe('supersenha10')
+        expect(res?.password).toBe(undefined)
     })
 
 

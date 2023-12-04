@@ -84,7 +84,7 @@ describe('TEST for Holder Service layer', () => {
             await holderService.Create(secondHolder)
         } catch (error: any) {
             expect(error).toBeInstanceOf(CustomError)
-            expect(error.message).toBe('Usuário já existe na base de dados')
+            expect(error.message).toBe('Usuário ou documento já existe na base de dados')
         }
     })
 
@@ -104,7 +104,7 @@ describe('TEST for Holder Service layer', () => {
                 .toThrowError(CustomError)
         } catch (error: any) {
             expect(error).toBeInstanceOf(CustomError)
-            expect(error.message).toBe('Usuário já existe na base de dados')
+            expect(error.message).toBe('Usuário ou documento já existe na base de dados')
         }
     })
 

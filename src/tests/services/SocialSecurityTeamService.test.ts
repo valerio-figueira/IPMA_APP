@@ -43,7 +43,7 @@ describe('TEST for SST service', () => {
         try {
             expect(await sstService.Create(UserMock)).toThrowError(CustomError)
         } catch (error: any) {
-            expect(error.message).toBe('Usuário já existe na base de dados')
+            expect(error.message).toBe('Usuário ou documento já existe na base de dados')
         }
     })
 
