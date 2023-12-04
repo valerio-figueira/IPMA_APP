@@ -34,6 +34,7 @@ export default class Server {
         this.database = new Database()
         this.routes = new RegisterRoutes(this.APP, this.database)
         this.setupMiddleware()
+        this.database.syncModels()
         this.initializeRoutes()
     }
 
