@@ -7,6 +7,6 @@ export function getJsDateFromExcel(excelDate: number) {
 
     const delta = excelDate - MAGIC_NUMBER_OF_DAYS
     const parsed = delta * MISSING_LEAP_YEAR_DAY
-    
+    console.log(parsed)
     return new Date(parsed)
 }
