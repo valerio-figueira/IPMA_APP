@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import CustomError from "../CustomError";
 import { BadRequest } from "../messages/APIResponse";
 
@@ -127,6 +128,10 @@ function validateDate(date: string | null) {
         if (regex[0].test(date)) return
         if (regex[1].test(date)) return
         if (regex[2].test(date)) return
+        if (typeof date === 'object') {
+            const convertedDate = format(new Date(date), 'dd-MM-yyyy')
+            if (regex[0].test(convertedDate)) return
+        }
 
         throw new CustomError('Data inválida', 400)
     }
@@ -136,13 +141,12 @@ function validateDate(date: string | null) {
 
 
 function validateStringOrNumber(data: Record<string, string | number>) {
+    const types = ['string', 'object', 'number']
+
     for (let key in data) {
-        if (typeof data[key] !== 'string') {
-            if (typeof data[key] !== 'number') {
-                if (data[key] !== null) {
-                    throw new CustomError('Erro na validação dos dados', 400)
-                }
-            }
+        const valueType = typeof data[key]
+        if (!types.includes(valueType)) {
+            throw new CustomError('Erro na validação dos dados', 400)
         }
     }
 }
@@ -170,7 +174,7 @@ function validateRole(value: string) {
 }
 
 
-function validateRelationshipDegree(value: string | null) {}
+function validateRelationshipDegree(value: string | null) { }
 
 
 function validateID(value: number) {
