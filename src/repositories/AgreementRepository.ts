@@ -47,9 +47,9 @@ export default class AgreementRepository {
 
 
 
-    async Delete(query: IAgreement) {
+    async Delete(agreement_id: string | number) {
         return this.model.destroy({
-            where: { agreement_id: query.agreement_id }
+            where: { agreement_id }
         })
     }
 

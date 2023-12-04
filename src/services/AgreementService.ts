@@ -66,9 +66,9 @@ export default class AgreementService {
 
 
 
-    async Delete(body: IAgreement) {
-        if (!body.agreement_id) throw new CustomError('Convênio não localizado', 404)
-        const contract = await this.agreementRepository.Delete(body);
+    async Delete(agreement_id: string | number) {
+        if (!agreement_id) throw new CustomError('Convênio não localizado', 404)
+        const contract = await this.agreementRepository.Delete(agreement_id);
 
         if (!contract) throw new CustomError('O Convênio não foi removido ou localizado', 400)
 
