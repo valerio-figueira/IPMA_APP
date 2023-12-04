@@ -98,7 +98,7 @@ describe('SUITE TEST for Agreement Service', () => {
         }
 
         try {
-            await agreementService.Delete(mock)
+            await agreementService.Delete(mock.agreement_id!)
         } catch (error: any) {
             expect(error).toBeInstanceOf(CustomError)
             expect(error.message).toBe('Convênio não localizado')
@@ -113,7 +113,7 @@ describe('SUITE TEST for Agreement Service', () => {
         }
 
         try {
-            await agreementService.Delete(mock)
+            await agreementService.Delete(mock.agreement_id!)
         } catch (error: any) {
             expect(error).toBeInstanceOf(CustomError)
             expect(error.message).toBe('O Convênio não foi removido ou localizado')
@@ -127,7 +127,7 @@ describe('SUITE TEST for Agreement Service', () => {
             description: 'Convênio médico para funcionários públicos da prefeitura de Monte Alegre de Minas, aposentados ou ativos.'
         }
 
-        const response = await agreementService.Delete(mock)
+        const response = await agreementService.Delete(mock.agreement_id!)
 
         expect(response).toHaveProperty('message')
         expect(response.message).toBe('Convênio removido com sucesso!')

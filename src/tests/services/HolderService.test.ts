@@ -71,7 +71,7 @@ describe('TEST for Holder Service layer', () => {
 
 
 
-    it('should CREATE one more holder with authentication', async () => {
+    it('should CREATE one more holder', async () => {
         const res = await holderService.Create(secondHolder)
 
         expect(res).toBeInstanceOf(Object)

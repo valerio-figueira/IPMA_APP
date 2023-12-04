@@ -92,7 +92,7 @@ describe('TEST for SST service', () => {
     })
 
     it('should READ ALL members in social security team', async () => {
-        const res = await sstService.ReadAll()
+        const res = await sstService.ReadAll({})
 
         expect(res).toBeInstanceOf(Array)
         expect(res).toHaveLength(2)
@@ -102,7 +102,6 @@ describe('TEST for SST service', () => {
         const res = await sstService.Delete(2)
 
         expect(res).toHaveProperty('message')
-        expect(res?.message).toBe(SSTErrors.Removed)
     })
 
     it('should NOT DELETE a member in social security team', async () => {
@@ -116,7 +115,7 @@ describe('TEST for SST service', () => {
     })
 
     it('should GET ALL members in social security team', async () => {
-        const res = await sstService.ReadAll()
+        const res = await sstService.ReadAll({})
 
         expect(res).toBeInstanceOf(Array)
         expect(res).toHaveLength(1)

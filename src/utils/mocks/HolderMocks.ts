@@ -44,11 +44,7 @@ export const secondHolder = {
     "issue_date": "2012-09-15",
     "health_card": "876543210987654",
     "status": "ATIVO(A)",
-    "subscription_number": 29,
-    "hierarchy_id": 4,
-    "username": "GiuliaB",
-    "password": "supersenha10",
-    "user_photo": ""
+    "subscription_number": 29
 }
 
 export const thirdHolder = {
