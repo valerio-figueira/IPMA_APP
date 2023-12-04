@@ -61,9 +61,7 @@ class MemberController {
 
     async Delete(req: Request, res: Response) {
         try {
-            MemberValidator.validate(req.body)
-            MemberValidator.validateMember(req.body)
-            res.status(200).json(await this.memberService.Delete(req.body))
+            res.status(200).json(await this.memberService.Delete(req.params.id))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }

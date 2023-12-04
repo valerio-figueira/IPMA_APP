@@ -90,7 +90,7 @@ export default class MemberService {
 
         if (!data) throw new CustomError('Nenhum registro encontrado!', 400)
 
-        return UserDataSanitizer.sanitizeQuery(data);
+        return data
     }
 
 
@@ -133,14 +133,24 @@ export default class MemberService {
 
 
 
-    async Delete(body: IMember) {
-        const holder = await this.findHolder(body)
-        const agreement = await this.findAgreement(body)
-        const deletedRegistry = await this.memberRepository.Delete(body);
+    async Delete(member_id: string | number) {
+        const holder = await this.ReadOne(member_id)
 
-        if (!deletedRegistry) throw new CustomError('Não houve alterações', 400)
+        if (holder && holder.subscription) {
+            const agreement_id = holder.subscription.agreement_id
+            const member_id = holder.subscription.member_id
+            const holder_id = holder.holder_id
+            const agreement = await this.findAgreement({ agreement_id })
+            const deletedRegistry = await this.memberRepository.Delete({
+                holder_id, member_id, agreement_id
+            })
 
-        return { message: `${holder.user!.name} foi removido(a) do convênio ${agreement.agreement_name}` }
+            if (!deletedRegistry) throw new CustomError('Não houve alterações', 400)
+
+            return { message: `O titular foi removido(a) do convênio ${agreement.agreement_name}` }
+        } else {
+            throw new Error('Falha ao localizar convênio.')
+        }
     }
 
 
@@ -158,6 +168,9 @@ export default class MemberService {
     }
 
 
+
+
+
     private async findAllDependents(body: IMember) {
         if (!body.dependent_id) return
 
@@ -169,7 +182,10 @@ export default class MemberService {
     }
 
 
-    private async findHolder(body: IMember) {
+
+
+
+    private async findHolder(body: Record<string, any>) {
         const holder: HolderModel = await this.holderService.ReadOne(body.holder_id)
 
         if (!holder) throw new CustomError('Não foi possível localizar os dados do titular', 400)
@@ -181,7 +197,7 @@ export default class MemberService {
 
 
 
-    private async findAgreement(body: IMember) {
+    private async findAgreement(body: Record<string, any>) {
         const agreement = await this.agreementService.ReadOne(body.agreement_id);
 
         if (!agreement) throw new CustomError('Não foi possível localizar os dados do convênio', 400)

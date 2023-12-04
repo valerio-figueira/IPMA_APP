@@ -6,7 +6,7 @@ import AgreementModel from "../models/AgreementModel";
 import CustomError from "../utils/CustomError";
 import Database from "../db/Database";
 import DependentModel from "../models/DependentModel";
-import { Op, Transaction, col } from "sequelize";
+import { Op, Transaction } from "sequelize";
 
 export default class MemberRepository {
     private db: Database
@@ -97,7 +97,7 @@ export default class MemberRepository {
 
 
 
-    async Delete(body: IMember) {
+    async Delete(body: Record<string, any>) {
         return this.models.Member.destroy({
             where: {
                 member_id: body.member_id,
