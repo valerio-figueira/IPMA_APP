@@ -161,7 +161,7 @@ export default class HolderRepository {
 
             subscriptions.forEach(async subscription => {
                 await MonthlyFeeModel.destroy({
-                    where: { member_id: subscription.member_id }
+                    where: { member_id: subscription.member_id }, transaction: t
                 })
             })
 
@@ -181,10 +181,11 @@ export default class HolderRepository {
                 transaction: t,
             })
 
-            await this.userRepository.DeleteWithTransaction(user.user_id, t)
+            const result = await this.userRepository.DeleteWithTransaction(user.user_id, t)
+
+            if (!result) throw new Error('Falha ao remover dados de usuário.')
 
             await t.commit()
-
             return { message: `O titular foi removido com todas as suas dependências` }
         } catch (error: any) {
             await t.rollback();

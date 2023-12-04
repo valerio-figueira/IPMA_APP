@@ -76,7 +76,8 @@ class UserModel extends Model<IUser> {
 
         AuthenticationModel.belongsTo(UserModel, {
             foreignKey: 'user_id',
-            as: 'user'
+            as: 'user',
+            onDelete: 'CASCADE'
         })
 
         UserModel.hasOne(ContactModel.INIT(sequelize), {
@@ -86,7 +87,8 @@ class UserModel extends Model<IUser> {
         })
 
         ContactModel.belongsTo(UserModel, {
-            foreignKey: 'user_id'
+            foreignKey: 'user_id',
+            onDelete: 'CASCADE'
         });
 
         UserModel.hasOne(DocumentModel.INIT(sequelize), {
@@ -96,7 +98,8 @@ class UserModel extends Model<IUser> {
         })
 
         DocumentModel.belongsTo(UserModel, {
-            foreignKey: 'user_id'
+            foreignKey: 'user_id',
+            onDelete: 'CASCADE'
         });
 
         UserModel.hasOne(LocationModel.INIT(sequelize), {
@@ -106,7 +109,8 @@ class UserModel extends Model<IUser> {
         })
 
         LocationModel.belongsTo(UserModel, {
-            foreignKey: 'user_id'
+            foreignKey: 'user_id',
+            onDelete: 'CASCADE'
         });
     }
 }

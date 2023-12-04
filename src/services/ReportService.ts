@@ -25,9 +25,9 @@ export default class ReportService {
     private async HolderReport(whereClause: Record<string, any>) {
         const holders = await this.holder.findAll({
             include: Queries.IncludeUserData,
-            where: whereClause
+            where: whereClause, raw: true, nest: true
         })
-
+        console.log(holders)
         const workbook = new ExcelJS.Workbook()
         const worksheet = workbook.addWorksheet('Titulares')
 
