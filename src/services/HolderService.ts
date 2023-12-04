@@ -13,6 +13,7 @@ import { validateUser } from "../utils/decorators/validateBody";
 import UserService from "./UserService";
 import { Request } from "express";
 import * as path from "path";
+import * as fs from "fs";
 import { UploadedFile } from "express-fileupload";
 import { format } from "date-fns";
 import { readFile, utils } from "xlsx";
@@ -56,12 +57,11 @@ export default class HolderService {
         if (!req.files || Object.keys(req.files).length === 0) throw error
 
         const table = req.files.table as UploadedFile
+        const currentTime = format(new Date(), 'dd-MM-yyyy')
+        const fileName = `holders-table-${currentTime}.xlsx`
+        const filePath = path.join(__dirname, '../temp', fileName)
 
         try {
-            const currentTime = format(new Date(), 'dd-MM-yyyy')
-            const fileName = `holders-table-${currentTime}.xlsx`
-            const filePath = path.join(__dirname, '../temp', fileName)
-
             await new Promise<void>((resolve, reject) => {
                 table.mv(filePath, (err) => {
                     if (err) reject(err)
@@ -85,6 +85,7 @@ export default class HolderService {
             }
         } catch (error: any) {
             console.log(error)
+            fs.unlinkSync(filePath)
             throw new CustomError('Erro ao processar a planilha.', 500)
         }
     }
@@ -187,7 +188,7 @@ export default class HolderService {
             row.forEach((value: any, index: any) => {
                 const column = columns[index]
                 if (column === 'birth_date') {
-                    value = format(getJsDateFromExcel(value), 'yyyy-MM-dd')
+                    value = format(new Date(value), 'yyyy-MM-dd')
                 }
                 if (column === 'marital_status') {
                     if (value.match('Solteiro')) value = 'Solteiro(a)'
@@ -199,7 +200,6 @@ export default class HolderService {
             })
 
             if (user.name) {
-                user.status = 'APOSENTADO(A)'
                 UserDataSanitizer.sanitizeBody(user)
                 return this.bundleEntities(user)
             }
