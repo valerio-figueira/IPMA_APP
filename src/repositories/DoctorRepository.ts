@@ -1,7 +1,7 @@
-import DoctorModel from "../models/DoctorModel"
 import { IDoctor } from "../interfaces/IDoctor"
 import Database from "../db/Database"
-import { Op, where } from "sequelize"
+import { Op } from "sequelize"
+
 
 export default class DoctorRepository {
     private db: Database
@@ -9,7 +9,7 @@ export default class DoctorRepository {
 
     constructor(db: Database) {
         this.db = db
-        this.model = DoctorModel.INIT(this.db.sequelize)
+        this.model = this.db.models.Doctor
     }
 
 

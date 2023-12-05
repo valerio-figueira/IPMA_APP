@@ -1,6 +1,6 @@
 import Database from "../db/Database";
 import IAgreement from "../interfaces/IAgreement";
-import AgreementModel from "../models/AgreementModel";
+
 
 export default class AgreementRepository {
     private db: Database
@@ -8,7 +8,7 @@ export default class AgreementRepository {
 
     constructor(db: Database) {
         this.db = db
-        this.model = AgreementModel.INIT(this.db.sequelize)
+        this.model = this.db.models.Agreement
     }
 
 

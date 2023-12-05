@@ -2,18 +2,19 @@ import { IUserAttributes } from "../interfaces/IUser";
 import ContactModel from "../models/user/ContactModel";
 import DocumentModel from "../models/user/DocumentModel";
 import LocationModel from "../models/user/LocationModel";
-import { ModelStatic, Transaction, where } from 'sequelize';
+import { Transaction } from 'sequelize';
 import Database from "../db/Database";
-import Queries from "../db/Queries";
 import CustomError from "../utils/CustomError";
-import UserModel from "../models/user/UserModel";
 import { ID } from "../types/ID";
 import DocumentEntity from "../entities/DocumentEntity";
 import AuthenticationModel from "../models/AuthenticationModel";
 import AccessHierarchyModel from "../models/AccessHierarchyModel";
 import { Op } from "sequelize";
 
+
+
 type OptionalTransaction = Transaction | undefined;
+
 
 export default class UserRepository {
     private db: Database
@@ -22,10 +23,10 @@ export default class UserRepository {
     constructor(database: Database) {
         this.db = database
         this.models = {
-            UserModel: UserModel.INIT(this.db.sequelize),
-            DocumentModel: DocumentModel.INIT(this.db.sequelize),
-            LocationModel: LocationModel.INIT(this.db.sequelize),
-            ContactModel: ContactModel.INIT(this.db.sequelize)
+            UserModel: this.db.models.User,
+            DocumentModel: this.db.models.Document,
+            LocationModel: this.db.models.Location,
+            ContactModel: this.db.models.Contact
         }
     }
 
@@ -50,11 +51,11 @@ export default class UserRepository {
         return this.models.UserModel.findAll({
             include: [
                 {
-                    model: AuthenticationModel.INIT(this.db.sequelize),
+                    model: AuthenticationModel,
                     as: 'authentication',
                     attributes: { exclude: ['user_id', 'password'] },
                     include: [{
-                        model: AccessHierarchyModel.INIT(this.db.sequelize),
+                        model: AccessHierarchyModel,
                         as: 'hierarchy'
                     }]
                 },

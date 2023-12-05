@@ -2,15 +2,11 @@ import { Sequelize } from "sequelize"
 import Database from "../db/Database"
 import Queries from "../db/Queries"
 import { SST_Props } from "../interfaces/ISocialSecurityTeam"
-import AccessHierarchyModel from "../models/AccessHierarchyModel"
-import AuthenticationModel from "../models/AuthenticationModel"
-import SSTModel from "../models/SocialSecurityTeamModel"
-import UserModel from "../models/user/UserModel"
 import { ID } from "../types/ID"
 import CustomError from "../utils/CustomError"
 import UserRepository from "./UserRepository"
-import UserAttributes from "../entities/UserAttributes"
 import SSTBundleEntities from "../entities/SSTBundleEntities"
+
 
 
 class SocialSecurityTeamRepository {
@@ -24,9 +20,9 @@ class SocialSecurityTeamRepository {
         this.seq = this.db.sequelize
         this.userRepository = new UserRepository(this.db)
         this.models = {
-            SocialSecurityTeam: SSTModel.INIT(this.seq),
-            AccessHierarchy: AccessHierarchyModel.INIT(this.seq),
-            Authentication: AuthenticationModel.INIT(this.seq)
+            SocialSecurityTeam: this.db.models.SocialSecurityTeam,
+            AccessHierarchy: this.db.models.AccessHierarchy,
+            Authentication: this.db.models.Authentication
         }
     }
 

@@ -1,19 +1,18 @@
 import Database from "../db/Database";
 import Queries from "../db/Queries";
 import IAuthentication from "../interfaces/IAuthentication";
-import AccessHierarchyModel from "../models/AccessHierarchyModel";
-import AuthenticationModel from "../models/AuthenticationModel";
-import UserModel from "../models/user/UserModel";
 
 
 export default class AuthenticationRepository {
     private models
+    private db: Database
 
     constructor(db: Database) {
+        this.db = db
         this.models = {
-            AccessHierarchy: AccessHierarchyModel.INIT(db.sequelize),
-            User: UserModel.INIT(db.sequelize),
-            Authentication: AuthenticationModel.INIT(db.sequelize),
+            AccessHierarchy: this.db.models.AccessHierarchy,
+            User: this.db.models.User,
+            Authentication: this.db.models.Authentication,
         }
     }
 

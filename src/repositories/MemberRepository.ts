@@ -1,12 +1,11 @@
-import MemberModel from "../models/MemberModel";
 import IMember from "../interfaces/IMember";
-import HolderModel from "../models/HolderModel";
 import UserModel from "../models/user/UserModel";
 import AgreementModel from "../models/AgreementModel";
 import CustomError from "../utils/CustomError";
 import Database from "../db/Database";
-import DependentModel from "../models/DependentModel";
 import { Op, Transaction } from "sequelize";
+
+
 
 export default class MemberRepository {
     private db: Database
@@ -15,10 +14,10 @@ export default class MemberRepository {
     constructor(db: Database) {
         this.db = db
         this.models = {
-            Member: MemberModel.INIT(this.db.sequelize),
-            Agreement: AgreementModel.INIT(this.db.sequelize),
-            Holder: HolderModel.INIT(this.db.sequelize),
-            Dependent: DependentModel.INIT(this.db.sequelize)
+            Agreement: this.db.models.Agreement,
+            Holder: this.db.models.Holder,
+            Dependent: this.db.models.Dependent,
+            Member: this.db.models.Member,
         }
     }
 
@@ -145,7 +144,9 @@ export default class MemberRepository {
 
 
     async updateExclusionOfDependents(query: IMember) {
-        const dependents = await DependentModel.findAll({ where: { holder_id: query.holder_id } })
+        const dependents = await this.models.Dependent
+            .findAll({ where: { holder_id: query.holder_id } })
+
         if (dependents.length === 0) return
 
         const transaction = await this.db.sequelize.transaction()

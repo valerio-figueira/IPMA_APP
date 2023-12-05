@@ -1,12 +1,15 @@
-import AccessHierarchyModel from "../models/AccessHierarchyModel";
 import IAccessHierarchy from "../interfaces/IAccessHierarchy";
 import Database from "../db/Database";
 
+
+
 export default class AccessHierarchyRepository {
     private model
+    private db: Database
 
     constructor(db: Database) {
-        this.model = AccessHierarchyModel.INIT(db.sequelize)
+        this.db = db
+        this.model = this.db.models.AccessHierarchy
     }
 
 

@@ -1,12 +1,11 @@
 import { Transaction } from "sequelize";
 import Database from "../db/Database";
-import { IUserAttributes } from "../interfaces/IUser";
 import CustomError from "../utils/CustomError";
 import UserRepository from "./UserRepository";
 import Queries from "../db/Queries";
-import DependentModel from "../models/DependentModel";
 import DependentBundleEntities from "../entities/DependentBundleEntities";
 import { ID } from "../types/ID";
+
 
 
 export default class DependentRepository {
@@ -17,7 +16,7 @@ export default class DependentRepository {
     constructor(db: Database) {
         this.db = db
         this.userRepository = new UserRepository(this.db);
-        this.model = DependentModel.INIT(db.sequelize)
+        this.model = this.db.models.Dependent
     }
 
 

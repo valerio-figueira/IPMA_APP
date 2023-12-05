@@ -1,16 +1,15 @@
 import { IUserAttributes } from "../interfaces/IUser";
 import UserRepository from "./UserRepository";
-import HolderModel from "../models/HolderModel";
 import Database from "../db/Database";
 import CustomError from '../utils/CustomError';
 import { Op, Transaction } from 'sequelize';
 import Queries from "../db/Queries";
 import MemberModel from "../models/MemberModel";
-import AccessHierarchyModel from "../models/AccessHierarchyModel";
-import AuthenticationModel from "../models/AuthenticationModel";
 import RES from "../utils/messages/HolderResponses";
 import HolderBundleEntities from "../entities/HolderBundleEntities";
 import MonthlyFeeModel from "../models/MonthlyFeeModel";
+
+
 
 export default class HolderRepository {
     private db: Database;
@@ -21,9 +20,9 @@ export default class HolderRepository {
         this.db = db
         this.userRepository = new UserRepository(this.db)
         this.models = {
-            Holder: HolderModel.INIT(this.db.sequelize),
-            AccessHierarchy: AccessHierarchyModel.INIT(this.db.sequelize),
-            Authentication: AuthenticationModel.INIT(this.db.sequelize)
+            Authentication: this.db.models.Authentication,
+            Holder: this.db.models.Holder,
+            AccessHierarchy: this.db.models.AccessHierarchy,
         }
     }
 
@@ -32,7 +31,7 @@ export default class HolderRepository {
 
     async Create(query: HolderBundleEntities) {
         const t: Transaction = await this.db.sequelize.transaction();
-        console.log(query)
+
         try {
             await this.userRepository.CreateWithTransaction(query, t);
 
@@ -156,7 +155,7 @@ export default class HolderRepository {
         const t: Transaction = await this.db.sequelize.transaction();
 
         try {
-            const subscriptions = await MemberModel.INIT(this.db.sequelize)
+            const subscriptions = await MemberModel
                 .findAll({ where: { holder_id } })
 
             subscriptions.forEach(async subscription => {

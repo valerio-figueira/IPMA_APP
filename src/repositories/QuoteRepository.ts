@@ -1,11 +1,16 @@
+import { ModelStatic } from "sequelize";
 import Database from "../db/Database";
 import QuoteModel from "../models/QuoteModel";
 
+
+
 export default class QuoteRepository {
-    private model
+    private model: ModelStatic<QuoteModel>
+    private db: Database
 
     constructor(db: Database) {
-        this.model = QuoteModel.INIT(db.sequelize)
+        this.db = db
+        this.model = this.db.models.Quotes
     }
 
 

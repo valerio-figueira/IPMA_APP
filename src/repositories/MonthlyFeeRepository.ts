@@ -5,9 +5,9 @@ import UserModel from "../models/user/UserModel";
 import AgreementModel from "../models/AgreementModel";
 import { Op, QueryTypes, Transaction } from "sequelize";
 import Queries from "../db/Queries";
-import MemberModel from "../models/MemberModel";
 import Database from "../db/Database";
-import MonthlyFeeModel from "../models/MonthlyFeeModel";
+
+
 
 export default class MonthlyFeeRepository {
     private db: Database
@@ -16,8 +16,8 @@ export default class MonthlyFeeRepository {
     constructor(db: Database) {
         this.db = db
         this.models = {
-            Member: MemberModel.INIT(this.db.sequelize),
-            MonthlyFee: MonthlyFeeModel.INIT(this.db.sequelize)
+            Member: this.db.models.Member,
+            MonthlyFee: this.db.models.MonthlyFee
         }
     }
 
