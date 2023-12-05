@@ -105,7 +105,7 @@ export default class JWT {
 
 
   static async findUserInDatabase(username: string, db: Database) {
-    return AuthenticationModel.INIT(db.sequelize).findOne({
+    return AuthenticationModel.findOne({
       where: {
         username
       },
