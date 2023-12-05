@@ -11,6 +11,7 @@ export default class Database {
     private environment
     private config
     sequelize: Sequelize
+    models: Models
 
     constructor() {
         const DB_ENV = process.env.DB_ENV as envProps
@@ -30,6 +31,8 @@ export default class Database {
                 timestamps: true
             }
         })
+
+        this.models = new Models(this.sequelize)
     }
 
 
