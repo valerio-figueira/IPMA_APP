@@ -3,7 +3,6 @@ import UserModel from './user/UserModel';
 import HolderModel from './HolderModel';
 import { IDependentBase } from '../interfaces/IDependent';
 import { IUser } from '../interfaces/IUser';
-import { TDependentModel } from '../types/TModels';
 
 
 class DependentModel extends Model<IDependentBase> {
@@ -14,7 +13,7 @@ class DependentModel extends Model<IDependentBase> {
   declare created_at: Date;
   declare user?: IUser
 
-  static INIT(sequelize: any): ModelStatic<DependentModel> {
+  static INIT(sequelize: Sequelize): ModelStatic<DependentModel> {
     super.init({
       dependent_id: {
         type: DataTypes.INTEGER,
@@ -26,7 +25,7 @@ class DependentModel extends Model<IDependentBase> {
         allowNull: false,
         unique: true,
         references: {
-          model: UserModel.INIT(sequelize),
+          model: UserModel,
           key: 'user_id',
         },
       },
@@ -34,7 +33,7 @@ class DependentModel extends Model<IDependentBase> {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: HolderModel.INIT(sequelize),
+          model: HolderModel,
           key: 'holder_id',
         },
       },
@@ -58,25 +57,25 @@ class DependentModel extends Model<IDependentBase> {
       foreignKey: 'user_id',
       as: 'dependent',
       onDelete: 'CASCADE'
-    });
+    })
 
     HolderModel.hasOne(this, {
       foreignKey: 'holder_id',
       as: 'dependent',
       onDelete: 'CASCADE'
-    });
+    })
 
     this.belongsTo(UserModel, {
       foreignKey: 'user_id',
       as: 'user',
-    });
+    })
 
     this.belongsTo(HolderModel, {
       foreignKey: 'holder_id',
       as: 'holder',
-    });
+    })
 
-    return sequelize.models.DependentModel
+    return this
   }
 }
 

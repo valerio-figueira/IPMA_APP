@@ -2,7 +2,7 @@ import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import IAuthentication from '../interfaces/IAuthentication';
 import UserModel from './user/UserModel';
 import AccessHierarchyModel from './AccessHierarchyModel';
-import { TAuthenticationModel } from '../types/TModels';
+
 
 class AuthenticationModel extends Model<IAuthentication> {
     declare authentication_id: number;
@@ -14,7 +14,7 @@ class AuthenticationModel extends Model<IAuthentication> {
     declare created_at: Date;
     hierarchy?: AccessHierarchyModel
 
-    static INIT(sequelize: any)
+    static INIT(sequelize: Sequelize)
         : ModelStatic<AuthenticationModel> {
         super.init({
             authentication_id: {
@@ -36,7 +36,7 @@ class AuthenticationModel extends Model<IAuthentication> {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: AccessHierarchyModel.INIT(sequelize),
+                    model: AccessHierarchyModel,
                     key: 'hierarchy_id'
                 }
             },
@@ -65,22 +65,31 @@ class AuthenticationModel extends Model<IAuthentication> {
             timestamps: false
         })
 
-        this.createAssociations()
 
-        return sequelize.models.AuthenticationModel
-    }
+        UserModel.hasOne(this, {
+            foreignKey: 'user_id',
+            as: 'authentication',
+            onDelete: 'CASCADE'
+        })
 
-    static createAssociations() {
+        this.belongsTo(UserModel, {
+            foreignKey: 'user_id',
+            as: 'user',
+            onDelete: 'CASCADE'
+        })
+
         AccessHierarchyModel.hasOne(this, {
             foreignKey: 'hierarchy_id',
-            as: 'hierarchy',
+            as: 'authentication',
             onDelete: 'CASCADE'
         })
 
         this.belongsTo(AccessHierarchyModel, {
             foreignKey: 'hierarchy_id',
             as: 'hierarchy',
-        });
+        })
+
+        return this
     }
 }
 

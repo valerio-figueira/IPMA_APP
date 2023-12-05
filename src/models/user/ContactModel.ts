@@ -1,7 +1,6 @@
 import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import UserModel from './UserModel';
 import { IContact } from '../../interfaces/IUser';
-import { TContactModel } from '../../types/TModels';
 
 
 class ContactModel extends Model<IContact> {
@@ -12,8 +11,8 @@ class ContactModel extends Model<IContact> {
   declare email?: string | null;
   declare created_at: Date;
 
-  static INIT(sequelize: any)
-  : ModelStatic<ContactModel> {
+  static INIT(sequelize: Sequelize)
+    : ModelStatic<ContactModel> {
     super.init({
       contact_id: {
         type: DataTypes.INTEGER,
@@ -54,7 +53,18 @@ class ContactModel extends Model<IContact> {
       timestamps: false,
     })
 
-    return sequelize.models.ContactModel
+    UserModel.hasOne(this, {
+      foreignKey: 'user_id',
+      as: 'contact',
+      onDelete: 'CASCADE'
+    })
+
+    this.belongsTo(UserModel, {
+      foreignKey: 'user_id',
+      onDelete: 'CASCADE'
+    })
+
+    return this
   }
 
 }

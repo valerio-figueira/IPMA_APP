@@ -13,8 +13,8 @@ class DocumentModel extends Model<IDocument> {
     declare health_card?: string | null;
     declare created_at: Date;
 
-    static INIT(sequelize: any)
-    : ModelStatic<DocumentModel> {
+    static INIT(sequelize: Sequelize)
+        : ModelStatic<DocumentModel> {
         super.init({
             document_id: {
                 type: DataTypes.INTEGER,
@@ -60,7 +60,20 @@ class DocumentModel extends Model<IDocument> {
             timestamps: false,
         })
 
-        return sequelize.models.DocumentModel
+
+        UserModel.hasOne(this, {
+            foreignKey: 'user_id',
+            as: 'document',
+            onDelete: 'CASCADE'
+        })
+
+        this.belongsTo(UserModel, {
+            foreignKey: 'user_id',
+            onDelete: 'CASCADE'
+        })
+
+
+        return this
     }
 }
 

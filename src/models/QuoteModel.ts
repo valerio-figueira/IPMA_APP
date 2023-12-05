@@ -1,4 +1,4 @@
-import { Model, DataTypes, ModelStatic } from 'sequelize';
+import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 
 interface IQuoteModel {
     quote_id: number;
@@ -13,7 +13,7 @@ class QuoteModel extends Model<IQuoteModel> {
     declare author: string;
     declare created_at: Date;
 
-    static INIT(sequelize: any): ModelStatic<QuoteModel> {
+    static INIT(sequelize: Sequelize): ModelStatic<QuoteModel> {
         super.init({
             quote_id: {
                 type: DataTypes.INTEGER,
@@ -40,7 +40,7 @@ class QuoteModel extends Model<IQuoteModel> {
             timestamps: false,
         })
 
-        return sequelize.models.QuoteModel
+        return this
     }
 }
 

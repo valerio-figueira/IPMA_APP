@@ -15,8 +15,8 @@ class LocationModel extends Model<ILocation> {
     declare state?: string | null;
     declare created_at: Date;
 
-    static INIT(sequelize: any)
-    : ModelStatic<LocationModel> {
+    static INIT(sequelize: Sequelize)
+        : ModelStatic<LocationModel> {
         super.init({
             location_id: {
                 type: DataTypes.INTEGER,
@@ -68,7 +68,19 @@ class LocationModel extends Model<ILocation> {
             timestamps: false,
         })
 
-        return sequelize.models.LocationModel
+
+        UserModel.hasOne(this, {
+            foreignKey: 'user_id',
+            as: 'location',
+            onDelete: 'CASCADE'
+        })
+
+        this.belongsTo(UserModel, {
+            foreignKey: 'user_id',
+            onDelete: 'CASCADE'
+        })
+
+        return this
     }
 
 }

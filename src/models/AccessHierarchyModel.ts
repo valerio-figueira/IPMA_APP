@@ -1,4 +1,4 @@
-import { Model, DataTypes, ModelStatic } from 'sequelize';
+import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import IAccessHierarchy from '../interfaces/IAccessHierarchy';
 
 
@@ -8,7 +8,7 @@ class AccessHierarchyModel extends Model<IAccessHierarchy> {
   declare parent_level_id?: number | null;
   declare created_at: Date;
 
-  static INIT(sequelize: any)
+  static INIT(sequelize: Sequelize)
   : ModelStatic<AccessHierarchyModel> {
     super.init({
       hierarchy_id: {
@@ -41,12 +41,12 @@ class AccessHierarchyModel extends Model<IAccessHierarchy> {
       timestamps: false, // Se não precisa de colunas 'createdAt' e 'updatedAt'
     })
 
-    sequelize.models.AccessHierarchyModel.belongsTo(AccessHierarchyModel, {
+    this.belongsTo(this, {
       foreignKey: 'parent_level_id',
       as: 'parentLevel',
     });
 
-    return sequelize.models.AccessHierarchyModel
+    return this
   }
 }
 

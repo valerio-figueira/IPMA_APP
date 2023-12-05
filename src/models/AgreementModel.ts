@@ -1,5 +1,6 @@
-import { Model, DataTypes, ModelStatic } from 'sequelize';
+import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import IAgreement from '../interfaces/IAgreement';
+import MemberModel from './MemberModel';
 
 
 class AgreementModel extends Model<IAgreement> {
@@ -8,7 +9,7 @@ class AgreementModel extends Model<IAgreement> {
     declare description: string | null;
     declare registration_date: Date;
 
-    static INIT(sequelize: any)
+    static INIT(sequelize: Sequelize)
     : ModelStatic<AgreementModel> {
         super.init({
             agreement_id: {
@@ -37,7 +38,7 @@ class AgreementModel extends Model<IAgreement> {
             timestamps: false, // Defina como true se desejar timestamps automáticos
         })
 
-        return sequelize.models.AgreementModel
+        return this
     }
 }
 

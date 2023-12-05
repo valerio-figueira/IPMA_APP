@@ -1,7 +1,6 @@
 import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import IMonthlyFee from '../interfaces/IMonthlyFee';
 import MemberModel from './MemberModel';
-import { TMonthlyFeeModel } from '../types/TModels';
 
 
 class MonthlyFeeModel extends Model<IMonthlyFee> {
@@ -14,7 +13,7 @@ class MonthlyFeeModel extends Model<IMonthlyFee> {
     declare payment_date?: Date;
     declare created_at: Date;
 
-    static INIT(sequelize: any): ModelStatic<MonthlyFeeModel> {
+    static INIT(sequelize: Sequelize): ModelStatic<MonthlyFeeModel> {
         super.init({
             monthly_fee_id: {
                 type: DataTypes.INTEGER,
@@ -26,7 +25,7 @@ class MonthlyFeeModel extends Model<IMonthlyFee> {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: MemberModel.INIT(sequelize),
+                    model: MemberModel,
                     key: 'member_id',
                 }
             },
@@ -83,7 +82,7 @@ class MonthlyFeeModel extends Model<IMonthlyFee> {
             as: 'subscription'
         })
 
-        return sequelize.models.MonthlyFeeModel
+        return this
     }
 }
 

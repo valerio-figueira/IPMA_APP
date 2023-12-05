@@ -1,4 +1,4 @@
-import { Model, DataTypes, ModelStatic } from 'sequelize';
+import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import UserModel from './user/UserModel';
 import { IHolderBase } from '../interfaces/IHolder';
 import { UserNestedProps } from '../interfaces/IUser';
@@ -16,7 +16,7 @@ class HolderModel extends Model<IHolderBase> {
     user?: UserNestedProps
     subscription?: IMember
 
-    static INIT(sequelize: any): ModelStatic<HolderModel> {
+    static INIT(sequelize: Sequelize): ModelStatic<HolderModel> {
         super.init({
             holder_id: {
                 type: DataTypes.INTEGER,
@@ -28,7 +28,7 @@ class HolderModel extends Model<IHolderBase> {
                 allowNull: false,
                 unique: true,
                 references: {
-                    model: UserModel.INIT(sequelize),
+                    model: UserModel,
                     key: 'user_id',
                 },
             },
@@ -59,12 +59,13 @@ class HolderModel extends Model<IHolderBase> {
             as: 'holder',
             onDelete: 'CASCADE'
         })
+
         this.belongsTo(UserModel, {
             foreignKey: 'user_id',
             as: 'user'
         })
 
-        return sequelize.models.HolderModel
+        return this
     }
 }
 

@@ -1,4 +1,4 @@
-import { Model, DataTypes, ModelStatic } from 'sequelize';
+import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import IBlogPost from '../interfaces/IBlogPost';
 import SSTModel from './SocialSecurityTeamModel';
 
@@ -12,7 +12,7 @@ class BlogPostModel extends Model<IBlogPost> {
     declare views: number;
     declare created_at: Date;
 
-    static INIT(sequelize: any)
+    static INIT(sequelize: Sequelize)
     : ModelStatic<BlogPostModel> {
         super.init({
             post_id: {
@@ -65,20 +65,18 @@ class BlogPostModel extends Model<IBlogPost> {
             timestamps: false, // Se não precisa de colunas 'createdAt' e 'updatedAt'
         })
 
-        const BlogPostModel = sequelize.models.BlogPostModel
-
-        SSTModel.INIT(sequelize).hasMany(BlogPostModel, {
+        SSTModel.hasMany(this, {
             foreignKey: 'last_editor_id',
             as: 'post',
             onDelete: 'CASCADE'
         })
 
-        BlogPostModel.belongsTo(SSTModel, {
+        this.belongsTo(SSTModel, {
             foreignKey: 'sst_member_id',
             as: 'socialTeam'
         })        
 
-        return BlogPostModel
+        return this
     }
 }
 

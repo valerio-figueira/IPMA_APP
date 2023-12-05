@@ -3,9 +3,6 @@ import HolderModel from './HolderModel';
 import DependentModel from './DependentModel';
 import AgreementModel from './AgreementModel';
 import IMember from '../interfaces/IMember';
-import { TMemberModel } from '../types/TModels';
-import sequelize from 'sequelize';
-import MonthlyFeeModel from './MonthlyFeeModel';
 
 
 class MemberModel extends Model<IMember> {
@@ -22,7 +19,7 @@ class MemberModel extends Model<IMember> {
     declare holder?: any;
     declare billing?: any;
 
-    static INIT(sequelize: any): ModelStatic<MemberModel> {
+    static INIT(sequelize: Sequelize): ModelStatic<MemberModel> {
         super.init({
             member_id: {
                 type: DataTypes.INTEGER,
@@ -33,7 +30,7 @@ class MemberModel extends Model<IMember> {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: HolderModel.INIT(sequelize),
+                    model: HolderModel,
                     key: 'holder_id',
                 }
             },
@@ -42,7 +39,7 @@ class MemberModel extends Model<IMember> {
                 defaultValue: null,
                 allowNull: true,
                 references: {
-                    model: DependentModel.INIT(sequelize),
+                    model: DependentModel,
                     key: 'dependent_id',
                 }
             },
@@ -50,7 +47,7 @@ class MemberModel extends Model<IMember> {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: AgreementModel.INIT(sequelize),
+                    model: AgreementModel,
                     key: 'agreement_id'
                 }
             },
@@ -79,46 +76,42 @@ class MemberModel extends Model<IMember> {
             timestamps: false,
         })
 
-        const memberModel = sequelize.models.MemberModel
-        this.createAssociations(memberModel)
 
-        return memberModel
-    }
 
-    private static createAssociations(MemberModel: TMemberModel) {
-        HolderModel.hasOne(MemberModel, {
+        HolderModel.hasOne(this, {
             foreignKey: 'holder_id',
             as: 'subscription',
             onDelete: 'CASCADE'
-        });
+        })
 
-        MemberModel.belongsTo(HolderModel, {
+        this.belongsTo(HolderModel, {
             foreignKey: 'holder_id',
             as: 'holder'
         })
 
-        AgreementModel.hasOne(MemberModel, {
+        AgreementModel.hasOne(this, {
             foreignKey: 'agreement_id',
             as: 'subscription',
             onDelete: 'CASCADE'
         })
 
-        MemberModel.belongsTo(AgreementModel, {
+        this.belongsTo(AgreementModel, {
             foreignKey: 'agreement_id',
             as: 'agreement'
         })
 
-        DependentModel.hasOne(MemberModel, {
+        DependentModel.hasOne(this, {
             foreignKey: 'dependent_id',
             as: 'subscription',
             onDelete: 'CASCADE'
         })
 
-        MemberModel.belongsTo(DependentModel, {
+        this.belongsTo(DependentModel, {
             foreignKey: 'dependent_id',
             as: 'dependent',
         })
 
+        return this
     }
 }
 

@@ -9,7 +9,7 @@ class PostAuthorModel extends Model<IPostAuthor> {
     declare post_id: number;
     declare created_at: Date;
 
-    static INIT(sequelize: any): ModelStatic<PostAuthorModel> {
+    static INIT(sequelize: Sequelize): ModelStatic<PostAuthorModel> {
         super.init({
             post_author_id: {
                 type: DataTypes.INTEGER,
@@ -45,14 +45,9 @@ class PostAuthorModel extends Model<IPostAuthor> {
             timestamps: false, // Se não precisa de colunas 'createdAt' e 'updatedAt'
         })
 
-        const PostAuthorModel = sequelize.models.PostAuthorModel
-        this.createAssociations(PostAuthorModel, sequelize)
 
-        return PostAuthorModel
-    }
 
-    static createAssociations(PostAuthorModel: any, sequelize: Sequelize) {
-        SSTModel.INIT(sequelize).hasMany(PostAuthorModel, {
+        SSTModel.hasMany(PostAuthorModel, {
             foreignKey: 'sst_author_id',
             as: 'authors',
             onDelete: 'CASCADE'
@@ -63,7 +58,7 @@ class PostAuthorModel extends Model<IPostAuthor> {
             as: 'socialTeam'
         })
 
-        BlogPostModel.INIT(sequelize).hasMany(PostAuthorModel, {
+        BlogPostModel.hasMany(PostAuthorModel, {
             foreignKey: 'post_id',
             as: 'authors',
         })
@@ -72,6 +67,8 @@ class PostAuthorModel extends Model<IPostAuthor> {
             foreignKey: 'post_id',
             as: 'post'
         })
+
+        return this
     }
 }
 

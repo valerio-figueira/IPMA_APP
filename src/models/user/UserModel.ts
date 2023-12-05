@@ -17,7 +17,7 @@ class UserModel extends Model<IUser> {
     declare mother_name?: string | null;
     declare created_at: Date;
 
-    static INIT(sequelize: any)
+    static INIT(sequelize: Sequelize)
         : ModelStatic<UserModel> {
         super.init({
             user_id: {
@@ -60,58 +60,7 @@ class UserModel extends Model<IUser> {
             timestamps: false,
         })
 
-        const UserModel = sequelize.models.UserModel
-
-        this.createAssociations(UserModel, sequelize)
-
-        return UserModel
-    }
-
-    static createAssociations(UserModel: TUserModel, sequelize: Sequelize) {
-        UserModel.hasOne(AuthenticationModel.INIT(sequelize), {
-            foreignKey: 'user_id',
-            as: 'authentication',
-            onDelete: 'CASCADE'
-        })
-
-        AuthenticationModel.belongsTo(UserModel, {
-            foreignKey: 'user_id',
-            as: 'user',
-            onDelete: 'CASCADE'
-        })
-
-        UserModel.hasOne(ContactModel.INIT(sequelize), {
-            foreignKey: 'user_id',
-            as: 'contact',
-            onDelete: 'CASCADE'
-        })
-
-        ContactModel.belongsTo(UserModel, {
-            foreignKey: 'user_id',
-            onDelete: 'CASCADE'
-        });
-
-        UserModel.hasOne(DocumentModel.INIT(sequelize), {
-            foreignKey: 'user_id',
-            as: 'document',
-            onDelete: 'CASCADE'
-        })
-
-        DocumentModel.belongsTo(UserModel, {
-            foreignKey: 'user_id',
-            onDelete: 'CASCADE'
-        });
-
-        UserModel.hasOne(LocationModel.INIT(sequelize), {
-            foreignKey: 'user_id',
-            as: 'location',
-            onDelete: 'CASCADE'
-        })
-
-        LocationModel.belongsTo(UserModel, {
-            foreignKey: 'user_id',
-            onDelete: 'CASCADE'
-        });
+        return this
     }
 }
 
