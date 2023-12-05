@@ -17,7 +17,6 @@ import * as fs from "fs";
 import { UploadedFile } from "express-fileupload";
 import { format } from "date-fns";
 import { readFile, utils } from "xlsx";
-import { getJsDateFromExcel } from "../helpers/ConvertDate";
 
 
 export default class HolderService {

@@ -1,6 +1,5 @@
 import Database from "../db/Database";
 import Queries from "../db/Queries";
-import HolderModel from "../models/HolderModel";
 import * as ExcelJS from "exceljs";
 import * as path from "path";
 import * as fs from "fs";
@@ -8,10 +7,12 @@ import format from "date-fns/format";
 
 
 export default class ReportService {
+    private db: Database
     private holder;
 
     constructor(db: Database) {
-        this.holder = HolderModel.INIT(db.sequelize)
+        this.db = db
+        this.holder = this.db.models.Holder
     }
 
 
