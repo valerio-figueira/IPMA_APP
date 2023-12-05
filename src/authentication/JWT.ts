@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import AuthenticationModel from "../models/AuthenticationModel";
 import AccessHierarchyModel from "../models/AccessHierarchyModel";
 import Database from "../db/Database";
 import CustomError from "../utils/CustomError";
@@ -105,7 +104,7 @@ export default class JWT {
 
 
   static async findUserInDatabase(username: string, db: Database) {
-    return AuthenticationModel.findOne({
+    return db.models.Authentication.findOne({
       where: {
         username
       },
