@@ -23,7 +23,7 @@ export default class QuoteRepository {
 
 
     async ReadAll() {
-        return this.model.findAll()
+        return this.model.findAll({ order: [['created_at', 'DESC']] })
     }
 
 
