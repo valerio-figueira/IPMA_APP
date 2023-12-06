@@ -162,6 +162,8 @@ export default class UserRepository {
             .create(query.contact, { transaction, raw: true });
         await this.models.LocationModel
             .create(query.location, { transaction, raw: true });
+
+        return user
     }
 
 
@@ -176,17 +178,17 @@ export default class UserRepository {
 
         const [contact] = await this.models.ContactModel
             .update(query.contact, {
-                where: { user_id }, transaction
+                where: { user_id }, transaction, fields: ['email', 'residential_phone', 'phone_number']
             })
 
         const [document] = await this.models.DocumentModel
             .update(query.document, {
-                where: { user_id }, transaction
+                where: { user_id }, transaction, fields: ['health_card', 'identity', 'issue_date']
             })
 
         const [location] = await this.models.LocationModel
             .update(query.location, {
-                where: { user_id }, transaction
+                where: { user_id }, transaction, fields: ['address', 'number', 'neighborhood', 'city', 'zipcode', 'state']
             })
 
         return this.checkAffectedCount({ user, contact, document, location })
@@ -222,44 +224,20 @@ export default class UserRepository {
         this.deleteUnnecessaryFields(query)
 
         const doc = await this.models.DocumentModel.findOne({ where: { cpf: query.document.cpf } })
-        let identity;
 
-        if (query.document.identity) {
-            identity = await this.models.DocumentModel.findOne({ where: { identity: query.document.identity } })
-        }
-
-        if (doc) {
-            await this.models.UserModel.update(query.user, {
-                where: { user_id: doc.user_id }, transaction, fields: [
-                    'birth_date', 'father_name', 'gender', 'marital_status', 'mother_name', 'name'
-                ]
-            })
-
-            this.insertIdValues(query, doc.user_id)
-
-            await this.models.DocumentModel.update(query.document, {
-                where: { user_id: doc.user_id }, transaction, fields: [
-                    'health_card', 'issue_date'
-                ]
-            })
-            await this.models.ContactModel.update(query.contact, {
-                where: { user_id: doc.user_id }, transaction, fields: [
-                    'phone_number', 'residential_phone'
-                ]
-            })
-            await this.models.LocationModel.update(query.location, { where: { user_id: doc.user_id }, transaction })
+        if (doc) { // UPDATE IF EXISTS
+            await this.UpdateWithTransaction(doc.user_id, query, transaction)
 
             return { user_id: doc.user_id, status: 'UPDATE' }
         } else {
-            if (!identity) {
-                const newUser = await this.models.UserModel.create(query.user, { transaction, raw: true })
+            let identity;
 
-                this.insertIdValues(query, newUser.user_id)
+            if (query.document.identity) {
+                identity = await this.models.DocumentModel.findOne({ where: { identity: query.document.identity } })
+            }
 
-                await this.models.DocumentModel.create(query.document, { transaction, raw: true })
-                await this.models.ContactModel.create(query.contact, { transaction, raw: true })
-                await this.models.LocationModel.create(query.location, { transaction, raw: true })
-
+            if (!identity) { // CREATE IF CPF AND IDENTITY (RG) NOT EXISTS
+                const newUser = await this.CreateWithTransaction(query, transaction)
                 return { user_id: newUser.user_id, status: 'CREATE' }
             }
         }
