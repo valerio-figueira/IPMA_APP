@@ -1,7 +1,8 @@
 import winston from "winston";
 import * as path from 'path';
-import { Request } from "express";
+import { Request, Response } from "express";
 import JWT from "../authentication/JWT";
+import axios from 'axios';
 
 
 
@@ -21,13 +22,62 @@ const logger = (level: string, filename: string) => {
 
 
 
-export const loggerMessage = (req: Request) => {
-    const decodedToken = JWT.getToken(req)
-    const message = `Action: ${req.method}
-    URL: ${req.url}
-    Username: ${decodedToken ? decodedToken.user.username : null}`
 
-    logger('info', 'server.log').info(message)
+
+
+const prepareLoggerMessage = (req: Request, res: Response, options: any) => {
+    const message = [
+        `Action: ${req.method}`,
+        `Host: ${req.hostname}`,
+        `Endpoint: ${req.baseUrl}`,
+        `Path: ${req.path}`,
+        `Response Status: ${res.statusCode}`,
+        `Session ID: ${req.sessionID}`
+    ]
+
+    if (req.originalUrl === '/api/v1/quotes/random') return null;
+    if (options.username) message.push(`Username: ${options.username}`);
+    if (options.ip) message.push(`Remote IP Address: ${options.ip}`);
+    if (options.country) message.push(`Country: ${options.country}`);
+    if (options.city) message.push(`City: ${options.city}`);
+    if (req.path === '/login') {
+        const user = req.body.username
+        message.push(res.statusCode === 200 ? `Login efetuado: ${user}` : `Tentativa de Login: ${user}`)
+    }
+
+    return message
+}
+
+
+
+export const loggerMessage = async (req: Request, res: Response) => {
+    const remoteIpAddress = req.ip
+    const decodedToken = JWT.getToken(req)
+    const username = decodedToken ? decodedToken.user.username : null
+
+    const response = await axios.get(`https://ipinfo.io/${remoteIpAddress}/json`)
+    const data = response.data;
+
+    // Adicione informações de geolocalização ao objeto de solicitação (req)
+    const geolocation = {
+        ip: data.ip,
+        country: data.country,
+        region: data.region,
+        city: data.city,
+        loc: data.loc,  // latitude e longitude
+    }
+
+    const message = prepareLoggerMessage(req, res, {
+        ip: remoteIpAddress,
+        country: geolocation.country,
+        city: geolocation.city,
+        username
+    })
+
+    if (!message) return
+    if (req.path === '/login') return logger('info', 'login.log').info(message)
+    if (res.statusCode >= 200 && res.statusCode < 300) return logger('info', 'server.log').info(message);
+    if (res.statusCode >= 400) return logger('error', 'error.log').error(message);
 }
 
 export default logger
