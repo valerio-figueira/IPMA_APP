@@ -1,5 +1,5 @@
 import { QueryTypes, Sequelize } from "sequelize";
-import DB_Config from "./DatabaseConfig";
+import DB_Config, { DB_ConfigType } from "./DatabaseConfig";
 import * as dotenv from "dotenv";
 import Models from "../models";
 import { DBErrors as ERROR } from "../utils/errors/Errors";
@@ -9,7 +9,7 @@ type envProps = undefined | 'test' | 'development' | 'production'
 
 export default class Database {
     private environment
-    private config
+    private config: DB_ConfigType
     sequelize: Sequelize
     models: Models
 
@@ -17,8 +17,14 @@ export default class Database {
         const DB_ENV = process.env.DB_ENV as envProps
         this.environment = DB_ENV || 'test'
         this.config = DB_Config[this.environment]
+        this.sequelize = this.createSequelizeInstance()
+        this.models = new Models(this.sequelize)
+    }
 
-        this.sequelize = new Sequelize(
+
+
+    private createSequelizeInstance() {
+        return new Sequelize(
             this.config.database,
             this.config.username,
             this.config.password, {
@@ -31,8 +37,6 @@ export default class Database {
                 timestamps: true
             }
         })
-
-        this.models = new Models(this.sequelize)
     }
 
 

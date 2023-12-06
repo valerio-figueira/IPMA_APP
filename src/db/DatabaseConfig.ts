@@ -2,7 +2,7 @@ import { Dialect } from "sequelize";
 import dotenv from "dotenv";
 dotenv.config();
 
-type DB_Props = {
+export type DB_ConfigType = {
     username: string,
     password: string,
     database: string,
@@ -12,7 +12,7 @@ type DB_Props = {
     port?: number
 }
 
-const DB_Config: Record<string, DB_Props> = {
+const DB_Config: Record<string, DB_ConfigType> = {
     development: {
         username: 'root',
         password: 'root',
