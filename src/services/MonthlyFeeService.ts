@@ -13,7 +13,7 @@ import createTable, { createHeader } from "../utils/CreateTable";
 import { groupDetailedBillings } from "../utils/GroupBillings";
 
 export default class MonthlyFeeService {
-    monthlyFeeRepository: MonthlyFeeRepository;
+    private monthlyFeeRepository: MonthlyFeeRepository;
 
     constructor(db: Database) {
         this.monthlyFeeRepository = new MonthlyFeeRepository(db);

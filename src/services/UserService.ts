@@ -9,8 +9,11 @@ import Database from "../db/Database";
 import { BadRequest } from "../utils/messages/APIResponse";
 import UserDataSanitizer from "../helpers/UserDataSanitizer";
 
+
+
+
 export default class UserService {
-    userRepository: UserRepository;
+    private userRepository: UserRepository;
 
     constructor(db: Database) {
         this.userRepository = new UserRepository(db);
@@ -56,7 +59,7 @@ export default class UserService {
         const contact = new ContactEntity(body)
         const location = new LocationEntity(body)
         const userData = new UserAttributes({ user, document, contact, location });
-        console.log(body)
+
         if (!user.user_id) throw new CustomError('Verifique a identificação de usuário', 400)
 
         try {

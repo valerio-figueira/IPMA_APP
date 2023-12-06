@@ -1,11 +1,12 @@
 import AccessHierarchyRepository from "../repositories/AccessHierarchyRepository";
 import IAccessHierarchy from "../interfaces/IAccessHierarchy";
-import AccessHierarchyTree from "../helpers/AccessHierarchyTree";
 import CustomError from "../utils/CustomError";
 import Database from "../db/Database";
 
+
+
 export default class AccessHierarchyService {
-    accessHierarchyRepository: AccessHierarchyRepository;
+    private accessHierarchyRepository: AccessHierarchyRepository;
 
     constructor(db: Database) {
         this.accessHierarchyRepository = new AccessHierarchyRepository(db);

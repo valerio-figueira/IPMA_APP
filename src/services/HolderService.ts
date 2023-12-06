@@ -20,8 +20,8 @@ import { readFile, utils } from "xlsx";
 
 
 export default class HolderService {
-    holderRepository: HolderRepository
-    userService: UserService
+    private holderRepository: HolderRepository
+    private userService: UserService
 
     constructor(db: Database) {
         this.holderRepository = new HolderRepository(db)
@@ -52,8 +52,9 @@ export default class HolderService {
 
 
     async BulkCreate(req: Request) {
-        const error = new CustomError('Nenhuma planilha foi enviada', 400)
-        if (!req.files || Object.keys(req.files).length === 0) throw error
+        if (!req.files || Object.keys(req.files).length === 0) {
+            throw new CustomError('Nenhuma planilha foi enviada', 400)
+        }
 
         const table = req.files.table as UploadedFile
         const currentTime = format(new Date(), 'dd-MM-yyyy')
@@ -68,12 +69,7 @@ export default class HolderService {
                 })
             })
 
-            const workbook = readFile(filePath)
-            const sheetName = workbook.SheetNames[0]
-            const sheet = workbook.Sheets[sheetName]
-            const rows = utils.sheet_to_json(sheet, { header: 1 })
-            const columns: any = rows[0]
-
+            const { rows, columns } = this.ExtractDataFromTable(filePath)
             const jsonResult: any = this.createJsonFromTable(columns, rows)
 
             if (jsonResult.length > 0) {
@@ -161,6 +157,19 @@ export default class HolderService {
 
     async findHolderByUserId(user_id: string | number) {
         return this.holderRepository.findHolderByUserId(user_id)
+    }
+
+
+
+
+    private ExtractDataFromTable(filePath: string) {
+        const workbook = readFile(filePath)
+        const sheetName = workbook.SheetNames[0]
+        const sheet = workbook.Sheets[sheetName]
+        const rows = utils.sheet_to_json(sheet, { header: 1 })
+        const columns: any = rows[0]
+
+        return { rows, columns }
     }
 
 

@@ -1,7 +1,6 @@
 import QuoteRepository from "../repositories/QuoteRepository";
-import CustomError from "../utils/CustomError";
 import Database from "../db/Database";
-import { BadRequest } from "../utils/messages/APIResponse";
+
 
 export default class QuoteService {
     private quoteRepository: QuoteRepository

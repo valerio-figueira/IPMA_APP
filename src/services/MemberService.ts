@@ -16,12 +16,12 @@ import { validateAgreements } from "../utils/decorators/validateBody";
 
 
 export default class MemberService {
-    db: Database;
-    memberRepository: MemberRepository;
-    holderService: HolderService;
-    agreementService: AgreementService;
-    monthlyFeeService: MonthlyFeeService;
-    dependentService: DependentService;
+    private db: Database;
+    private memberRepository: MemberRepository;
+    private holderService: HolderService;
+    private agreementService: AgreementService;
+    private monthlyFeeService: MonthlyFeeService;
+    private dependentService: DependentService;
 
     constructor(db: Database) {
         this.db = db

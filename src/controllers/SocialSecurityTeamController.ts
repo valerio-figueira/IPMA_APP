@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import SocialSecurityTeamService from "../services/SocialSecurityTeamService";
-import JWT from "../authentication/JWT";
 import Database from "../db/Database";
 
 

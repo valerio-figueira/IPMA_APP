@@ -5,12 +5,11 @@ import CustomError from "../utils/CustomError";
 import { IDoctor } from "../interfaces/IDoctor";
 import Database from "../db/Database";
 import format from "date-fns/format";
-import * as fs from 'fs';
 import * as path from 'path';
 import { Request } from "express";
 
 export default class DoctorService {
-    doctorRepository: DoctorRepository;
+    private doctorRepository: DoctorRepository;
 
     constructor(db: Database) {
         this.doctorRepository = new DoctorRepository(db);

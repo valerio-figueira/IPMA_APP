@@ -6,8 +6,8 @@ import Database from "../db/Database";
 
 
 class MemberController {
-    memberService: MemberService
-    db: Database
+    private memberService: MemberService
+    private db: Database
 
     constructor(database: Database) {
         this.db = database
