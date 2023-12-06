@@ -44,6 +44,7 @@ const prepareLoggerMessage = (req: Request, res: Response, options: any) => {
         const user = req.body.username
         message.push(res.statusCode === 200 ? `Login efetuado: ${user}` : `Tentativa de Login: ${user}`)
     }
+    if (res.statusCode >= 400) { }
 
     return message
 }
@@ -55,22 +56,20 @@ export const loggerMessage = async (req: Request, res: Response) => {
     const decodedToken = JWT.getToken(req)
     const username = decodedToken ? decodedToken.user.username : null
 
-    const response = await axios.get(`https://ipinfo.io/${remoteIpAddress}/json`)
-    const data = response.data;
+    // const response = await axios.get(`https://ipinfo.io/${remoteIpAddress}/json`)
+    // const data = response.data;
 
     // Adicione informações de geolocalização ao objeto de solicitação (req)
-    const geolocation = {
+    /*const geolocation = {
         ip: data.ip,
         country: data.country,
         region: data.region,
         city: data.city,
         loc: data.loc,  // latitude e longitude
-    }
+    }*/
 
     const message = prepareLoggerMessage(req, res, {
         ip: remoteIpAddress,
-        country: geolocation.country,
-        city: geolocation.city,
         username
     })
 
