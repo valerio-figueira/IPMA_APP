@@ -17,7 +17,7 @@ export default class UserValidator {
     }
 
     static validateIdentifications(data: any) {
-        this.hasUserIdentification(data)
+        // this.hasUserIdentification(data)
         this.hasHolderIdentification(data)
     }
 

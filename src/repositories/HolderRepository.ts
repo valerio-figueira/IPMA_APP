@@ -222,7 +222,7 @@ export default class HolderRepository {
 
     private async UpdateHolderInfo(query: any, transaction: Transaction) {
         return this.models.Holder
-            .update(query.holder!, {
+            .update(query.holder, {
                 where: { user_id: query.user.user_id },
                 transaction
             })

@@ -131,17 +131,15 @@ export default class HolderService {
 
 
 
-    @validateUser('Holder')
+
     async Update(body: any) {
         UserDataSanitizer.sanitizeBody(body)
+        const holder = await this.ReadOne(body.holder_id ? body.holder_id : -1)
+        await this.userService.throwErrorIfNotExists(holder.user_id)
+        body.user_id = holder.user_id
         const holderData = this.bundleEntities(body)
-        const holderID = holderData.holder.holder_id
-        const userID = holderData.user.user_id
 
-        if (holderID) await this.ReadOne(holderID)
-        if (userID) await this.userService.throwErrorIfNotExists(userID)
         if (!holderData.holder) throw new CustomError('Falha ao processar os dados do titular', 400)
-
         return this.holderRepository.Update(holderData)
     }
 
