@@ -62,7 +62,7 @@ export default class Server {
 
 
     private logger(req: Request, res: Response, next: NextFunction) {
-        loggerMessage(req)
+        loggerMessage(req, res)
         next()
     }
 
