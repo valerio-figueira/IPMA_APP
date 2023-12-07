@@ -4,7 +4,6 @@ import CustomError from "../utils/CustomError";
 import HolderService from "./HolderService";
 import AgreementService from "./AgreementService";
 import MemberEntity from "../entities/MemberEntity";
-import UserDataSanitizer from "../helpers/UserDataSanitizer";
 import MonthlyFeeService from "./MonthlyFeeService";
 import IMonthlyFee from "../interfaces/IMonthlyFee";
 import DependentService from "./DependentService";
@@ -13,6 +12,13 @@ import DependentModel from "../models/DependentModel";
 import MemberModel from "../models/MemberModel";
 import Database from "../db/Database";
 import { validateAgreements } from "../utils/decorators/validateBody";
+import { Request } from "express";
+import { format } from "date-fns";
+import * as fs from "fs";
+import * as path from "path";
+import { UploadedFile } from "express-fileupload";
+import ExtractDataFromTable from "../helpers/ExtractDataFromTable";
+import UserDataSanitizer from "../helpers/UserDataSanitizer";
 
 
 export default class MemberService {
@@ -64,11 +70,11 @@ export default class MemberService {
 
     async ReadAll(query: any) {
         const subscriptions: MemberModel[] = await this.memberRepository.ReadAll(query)
+        const totalCount = await this.memberRepository.totalCount(query)
 
         if (!subscriptions || subscriptions.length === 0) throw new CustomError('Nenhum registro encontrado!', 400)
         //const holders: Record<number, any> = await this.addUsersToResponse(subscriptions)
 
-        const totalCount = subscriptions.length + 1
         const totalPages = Math.ceil(totalCount / (query.pageSize || 10))
         const response = []
         response.push(subscriptions, {
@@ -157,6 +163,44 @@ export default class MemberService {
 
 
 
+    async BulkCreate(req: Request) {
+        if (!req.files || Object.keys(req.files).length === 0) {
+            throw new CustomError('Nenhuma planilha foi enviada', 400)
+        }
+
+        const table = req.files.table as UploadedFile
+        const currentTime = format(new Date(), 'dd-MM-yyyy')
+        const fileName = `holders-table-${currentTime}.xlsx`
+        const filePath = path.join(__dirname, '../temp', fileName)
+
+        try {
+            await new Promise<void>((resolve, reject) => {
+                table.mv(filePath, (err) => {
+                    if (err) reject(err)
+                    else resolve()
+                })
+            })
+
+            const { rows, columns } = ExtractDataFromTable(filePath)
+            const jsonResult: any = this.createJsonFromTable(columns, rows)
+
+            if (jsonResult.length > 0) {
+                const { message } = await this.memberRepository.BulkCreate(jsonResult)
+                return { message, fileName, filePath }
+            } else {
+                throw new Error('Ocorreu um erro ao processar os dados!')
+            }
+        } catch (error: any) {
+            console.log(error)
+            fs.unlinkSync(filePath)
+            throw new CustomError('Erro ao processar a planilha.', 500)
+        }
+    }
+
+
+
+
+
     private async findDependent(body: IMember) {
         if (!body.dependent_id) return
 
@@ -226,6 +270,36 @@ export default class MemberService {
         const member = await this.memberRepository.ReadOne(body.member_id!)
 
         if (!member) throw new CustomError(`O conveniado não existe`, 400)
+    }
+
+
+
+
+    private createJsonFromTable(columns: any, rows: any[]) {
+        return rows.slice(1).map((row: any) => {
+            const user: Record<string, any> = {}
+
+            row.forEach((value: any, index: any) => {
+                const column = columns[index]
+                if (column === 'birth_date') {
+                    value = format(new Date(value), 'yyyy-MM-dd')
+                }
+                if (column === 'marital_status') {
+                    if (value.match('Solteiro')) value = 'Solteiro(a)'
+                    if (value.match('Casado')) value = 'Casado(a)'
+                    if (value.match('Viúvo')) value = 'Viúvo(a)'
+                    if (value.match('Divorciado')) value = 'Divorciado(a)'
+                }
+                user[column] = value
+            })
+
+            if (user.name) {
+                UserDataSanitizer.sanitizeBody(user)
+                return user
+            }
+
+            return null
+        }).filter(Boolean)
     }
 
 

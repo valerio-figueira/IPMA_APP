@@ -43,8 +43,19 @@ export default class MonthlyFeeService {
 
     async ReadAll(query: any) {
         const billings = await this.monthlyFeeRepository.ReadAll(query)
+        const totalCount = await this.monthlyFeeRepository.totalCount(query)
 
-        return groupDetailedBillings(billings)
+        const totalPages = Math.ceil(totalCount / (query.pageSize || 10))
+        const groupedBillings = groupDetailedBillings(billings)
+        const response = []
+        response.push(groupedBillings, {
+            currentPage: query.page || 1,
+            pageSize: query.pageSize || 10,
+            totalCount: totalCount,
+            totalPages: totalPages
+        })
+
+        return response
     }
 
 
@@ -64,8 +75,12 @@ export default class MonthlyFeeService {
 
 
 
-    async Update() {
-        return this.monthlyFeeRepository.Update();
+    async Update(body: Record<string, any>) {
+        console.log(body)
+        if(!body.monthly_fee_id) throw new Error('Insira a identificação do pagamento.')
+        if(!body.reference_month) throw new Error('Insira o mês de referência do pagamento.')
+        if(!body.reference_year) throw new Error('Insira o ano de referência do pagamento.')
+        return this.monthlyFeeRepository.Update(body);
     }
 
 

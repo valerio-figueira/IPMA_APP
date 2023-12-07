@@ -18,6 +18,7 @@ export default class MemberRepository {
             Holder: this.db.models.Holder,
             Dependent: this.db.models.Dependent,
             Member: this.db.models.Member,
+            MonthlyFee: this.db.models.MonthlyFee
         }
     }
 
@@ -104,6 +105,44 @@ export default class MemberRepository {
                 holder_id: body.holder_id
             }
         })
+    }
+
+
+
+
+    async BulkCreate(json: any[]) {
+        console.log(json)
+        for (let user of json) {
+            const transaction: Transaction = await this.db.sequelize.transaction()
+            const { holder_id, agreement_id } = user
+
+            try {
+                const result = await this.models.Member.findOne({
+                    where: {
+                        holder_id,
+                        agreement_id
+                    }
+                })
+
+                if (result) {
+                    await this.models.Member.update(user, { where: { member_id: result.member_id }, transaction })
+                    await this.models.MonthlyFee.update(user, { where: { member_id: result.member_id } })
+                } else {
+                    const member = await this.models.Member.create(user, { transaction })
+                    user.member_id = member.member_id
+                    await this.models.MonthlyFee.create(user, { transaction })
+                }
+
+                await transaction.commit()
+            } catch (error: any) {
+                await transaction.rollback()
+                console.error(error)
+                throw new Error(error.message)
+            }
+        }
+
+
+        return { message: 'Banco de dados atualizado!' }
     }
 
 

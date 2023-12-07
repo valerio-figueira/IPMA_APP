@@ -31,35 +31,31 @@ export default class MonthlyFeeRepository {
 
 
 
-    async ReadAll(query: any) {
-        const whereClause: any = {
+    async ReadAll(query: Record<string, any>) {
+        const page = query.page || 1;
+        const pageSize = query.pageSize || 10;
+        const offset = (page - 1) * pageSize;
+        const whereClause: Record<string, any> = {
             active: query.active || 1,
             '$billing.member_id$': { [Op.not]: null }
         }
 
-        if (query.name)
-            whereClause['$holder.user.name$'] = { [Op.like]: `%${query.name}%` };
-
-        if (query.agreement_name)
-            whereClause['$agreement.agreement_name$'] = { [Op.like]: `%${query.agreement_name}%` };
-
-        if (query.reference_year)
-            whereClause['$billing.reference_year$'] = query.reference_year;
-
-        if (query.reference_month)
-            whereClause['$billing.reference_month$'] = query.reference_month;
+        this.setParams(query, whereClause)
 
         return this.models.Member.findAll({
             where: whereClause,
             include: Queries.MonthlyFeeSummary,
             order: [['created_at', 'DESC']],
-            raw: true, nest: true
+            raw: true, nest: true,
+            limit: pageSize,
+            offset
         })
     }
 
 
 
-    async ReadAllSummary(params: any, query: any) {
+
+    async ReadAllSummary(params: Record<string, any>, query: any) {
         return this.db.sequelize.query(Queries.MonthlyFeeRawQuery, {
             replacements: {
                 holderId: params.holder_id,
@@ -100,7 +96,12 @@ export default class MonthlyFeeRepository {
 
 
 
-    async Update() { }
+    async Update(query: Record<string, any>) {
+        return this.models.MonthlyFee
+            .update(query, {
+                where: { monthly_fee_id: query.monthly_fee_id }
+            })
+    }
 
 
 
@@ -150,5 +151,28 @@ export default class MonthlyFeeRepository {
                 'agreement.agreement_id'],
             raw: true, nest: true
         })
+    }
+
+
+
+
+
+    async totalCount(query: Record<string, any>) {
+        const whereClause: Record<string, any> = {
+            active: query.active || 1,
+            '$billing.member_id$': { [Op.not]: null }
+        }
+        this.setParams(query, whereClause)
+        return this.models.Member.count({ where: whereClause, include: Queries.MonthlyFeeSummary })
+    }
+
+
+
+
+    setParams(query: Record<string, any>, whereClause: Record<string, any>) {
+        if (query.name) whereClause['$holder.user.name$'] = { [Op.like]: `%${query.name}%` };
+        if (query.agreement_name) whereClause['$agreement.agreement_name$'] = { [Op.like]: `%${query.agreement_name}%` };
+        if (query.reference_year) whereClause['$billing.reference_year$'] = query.reference_year;
+        if (query.reference_month) whereClause['$billing.reference_month$'] = query.reference_month;
     }
 }

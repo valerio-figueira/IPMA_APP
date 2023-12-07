@@ -17,6 +17,7 @@ import * as fs from "fs";
 import { UploadedFile } from "express-fileupload";
 import { format } from "date-fns";
 import { readFile, utils } from "xlsx";
+import ExtractDataFromTable from "../helpers/ExtractDataFromTable";
 
 
 export default class HolderService {
@@ -69,7 +70,7 @@ export default class HolderService {
                 })
             })
 
-            const { rows, columns } = this.ExtractDataFromTable(filePath)
+            const { rows, columns } = ExtractDataFromTable(filePath)
             const jsonResult: any = this.createJsonFromTable(columns, rows)
 
             if (jsonResult.length > 0) {
@@ -157,18 +158,6 @@ export default class HolderService {
         return this.holderRepository.findHolderByUserId(user_id)
     }
 
-
-
-
-    private ExtractDataFromTable(filePath: string) {
-        const workbook = readFile(filePath)
-        const sheetName = workbook.SheetNames[0]
-        const sheet = workbook.Sheets[sheetName]
-        const rows = utils.sheet_to_json(sheet, { header: 1 })
-        const columns: any = rows[0]
-
-        return { rows, columns }
-    }
 
 
 
