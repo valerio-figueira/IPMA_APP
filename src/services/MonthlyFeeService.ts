@@ -76,7 +76,6 @@ export default class MonthlyFeeService {
 
 
     async Update(body: Record<string, any>) {
-        console.log(body)
         if(!body.monthly_fee_id) throw new Error('Insira a identificação do pagamento.')
         if(!body.reference_month) throw new Error('Insira o mês de referência do pagamento.')
         if(!body.reference_year) throw new Error('Insira o ano de referência do pagamento.')
