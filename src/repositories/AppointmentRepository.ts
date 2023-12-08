@@ -22,6 +22,15 @@ class AppointmentRepository {
 
 
 
+
+    async BulkCreate(query: IAppointment[]) {
+        // this.models.Appointment.bulkCreate(query)
+        return { message: 'Ok...' }
+    }
+
+
+
+
     async ReadAll(query: Record<string, any>) {
         const whereClause: Record<string, any> = {}
 
