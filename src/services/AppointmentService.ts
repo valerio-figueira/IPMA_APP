@@ -4,11 +4,10 @@ import IAppointment from "../interfaces/IAppointment";
 import { UploadedFile } from "express-fileupload";
 import { format } from "date-fns";
 import { Request } from "express";
-import * as path from "path";
 import * as fs from "fs";
 import CustomError from "../utils/CustomError";
-import ExtractDataFromTable from "../helpers/ExtractDataFromTable";
 import ExtractAndCreateData from "../helpers/ExtractAndCreateData";
+import { validateAndConvertDate } from "../helpers/ConvertDate";
 
 
 
@@ -44,7 +43,7 @@ class AppointmentService {
             this.createJsonFromTable,
             this.appointmentRepository.BulkCreate)
 
-        return { message: fs.createReadStream(message), fileName, filePath }
+        return { message, fileName, filePath }
     }
 
 
@@ -79,15 +78,15 @@ class AppointmentService {
 
 
 
-    private createJsonFromTable(columns: any, rows: any[]) {
+    private createJsonFromTable(columns: any[], rows: any[]) {
         return rows.slice(1).map((row: any) => {
             const appointment: Record<string, any> = {}
+            const columnNames = ['amount', 'total_amount']
 
             row.forEach((value: any, index: any) => {
                 const column = columns[index]
-                if (column === 'appointment_date') {
-                    value = format(new Date(value), 'yyyy-MM-dd')
-                }
+                if (column === 'appointment_date') value = validateAndConvertDate(value)
+                if (columnNames.includes(column)) value = Number(value)
                 appointment[column] = value
             })
 

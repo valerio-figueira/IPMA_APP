@@ -25,6 +25,7 @@ class AppointmentRepository {
 
     async BulkCreate(query: IAppointment[]) {
         // this.models.Appointment.bulkCreate(query)
+        console.log(query)
         return { message: 'Ok...' }
     }
 
