@@ -12,15 +12,25 @@ type TBulkCreate = (json: any[]) => Promise<Record<string, any>>
 
 
 
-async function ExtractAndCreateData(
+
+const createTempFile = (fileNameArg: string) => {
+    const currentTime = format(new Date(), 'dd-MM-yyyy')
+    const fileName = `${fileNameArg}-${currentTime}.xlsx`
+    const filePath = path.join(__dirname, '../temp', fileName)
+
+    return { fileName, filePath }
+}
+
+
+
+
+const ExtractAndCreateData = async (
     table: UploadedFile,
-    fileNameText: string,
+    fileNameArg: string,
     createJson: TCreateJson,
     bulkCreateFn: TBulkCreate
-) {
-    const currentTime = format(new Date(), 'dd-MM-yyyy')
-    const fileName = `${fileNameText}-${currentTime}.xlsx`
-    const filePath = path.join(__dirname, '../temp', fileName)
+) => {
+    const { fileName, filePath } = createTempFile(fileNameArg)
 
     try {
         await new Promise<void>((resolve, reject) => {
