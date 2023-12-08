@@ -1,3 +1,5 @@
+import IDetailedBilling from "../interfaces/IDetailedBilling"
+
 const sortByName = (a: any, b: any) => {
     const nameA = a.name.toUpperCase()
     const nameB = b.name.toUpperCase()
@@ -29,11 +31,17 @@ const sortByDateDesc = (a: any, b: any) => {
 }
 
 
+
+
+
+
+
+
+
 const groupBillings = (billings: any[]) => {
     const groupedResults = billings.reduce((acc, curr) => {
         const holderId = curr.holder_id
 
-        console.log(curr.status)
 
         if (!acc[holderId]) {
             acc[holderId] = {
@@ -60,7 +68,35 @@ const groupBillings = (billings: any[]) => {
 }
 
 
-export const groupDetailedBillings = (billings: any[]) => {
+
+
+
+
+
+const addTotalPrice = (acc: any, curr: any, holderId: any, data: Record<string, any>) => {
+    if (curr.agreement.agreement_name === 'ODONTO COMPANY') {
+        acc[holderId].totalPrice.odontoCompany += parseFloat(curr.billing.amount)
+    }
+
+    if (curr.agreement.agreement_name === 'UNIMED') {
+        acc[holderId].totalPrice.unimed += parseFloat(curr.billing.amount)
+    }
+
+    if (curr.agreement.agreement_name === 'UNIODONTO') {
+        acc[holderId].totalPrice.uniodonto += parseFloat(curr.billing.amount)
+    }
+
+    acc[holderId].totalPrice.all += parseFloat(curr.billing.amount)
+}
+
+
+
+
+
+
+
+
+export const groupDetailedBillings = (billings: any[]): IDetailedBilling[] => {
     const groupedResults = billings.reduce((acc, curr) => {
         const holderId = curr.holder_id
 
@@ -68,7 +104,6 @@ export const groupDetailedBillings = (billings: any[]) => {
             acc[holderId] = {
                 holder_id: curr.holder_id,
                 user_id: curr.holder.user.user_id,
-                agreement_id: curr.agreement_id,
                 agreement_card: curr.agreement_card,
                 created_at: curr.created_at,
                 name: curr.holder.user.name,
@@ -79,12 +114,13 @@ export const groupDetailedBillings = (billings: any[]) => {
                     unimed: 0,
                     uniodonto: 0
                 },
-            }
+            } as IDetailedBilling
         }
 
         const data = {
             name: null,
             monthly_fee_id: curr.billing.monthly_fee_id,
+            agreement_id: curr.agreement_id,
             agreement_name: curr.agreement.agreement_name,
             amount: parseFloat(curr.billing.amount),
             reference_month: curr.billing.reference_month,
@@ -98,21 +134,14 @@ export const groupDetailedBillings = (billings: any[]) => {
             acc[holderId].agreements.push({ ...data, name: curr.dependent.user.name })
         }
 
-        if (curr.agreement.agreement_name === 'ODONTO COMPANY') {
-            acc[holderId].totalPrice.odontoCompany += parseFloat(curr.billing.amount)
-        }
+        addTotalPrice(acc, curr, holderId, data)
 
-        if (curr.agreement.agreement_name === 'UNIMED') {
-            acc[holderId].totalPrice.unimed += parseFloat(curr.billing.amount)
-        }
-
-        acc[holderId].totalPrice.all += parseFloat(curr.billing.amount)
         acc[holderId].agreements.sort(sortByDateAsc)
         return acc
     }, {})
 
     // Converter o objeto agrupado em uma matriz de valores
-    return Object.values(groupedResults).sort(sortByDateDesc)
+    return Object.values(groupedResults).sort(sortByDateDesc) as IDetailedBilling[]
 }
 
 
