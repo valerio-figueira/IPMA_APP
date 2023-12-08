@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Database from "../db/Database";
 import AppointmentService from "../services/AppointmentService";
+import * as fs from "fs";
 
 
 class AppointmentController {
@@ -27,7 +28,9 @@ class AppointmentController {
 
     async BulkCreate(req: Request, res: Response) {
         try {
-            res.status(201).json(await this.appointmentService.BulkCreate(req.body))
+            const data = await this.appointmentService.BulkCreate(req)
+            fs.unlinkSync(data.filePath)
+            res.status(201).json({ message: data.message })
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }

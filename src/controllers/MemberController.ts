@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import MemberService from "../services/MemberService";
 import MemberValidator from "./validation/MemberValidator";
 import Database from "../db/Database";
-
+import * as fs from "fs";
 
 
 class MemberController {
@@ -29,7 +29,9 @@ class MemberController {
 
     async BulkCreate(req: Request, res: Response) {
         try {
-            res.status(201).json(await this.memberService.BulkCreate(req))
+            const data = await this.memberService.BulkCreate(req)
+            fs.unlinkSync(data.filePath)
+            res.status(201).json({ message: data.message })
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
