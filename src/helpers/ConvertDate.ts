@@ -21,6 +21,12 @@ export function validateAndConvertDate(value: string) {
     // Tenta analisar a data
     const date = parse(value, 'dd/MM/yyyy', new Date())
 
-    if (isValid(date)) return date
-    else return null
+    if (isValid(date)) {
+        return date
+    } else {
+        const date = new Date(value)
+
+        if (date) return date
+        else return null
+    }
 }

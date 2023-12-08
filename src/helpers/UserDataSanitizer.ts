@@ -1,3 +1,4 @@
+import { validateAndConvertDate } from "./ConvertDate"
 import StringSanitizer from "./StringSanitizer"
 import format from "date-fns/format"
 
@@ -88,7 +89,7 @@ export default class UserDataSanitizer {
             return date ? format(date, 'yyyy-MM-dd') : null
         }
 
-        return null
+        return validateAndConvertDate(value)
     }
 
     static formatDate(str: string) {
