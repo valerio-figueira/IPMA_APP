@@ -111,7 +111,6 @@ export default class MemberRepository {
 
 
     async BulkCreate(json: any[]) {
-        console.log(json)
         for (let user of json) {
             const transaction: Transaction = await this.db.sequelize.transaction()
             const { holder_id, agreement_id } = user
@@ -124,7 +123,7 @@ export default class MemberRepository {
                     }
                 })
 
-                if (result) {
+                if (result && user.agreement_id === result.agreement_id) {
                     await this.models.Member.update(user, { where: { member_id: result.member_id }, transaction })
                     await this.models.MonthlyFee.update(user, { where: { member_id: result.member_id } })
                 } else {
