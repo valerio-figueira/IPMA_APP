@@ -2,106 +2,165 @@ import format from 'date-fns/format';
 import * as path from 'path';
 import groupBillings from './GroupBillings';
 
-// Função para criar uma tabela no PDF
-function createTable(doc: PDFKit.PDFDocument, data: any) {
-    // Definir as coordenadas iniciais da tabela
-    const startX = 50
-    let startY = 100
 
-    // Definir larguras das colunas
-    const [col1Width, col2Width, col3Width, col4Width] = [50, 180, 55, 55]
-    // Definir altura da linha
-    const rowHeight = 15
 
-    // Definir estilo da tabela
-    doc.font('Helvetica-Bold').fillColor('#233257')
-    doc.fontSize(9)
 
-    // Adicionar cabeçalhos da tabela
+
+
+
+
+const createColumns = (doc: PDFKit.PDFDocument, options: Record<string, number>) => {
+    const { startX, startY, col1Width, col2Width, col3Width, col4Width } = options
+    doc.font('Helvetica-Bold').fillColor('#233257').fontSize(9)
     doc.text('Matrícula', startX, startY)
     doc.text('Nome', startX + col1Width, startY)
     doc.text('Unimed', startX + col1Width + col2Width, startY)
     doc.text('Uniodonto', startX + col1Width + col2Width + col3Width, startY)
     doc.text('Od. Company', startX + col1Width + col2Width + col3Width + col4Width, startY)
-
-    const spaceInY = 15
-
-    // Desenhar linha horizontal abaixo do cabeçalho
-    doc.moveTo(startX, startY + spaceInY).lineTo(startX + 510, startY + spaceInY).stroke('#303c57')
-
-    // Adicionar dados da tabela
-    doc.font('Helvetica')
-    const group = groupBillings(data)
-    const sum = { unimed: 0, odontoCompany: 0, uniodonto: 0, usersCount: 0 }
-
-    group.forEach((billing: any, index: number) => {
-        const currentY = startY + spaceInY + (index + 1) * rowHeight
-
-        // Verificar se há espaço suficiente na página atual
-        /*if (currentY + rowHeight > doc.page.height - 50) {
-            // Adicionar nova página
-            doc.addPage();
-
-            createHeader(doc, query)
-
-            // Redefinir posição inicial
-            startY = 50;
-
-            // Adicionar cabeçalhos da tabela na nova página
-            doc.text('Nome', startX, startY)
-            doc.text('Convênio', startX + col1Width, startY)
-            doc.text('Mensalidade', startX + col1Width + col2Width, startY)
-
-            // Desenhar linha horizontal abaixo do cabeçalho
-            doc.moveTo(startX, startY + 20).lineTo(startX + col1Width + col2Width + col2Width, startY + 20).stroke()
-        }*/
-
-        doc.text(billing.subscription_number, startX, currentY)
-        doc.text(billing.name, startX + col1Width, currentY)
-        sum.usersCount++
-
-        billing.agreements.forEach((agreement: any) => {
-            if (agreement.agreement_name === 'UNIMED') {
-                const currentX = startX + col1Width + col2Width
-                sum.unimed += agreement.total_billing
-                doc.text('R$ ' + Number(agreement.total_billing).toFixed(2), currentX, currentY)
-            }
-
-            if (agreement.agreement_name === 'ODONTO COMPANY') {
-                const currentX = startX + col1Width + col2Width + col3Width + col4Width
-                sum.odontoCompany += agreement.total_billing
-                doc.text('R$ ' + Number(agreement.total_billing).toFixed(2), currentX, currentY)
-            }
-
-            if (agreement.agreement_name === 'UNIODONTO') {
-                const currentX = startX + col1Width + col2Width + col3Width
-                sum.uniodonto += agreement.total_billing
-                doc.text('R$ ' + Number(agreement.total_billing).toFixed(2), currentX, currentY)
-            }
-        })
-        //doc.text(`R$ ${billing.total_billing}`, startX + col1Width + col2Width, currentY)
-        doc.moveTo(startX, currentY + 10).lineTo(startX + 510, currentY + 10).lineWidth(0.1).stroke('#303c57')
-    })
-
-
-    createFooter(sum, doc, col1Width, col2Width, col3Width, col4Width)
+    doc.moveTo(startX, startY + 15).lineTo(startX + 510, startY + 15).stroke('#303c57')
 }
 
 
-function createFooter(sum: any, doc: PDFKit.PDFDocument, ...args: number[]) {
+
+
+
+
+
+const selectActualColumnAndInsertData = (agreement: Record<string, any>, doc: PDFKit.PDFDocument, options: any) => {
+    const { sum, startX, currentY, col1Width, col2Width, col3Width, col4Width } = options
+    if (agreement.agreement_name === 'UNIMED') {
+        const currentX = startX + col1Width + col2Width
+        sum.unimed += agreement.total_billing
+        doc.text('R$ ' + Number(agreement.total_billing).toFixed(2), currentX, currentY)
+    }
+
+    if (agreement.agreement_name === 'ODONTO COMPANY') {
+        const currentX = startX + col1Width + col2Width + col3Width + col4Width
+        sum.odontoCompany += agreement.total_billing
+        doc.text('R$ ' + Number(agreement.total_billing).toFixed(2), currentX, currentY)
+    }
+
+    if (agreement.agreement_name === 'UNIODONTO') {
+        const currentX = startX + col1Width + col2Width + col3Width
+        sum.uniodonto += agreement.total_billing
+        doc.text('R$ ' + Number(agreement.total_billing).toFixed(2), currentX, currentY)
+    }
+}
+
+
+
+
+
+
+
+const insertRows = (billing: any, doc: PDFKit.PDFDocument, options: any) => {
+    const { sum, startX, currentY, col1Width, col2Width, col3Width, col4Width } = options
+
+    const name = billing.name.length >= 32 ? billing.name.slice(0, 32).trim() : billing.name
+
+    doc.font('Helvetica')
+    doc.text(billing.subscription_number, startX, currentY)
+    doc.text(name, startX + col1Width, currentY)
+    sum.usersCount++
+
+    billing.agreements.forEach((agreement: Record<string, any>) => {
+        selectActualColumnAndInsertData(agreement, doc, {
+            sum, startX, currentY, col1Width, col2Width, col3Width, col4Width
+        })
+    })
+
+    doc.moveTo(startX, currentY + 10).lineTo(startX + 510, currentY + 10).lineWidth(0.1).stroke('#303c57')
+}
+
+
+
+
+
+
+const addDateAndPageNumberAtBottom = (doc: PDFKit.PDFDocument, options: Record<string, any>) => {
+    const { pageNumber } = options
+
+    doc.fontSize(9).font('Helvetica') // ADD DATE BEFORE NEW PAGE
+        .text(`Data de Criação: ${format(new Date(), 'dd/MM/yyyy HH:mm:ss')}`,
+            doc.page.width - 215, doc.page.height - 100, { align: 'right', width: 170 })
+
+    doc.fontSize(9) // ADD PAGE NUMBER BEFORE NEW PAGE
+        .text(`Página: ${pageNumber}`,
+            doc.page.width - 215, doc.page.height - 85, { align: 'right', width: 170 })
+}
+
+
+
+
+
+
+
+// Função para criar uma tabela no PDF
+function createTable(doc: PDFKit.PDFDocument, data: any, query: any) {
+    // Definir as coordenadas iniciais da tabela
+    const startX = 40
+    const startY = 100
+    const [col1Width, col2Width, col3Width, col4Width] = [50, 180, 55, 55]
+    const availableSpaceOnPage = doc.page.height - startY
+    const spaceInY = 15
+    const rowHeight = 15
+
+    // Adicionar cabeçalhos da tabela
+    createColumns(doc, { startX, startY, col1Width, col2Width, col3Width, col4Width })
+
+    // Adicionar dados da tabela
+    const group = groupBillings(data)
+    const sum = { unimed: 0, odontoCompany: 0, uniodonto: 0, usersCount: 0 }
+    let index = 1
+    let pageNumber = 1
+
+    for (let billing of group) {
+        let currentY = startY + spaceInY + index * rowHeight
+
+        // Verificar se há espaço suficiente na página atual
+        if (currentY + rowHeight + 10 > availableSpaceOnPage) {
+            addDateAndPageNumberAtBottom(doc, { pageNumber })
+            pageNumber++
+            doc.addPage()
+            createHeader(doc, query)
+            index = 1
+            currentY = startY + spaceInY + index * rowHeight
+            // Adicionar cabeçalhos da tabela na nova página
+            createColumns(doc, { startX, startY, col1Width, col2Width, col3Width, col4Width })
+        }
+        insertRows(billing, doc, { sum, startX, currentY, col1Width, col2Width, col3Width, col4Width })
+        index++
+    }
+
+    createFooter(sum, doc, { col1Width, pageNumber })
+}
+
+
+
+
+
+
+
+function createFooter(sum: Record<string, any>, doc: PDFKit.PDFDocument, options: any) {
+    const { col1Width, pageNumber } = options
+
     const color = '#233257'
     doc.moveDown()
     doc.font('Helvetica-Bold').fillColor(color)
-    doc.text(`Qtd Usuários: ${sum.usersCount}`, args[0])
+    doc.text(`Qtd Usuários: ${sum.usersCount}`, col1Width)
     doc.text(`Total Unimed: R$ ${Number(sum.unimed).toFixed(2)}`)
-    doc.text(`Total Odonto Company: R$ ${Number(sum.odontoCompany).toFixed(2)}`, args[0])
-    doc.text(`Total Uniodonto: R$ ${Number(sum.uniodonto).toFixed(2)}`, args[0])
-    doc.fontSize(9).font('Helvetica')
-        .text(`Data de Criação: ${format(new Date(), 'dd/MM/yyyy HH:mm:ss')}`, { align: 'right' })
+    doc.text(`Total Odonto Company: R$ ${Number(sum.odontoCompany).toFixed(2)}`, col1Width)
+    doc.text(`Total Uniodonto: R$ ${Number(sum.uniodonto).toFixed(2)}`, col1Width)
+    addDateAndPageNumberAtBottom(doc, { pageNumber })
 }
 
 
-export function createHeader(doc: PDFKit.PDFDocument, query: any) {
+
+
+
+
+
+export function createHeader(doc: PDFKit.PDFDocument, query: Record<string, any>) {
     const month = Number(query.reference_month) + 1
     const year = query.reference_year
 
