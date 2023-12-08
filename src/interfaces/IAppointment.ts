@@ -7,5 +7,6 @@ export default interface IAppointment {
     appointment_date: Date;
     reference_month: number;
     reference_year: number;
+    cpf?: string;
     created_at?: Date;
 }
