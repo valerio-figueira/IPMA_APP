@@ -76,9 +76,9 @@ export default class MonthlyFeeService {
 
 
     async Update(body: Record<string, any>) {
-        if(!body.monthly_fee_id) throw new Error('Insira a identificação do pagamento.')
-        if(!body.reference_month) throw new Error('Insira o mês de referência do pagamento.')
-        if(!body.reference_year) throw new Error('Insira o ano de referência do pagamento.')
+        if (!body.monthly_fee_id) throw new Error('Insira a identificação do pagamento.')
+        if (!body.reference_month) throw new Error('Insira o mês de referência do pagamento.')
+        if (!body.reference_year) throw new Error('Insira o ano de referência do pagamento.')
         return this.monthlyFeeRepository.Update(body);
     }
 
@@ -104,7 +104,7 @@ export default class MonthlyFeeService {
         const billingsReport: any[] | null = await this.fetchDataForReport(query)
         if (!billingsReport) throw new Error('Nenhuma informação encontrada!')
 
-        const doc = new PDFDocument()
+        const doc = new PDFDocument({ size: 'A4' })
         const month = Number(query.reference_month) + 1
         const year = query.reference_year
 
@@ -115,7 +115,7 @@ export default class MonthlyFeeService {
         doc.pipe(writeStream)
 
         createHeader(doc, query)
-        createTable(doc, billingsReport)
+        createTable(doc, billingsReport, query)
 
         return { filename, doc }
     }
