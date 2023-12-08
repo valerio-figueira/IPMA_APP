@@ -1,0 +1,11 @@
+export default interface IAppointment {
+    appointment_id?: number;
+    member_id?: number;
+    description: string;
+    amount: number;
+    total_amount: number;
+    appointment_date: Date;
+    reference_month: number;
+    reference_year: number;
+    created_at?: Date;
+}
