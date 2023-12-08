@@ -41,7 +41,7 @@ class DocumentModel extends Model<IDocument> {
                 unique: true,
             },
             issue_date: {
-                type: DataTypes.DATE,
+                type: DataTypes.DATEONLY,
                 defaultValue: null
             },
             health_card: {

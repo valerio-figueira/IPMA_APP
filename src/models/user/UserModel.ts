@@ -37,7 +37,7 @@ class UserModel extends Model<IUser> {
                 defaultValue: null
             },
             birth_date: {
-                type: DataTypes.DATE,
+                type: DataTypes.DATEONLY,
                 defaultValue: null
             },
             father_name: {

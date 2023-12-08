@@ -24,7 +24,6 @@ class AppointmentModel extends Model<IAppointment> {
             },
             member_id: {
                 type: DataTypes.INTEGER,
-                unique: true,
                 allowNull: false,
                 references: {
                     model: MemberModel,
@@ -32,7 +31,11 @@ class AppointmentModel extends Model<IAppointment> {
                 }
             },
             description: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(150),
+                allowNull: false,
+            },
+            cpf: {
+                type: DataTypes.STRING(14),
                 allowNull: false,
             },
             amount: {
@@ -44,7 +47,7 @@ class AppointmentModel extends Model<IAppointment> {
                 allowNull: false,
             },
             appointment_date: {
-                type: DataTypes.DATE,
+                type: DataTypes.DATEONLY,
                 allowNull: false,
             },
             reference_month: {
