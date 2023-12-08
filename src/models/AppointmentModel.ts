@@ -9,7 +9,7 @@ class AppointmentModel extends Model<IAppointment> {
     declare description: number;
     declare amount: number;
     declare total_amount: number;
-    declare appointment: Date;
+    declare appointment_date: Date;
     declare reference_month: number;
     declare reference_year: number;
     declare created_at: Date;

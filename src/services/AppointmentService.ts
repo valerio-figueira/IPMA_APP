@@ -2,9 +2,7 @@ import Database from "../db/Database";
 import AppointmentRepository from "../repositories/AppointmentRepository";
 import IAppointment from "../interfaces/IAppointment";
 import { UploadedFile } from "express-fileupload";
-import { format } from "date-fns";
 import { Request } from "express";
-import * as fs from "fs";
 import CustomError from "../utils/CustomError";
 import ExtractAndCreateData from "../helpers/ExtractAndCreateData";
 import { validateAndConvertDate } from "../helpers/ConvertDate";
@@ -84,10 +82,7 @@ class AppointmentService {
 
             row.forEach((value: any, index: any) => {
                 const column = columns[index]
-                if (column === 'appointment_date') {
-                    value = validateAndConvertDate(value)
-                    if (value) value = new Date(value).toLocaleDateString()
-                }
+                if (column === 'appointment_date') value = validateAndConvertDate(value)
                 if (columnNames.includes(column)) value = Number(value)
                 appointment[column] = value
             })

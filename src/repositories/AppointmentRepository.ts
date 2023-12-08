@@ -3,6 +3,10 @@ import Database from "../db/Database";
 import IAppointment from "../interfaces/IAppointment";
 import Models from "../models";
 import Queries from "../db/Queries";
+import MemberModel from "../models/MemberModel";
+import HolderModel from "../models/HolderModel";
+import UserModel from "../models/user/UserModel";
+import CustomError from "../utils/CustomError";
 
 
 class AppointmentRepository {
@@ -29,7 +33,7 @@ class AppointmentRepository {
         await this.ClearBeforeBulk(json)
         for (let appointment of json) {
             const transaction: Transaction = await this.db.sequelize.transaction()
-            let { cpf, description, amount, appointment_date, total_amount, reference_month, reference_year } = appointment
+            let { cpf } = appointment
 
             try {
                 const result = await this.models.Member.findOne({
@@ -38,14 +42,8 @@ class AppointmentRepository {
                 })
 
                 if (result) {
-                    const appointmentFound = await this.models.Appointment.findOne({
-                        where: { cpf, description, amount, total_amount, appointment_date, reference_month, reference_year },
-                        transaction, raw: true
-                    })
-                    if (!appointmentFound) {
-                        appointment.member_id = result.member_id
-                        await this.models.Appointment.create(appointment, { raw: true, transaction })
-                    }
+                    appointment.member_id = result.member_id
+                    await this.models.Appointment.create(appointment, { raw: true, transaction })
                 }
 
                 await transaction.commit()
@@ -65,8 +63,22 @@ class AppointmentRepository {
     async ReadAll(query: Record<string, any>) {
         const whereClause: Record<string, any> = {}
 
+        if (query.member_id) whereClause.member_id = query.member_id
+
         return this.models.Appointment.findAll({
-            where: whereClause
+            where: whereClause, nest: true, raw: true,
+            include: [{
+                model: MemberModel,
+                as: 'subscription',
+                include: [{
+                    model: HolderModel,
+                    as: 'holder',
+                    include: [{
+                        model: UserModel,
+                        as: 'user'
+                    }]
+                }]
+            }]
         })
     }
 
@@ -101,6 +113,9 @@ class AppointmentRepository {
 
 
     private async ClearBeforeBulk(json: IAppointment[]) {
+        if (!json[0].reference_month) throw new CustomError('Mês de referência não encontrado!', 400)
+        if (!json[0].reference_year) throw new CustomError('Ano de referência não encontrado!', 400)
+
         return this.models.Appointment.destroy({
             where: {
                 reference_month: json[0].reference_month,
