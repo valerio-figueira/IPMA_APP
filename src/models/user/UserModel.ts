@@ -1,10 +1,5 @@
 import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import { IUser } from '../../interfaces/IUser';
-import AuthenticationModel from '../AuthenticationModel';
-import { TUserModel } from '../../types/TModels';
-import ContactModel from './ContactModel';
-import DocumentModel from './DocumentModel';
-import LocationModel from './LocationModel';
 
 
 class UserModel extends Model<IUser> {

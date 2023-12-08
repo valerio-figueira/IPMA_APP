@@ -1,4 +1,4 @@
-import IAccessHierarchy from "../interfaces/IAccessHierarchy";
+
 
 export default class AccessHierarchyTree {
     data: any;

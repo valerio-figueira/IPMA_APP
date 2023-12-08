@@ -1,6 +1,6 @@
 import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import IAgreement from '../interfaces/IAgreement';
-import MemberModel from './MemberModel';
+
 
 
 class AgreementModel extends Model<IAgreement> {

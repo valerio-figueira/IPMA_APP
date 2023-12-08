@@ -1,7 +1,6 @@
 import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import UserModel from './UserModel';
 import { ILocation } from '../../interfaces/IUser';
-import { TLocationModel } from '../../types/TModels';
 
 
 class LocationModel extends Model<ILocation> {

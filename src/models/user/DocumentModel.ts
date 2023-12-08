@@ -1,7 +1,6 @@
 import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import UserModel from './UserModel';
 import { IDocument } from '../../interfaces/IUser';
-import { TDocumentModel } from '../../types/TModels';
 
 
 class DocumentModel extends Model<IDocument> {
