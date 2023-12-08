@@ -39,7 +39,7 @@ class AppointmentService {
 
         const { message, fileName, filePath } = await ExtractAndCreateData(
             table, 'appointments-list',
-            this.createJsonFromTable,
+            this.createJsonFromTable.bind(this),
             this.appointmentRepository.BulkCreate.bind(this.appointmentRepository))
 
         return { message, fileName, filePath }
@@ -84,7 +84,10 @@ class AppointmentService {
 
             row.forEach((value: any, index: any) => {
                 const column = columns[index]
-                if (column === 'appointment_date') value = validateAndConvertDate(value)
+                if (column === 'appointment_date') {
+                    value = validateAndConvertDate(value)
+                    if (value) value = new Date(value).toLocaleDateString()
+                }
                 if (columnNames.includes(column)) value = Number(value)
                 appointment[column] = value
             })
