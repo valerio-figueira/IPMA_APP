@@ -15,6 +15,7 @@ import SSTModel from "../models/SocialSecurityTeamModel"
 import PostAuthorModel from "../models/PostAuthor"
 import BlogPostModel from "../models/BlogPostModel"
 import QuoteModel from "../models/QuoteModel"
+import AppointmentModel from "../models/AppointmentModel"
 
 export type TAccessHierarchyModel = ModelStatic<AccessHierarchyModel>
 export type TAuthenticationModel = ModelStatic<AuthenticationModel>
@@ -32,3 +33,4 @@ export type TSSTModel = ModelStatic<SSTModel>
 export type TPostAuthorModel = ModelStatic<PostAuthorModel>
 export type TBlogPostModel = ModelStatic<BlogPostModel>
 export type TQuotesModel = ModelStatic<QuoteModel>
+export type TAppointmentModel = ModelStatic<AppointmentModel>

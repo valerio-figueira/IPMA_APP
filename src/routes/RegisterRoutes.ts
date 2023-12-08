@@ -8,6 +8,7 @@ import HolderRoutes from "./HolderRoutes";
 import MemberRoutes from "./MemberRoutes";
 import MonthlyFeeRoutes from "./MonthlyFeeRoutes";
 import SocialSecurityTeamRoutes from "./SocialSecurityTeamRoutes";
+import AppointmentRoutes from "./AppointmentRoutes";
 import Database from "../db/Database";
 import UserRoutes from "./UserRoutes";
 import DatabaseRoutes from "./DatabaseRoutes";
@@ -35,7 +36,8 @@ class RegisterRoutes {
             User: new UserRoutes(this.database).router,
             Database: new DatabaseRoutes(this.database).router,
             Quote: new QuoteRoutes(this.database).router,
-            ReportRoutes: new ReportRoutes(this.database).router
+            ReportRoutes: new ReportRoutes(this.database).router,
+            AppointmentRoutes: new AppointmentRoutes(this.database).router
         }
         // this.printRoutes()
     }
@@ -53,7 +55,8 @@ class RegisterRoutes {
         this.APP.use('/api/v1/users', this.routes.User),
         this.APP.use('/api/v1/database', this.routes.Database),
         this.APP.use('/api/v1/quotes', this.routes.Quote),
-        this.APP.use('/api/v1/report', this.routes.ReportRoutes)
+        this.APP.use('/api/v1/report', this.routes.ReportRoutes),
+        this.APP.use('/api/v1/appointments', this.routes.AppointmentRoutes)
     }
 
     printRoutes() {

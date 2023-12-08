@@ -16,6 +16,7 @@ import BlogPostModel from "./BlogPostModel";
 import PostAuthorModel from "./PostAuthor";
 import * as ModelTypes from "../types/TModels";
 import QuoteModel from "./QuoteModel";
+import AppointmentModel from "./AppointmentModel";
 
 
 class Models {
@@ -26,6 +27,7 @@ class Models {
     Holder: ModelTypes.THolderModel
     Member: ModelTypes.TMemberModel
     MonthlyFee: ModelTypes.TMonthlyFeeModel
+    Appointment: ModelTypes.TAppointmentModel
     Doctor: ModelTypes.TDoctorModel
     User: ModelTypes.TUserModel
     Document: ModelTypes.TDocumentModel
@@ -48,6 +50,7 @@ class Models {
         this.Agreement = AgreementModel.INIT(sequelize)
         this.Member = MemberModel.INIT(sequelize)
         this.MonthlyFee = MonthlyFeeModel.INIT(sequelize)
+        this.Appointment = AppointmentModel.INIT(sequelize)
         this.Doctor = DoctorModel.INIT(sequelize)
         this.SocialSecurityTeam = SSTModel.INIT(sequelize)
         this.BlogPost = BlogPostModel.INIT(sequelize)
