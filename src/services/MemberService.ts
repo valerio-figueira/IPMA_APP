@@ -317,7 +317,6 @@ export default class MemberService {
                 const holder: any = await this.holderService.ReadOneSummary(holderID)
                 holder['subscriptions'] = {}
                 holders[holderID] = holder
-                console.log(holders)
                 index = 1
             }
             const dependent = dependentID ? await this.dependentService.ReadOneSummary(holderID, dependentID) : null
