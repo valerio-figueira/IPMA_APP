@@ -125,6 +125,25 @@ export default class Queries {
 
 
 
+    static AppointmentQueryBulkCreate = [{
+        model: HolderModel,
+        as: 'holder',
+        attributes: ['holder_id'],
+        include: [{
+            model: UserModel,
+            as: 'user',
+            attributes: ['user_id', 'name'],
+            include: [{
+                model: DocumentModel,
+                as: 'document',
+                attributes: ['document_id', 'cpf'],
+            }]
+        }]
+    }]
+
+
+
+
 
 
     static IncludeSummaryUser(where: Record<string, any>) {
