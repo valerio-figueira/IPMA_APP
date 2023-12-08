@@ -62,6 +62,12 @@ export default class Queries {
             }
     */
 
+
+
+
+
+
+
     static MonthlyFeeSummary = [{
         model: MonthlyFeeModel,
         as: 'billing',
@@ -90,6 +96,12 @@ export default class Queries {
         }]
     }]
 
+
+
+
+
+
+
     static MemberIncludeAll = [{
         model: MonthlyFeeModel,
         as: 'billing',
@@ -108,6 +120,12 @@ export default class Queries {
             attributes: []
         }]
     }]
+
+
+
+
+
+
 
     static IncludeSummaryUser(where: Record<string, any>) {
         return [{
@@ -128,6 +146,12 @@ export default class Queries {
             ]
         }]
     }
+
+
+
+
+
+
 
     static IncludeUserData = [{
         model: UserModel,
@@ -161,6 +185,12 @@ export default class Queries {
         ]
     }]
 
+
+
+
+
+
+
     static IncludeUserDataSummary = [{
         model: UserModel,
         as: 'user',
@@ -177,6 +207,11 @@ export default class Queries {
             }
         ]
     }]
+
+
+
+
+
 
     static IncludeDependentUserData = [{
         model: UserModel,
@@ -208,11 +243,21 @@ export default class Queries {
         }]
     }]
 
+
+
+
+
+
     static IncludeDependentSummary = [{
         model: UserModel,
         as: 'user',
         attributes: { exclude: ['user_id'] }
     }]
+
+
+
+
+
 
     static IncludeHierarchyAndUser = [{
         model: AccessHierarchyModel,
