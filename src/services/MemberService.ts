@@ -19,6 +19,8 @@ import * as path from "path";
 import { UploadedFile } from "express-fileupload";
 import ExtractDataFromTable from "../helpers/ExtractDataFromTable";
 import UserDataSanitizer from "../helpers/UserDataSanitizer";
+import ExtractAndCreateData from "../helpers/ExtractAndCreateData";
+import { validateAndConvertDate } from "../helpers/ConvertDate";
 
 
 export default class MemberService {
@@ -169,32 +171,14 @@ export default class MemberService {
         }
 
         const table = req.files.table as UploadedFile
-        const currentTime = format(new Date(), 'dd-MM-yyyy')
-        const fileName = `holders-table-${currentTime}.xlsx`
-        const filePath = path.join(__dirname, '../temp', fileName)
 
-        try {
-            await new Promise<void>((resolve, reject) => {
-                table.mv(filePath, (err) => {
-                    if (err) reject(err)
-                    else resolve()
-                })
-            })
+        const { message, fileName, filePath } = await ExtractAndCreateData(
+            table, 'members-and-billings-table',
+            this.createJsonFromTable.bind(this),
+            this.memberRepository.BulkCreate.bind(this.memberRepository)
+        )
 
-            const { rows, columns } = ExtractDataFromTable(filePath)
-            const jsonResult: any = this.createJsonFromTable(columns, rows)
-
-            if (jsonResult.length > 0) {
-                const { message } = await this.memberRepository.BulkCreate(jsonResult)
-                return { message, fileName, filePath }
-            } else {
-                throw new Error('Ocorreu um erro ao processar os dados!')
-            }
-        } catch (error: any) {
-            console.log(error)
-            fs.unlinkSync(filePath)
-            throw new CustomError('Erro ao processar a planilha.', 500)
-        }
+        return { message, fileName, filePath }
     }
 
 
@@ -277,26 +261,16 @@ export default class MemberService {
 
     private createJsonFromTable(columns: any, rows: any[]) {
         return rows.slice(1).map((row: any) => {
-            const user: Record<string, any> = {}
+            const member: Record<string, any> = {}
+            const columnNames = ['amount', 'reference_month', 'reference_year']
 
             row.forEach((value: any, index: any) => {
                 const column = columns[index]
-                if (column === 'birth_date') {
-                    value = format(new Date(value), 'yyyy-MM-dd')
-                }
-                if (column === 'marital_status') {
-                    if (value.match('Solteiro')) value = 'Solteiro(a)'
-                    if (value.match('Casado')) value = 'Casado(a)'
-                    if (value.match('Viúvo')) value = 'Viúvo(a)'
-                    if (value.match('Divorciado')) value = 'Divorciado(a)'
-                }
-                user[column] = value
+                if (columnNames.includes(column)) value = Number(value)
+                member[column] = value
             })
 
-            if (user.name) {
-                UserDataSanitizer.sanitizeBody(user)
-                return user
-            }
+            if (member.holder_id) return member
 
             return null
         }).filter(Boolean)

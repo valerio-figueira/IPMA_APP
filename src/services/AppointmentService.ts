@@ -38,10 +38,9 @@ class AppointmentService {
         const table = req.files.table as UploadedFile
 
         const { message, fileName, filePath } = await ExtractAndCreateData(
-            table,
-            'appointments-list',
+            table, 'appointments-list',
             this.createJsonFromTable,
-            this.appointmentRepository.BulkCreate)
+            this.appointmentRepository.BulkCreate.bind(this.appointmentRepository))
 
         return { message, fileName, filePath }
     }
@@ -90,7 +89,7 @@ class AppointmentService {
                 appointment[column] = value
             })
 
-            if (appointment.description) return appointment
+            if (appointment.cpf) return appointment
 
             return null
         }).filter(Boolean)
