@@ -87,10 +87,22 @@ class AppointmentService {
                 appointment[column] = value
             })
 
+            this.validateAppointmentInfo(appointment)
             if (appointment.cpf) return appointment
 
             return null
         }).filter(Boolean)
+    }
+
+
+
+    private validateAppointmentInfo(appointment: Record<string, any>) {
+        if (!appointment.cpf) throw new CustomError('Está faltando o CPF do usuário!', 400)
+        if (!appointment.reference_month) throw new CustomError('Está faltando o mês de referência!', 400)
+        if (!appointment.reference_year) throw new CustomError('Está faltando o ano de referência!', 400)
+        if (!appointment.description) throw new CustomError('Está faltando a descrição!', 400)
+        if (!appointment.amount) throw new CustomError('Está faltando o valor de cobrança!', 400)
+        if (!appointment.total_amount) throw new CustomError('Está faltando o valor total!', 400)
     }
 }
 

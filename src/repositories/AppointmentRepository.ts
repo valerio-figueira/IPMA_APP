@@ -31,27 +31,24 @@ class AppointmentRepository {
 
     async BulkCreate(json: IAppointment[]) {
         await this.ClearBeforeBulk(json)
-        for (let appointment of json) {
-            const transaction: Transaction = await this.db.sequelize.transaction()
-            let { cpf } = appointment
+        const transaction: Transaction = await this.db.sequelize.transaction()
 
-            try {
-                const result = await this.models.Member.findOne({
-                    where: { '$holder.user.document.cpf$': cpf, agreement_id: 1 },
-                    include: Queries.AppointmentQueryBulkCreate, transaction, raw: true
-                })
+        try {
+            for (let appointment of json) {
+                let { cpf } = appointment
+                if (!cpf) throw new CustomError('Está faltando o CPF do usuário!', 400)
 
-                if (result) {
-                    appointment.member_id = result.member_id
-                    await this.models.Appointment.create(appointment, { raw: true, transaction })
-                }
+                const userFound = await this.findOneUser('Holder', cpf, transaction) ||
+                    await this.findOneUser('Dependent', cpf, transaction)
 
-                await transaction.commit()
-            } catch (error: any) {
-                await transaction.rollback()
-                console.error(error)
-                throw new Error(error.message)
+                if (userFound) await this.CreateAppointment(appointment, userFound, transaction)
             }
+
+            await transaction.commit()
+        } catch (error: any) {
+            await transaction.rollback()
+            console.error(error)
+            throw new Error(error.message)
         }
 
         return { message: 'Banco de dados atualizado!' }
@@ -124,6 +121,35 @@ class AppointmentRepository {
         })
     }
 
+
+
+
+    private async findOneUser(typeOfUser: string, cpf: string, transaction: Transaction) {
+        if (typeOfUser === 'Holder') {
+            return this.models.Member.findOne({
+                where: { '$holder.user.document.cpf$': cpf, agreement_id: 1 },
+                include: Queries.AppointmentQueryBulkCreate, transaction, raw: true
+            })
+        }
+
+        if (typeOfUser === 'Dependent') {
+            return this.models.Member.findOne({
+                where: { '$dependent.user.document.cpf$': cpf, agreement_id: 1 },
+                include: Queries.AppointmentQueryFindDependent, transaction, raw: true
+            })
+        }
+
+        return null
+    }
+
+
+
+
+    private async CreateAppointment(appointment: IAppointment,
+        memberFound: MemberModel, transaction: Transaction) {
+        appointment.member_id = memberFound.member_id
+        return this.models.Appointment.create(appointment, { raw: true, transaction })
+    }
 }
 
 
