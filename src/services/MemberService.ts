@@ -69,7 +69,6 @@ export default class MemberService {
         const subscriptions: MemberModel[] = await this.memberRepository.ReadAll(query)
         const totalCount = await this.memberRepository.totalCount(query)
 
-        if (!subscriptions || subscriptions.length === 0) throw new CustomError('Nenhum registro encontrado!', 400)
         //const holders: Record<number, any> = await this.addUsersToResponse(subscriptions)
 
         const totalPages = Math.ceil(totalCount / (query.pageSize || 10))
