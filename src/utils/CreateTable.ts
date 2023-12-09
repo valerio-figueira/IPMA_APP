@@ -56,11 +56,11 @@ const selectActualColumnAndInsertData = (agreement: Record<string, any>, doc: PD
 const insertRows = (billing: any, doc: PDFKit.PDFDocument, options: any) => {
     const { sum, startX, currentY, col1Width, col2Width, col3Width, col4Width } = options
 
-    const name = billing.name.length >= 32 ? billing.name.slice(0, 32).trim() : billing.name
+    // const name = billing.name.length >= 32 ? billing.name.slice(0, 32).trim() : billing.name
 
     doc.font('Helvetica')
     doc.text(billing.subscription_number, startX, currentY)
-    doc.text(name, startX + col1Width, currentY)
+    doc.text(billing.name, startX + col1Width, currentY)
     sum.usersCount++
 
     billing.agreements.forEach((agreement: Record<string, any>) => {
@@ -100,7 +100,7 @@ function createTable(doc: PDFKit.PDFDocument, data: any, query: any) {
     // Definir as coordenadas iniciais da tabela
     const startX = 40
     const startY = 100
-    const [col1Width, col2Width, col3Width, col4Width] = [50, 180, 55, 55]
+    const [col1Width, col2Width, col3Width, col4Width] = [50, 220, 75, 80]
     const availableSpaceOnPage = doc.page.height - startY
     const spaceInY = 15
     const rowHeight = 15
