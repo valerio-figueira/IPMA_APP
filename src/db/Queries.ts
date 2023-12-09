@@ -145,6 +145,26 @@ export default class Queries {
 
 
 
+    static AppointmentQueryFindDependent = [{
+        model: DependentModel,
+        as: 'dependent',
+        attributes: ['holder_id', 'dependent_id'],
+        include: [{
+            model: UserModel,
+            as: 'user',
+            attributes: ['user_id', 'name'],
+            include: [{
+                model: DocumentModel,
+                as: 'document',
+                attributes: ['document_id', 'cpf'],
+            }]
+        }]
+    }]
+
+
+
+
+
 
     static IncludeSummaryUser(where: Record<string, any>) {
         return [{
