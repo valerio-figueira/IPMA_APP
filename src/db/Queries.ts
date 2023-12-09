@@ -165,6 +165,23 @@ export default class Queries {
 
 
 
+    static MonthlyFeeQuery = [{
+        model: AgreementModel,
+        as: 'agreement',
+        attributes: { exclude: ['agreement_id'] }
+    }, {
+        model: HolderModel,
+        as: 'holder',
+        include: [{
+            model: UserModel,
+            as: 'user'
+        }]
+    }]
+
+
+
+
+
 
     static IncludeSummaryUser(where: Record<string, any>) {
         return [{
