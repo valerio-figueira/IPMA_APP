@@ -1,9 +1,8 @@
 import IMember from "../interfaces/IMember";
-import UserModel from "../models/user/UserModel";
-import AgreementModel from "../models/AgreementModel";
 import CustomError from "../utils/CustomError";
 import Database from "../db/Database";
 import { Op, Transaction } from "sequelize";
+import Queries from "../db/Queries";
 
 
 
@@ -37,30 +36,14 @@ export default class MemberRepository {
         const pageSize = query.pageSize || 10;
         const offset = (page - 1) * pageSize;
 
-        const where: any = { dependent_id: null }
+        const whereClause: any = { dependent_id: null }
 
-        const include: any = [{
-            model: AgreementModel,
-            as: 'agreement',
-            attributes: { exclude: ['agreement_id'] }
-        }, {
-            model: this.models.Holder,
-            as: 'holder',
-            include: [{
-                model: UserModel,
-                as: 'user'
-            }]
-        }]
-
-        if (query.active) where.active = query.active
-        if (query.holder_id) where.holder_id = query.holder_id
-        if (query.name) where['$holder.user.name$'] = { [Op.like]: `%${query.name}%` }
-        if (query.agreement_name) include[0].where = { agreement_name: query.agreement_name }
+        this.setParams(query, whereClause)
 
         return this.models.Member.findAll({
             offset,
             limit: pageSize,
-            where, include,
+            where: whereClause, include: Queries.MonthlyFeeQuery,
             order: [['created_at', 'DESC']],
             raw: true, nest: true
         })
@@ -150,7 +133,10 @@ export default class MemberRepository {
     async totalCount(query: any) {
         const whereClause: any = {}
         this.setParams(query, whereClause)
-        return this.models.Member.count({ where: whereClause })
+        return this.models.Member.count({
+            where: whereClause,
+            include: Queries.MonthlyFeeQuery
+        })
     }
 
 
@@ -176,6 +162,7 @@ export default class MemberRepository {
         if (query.active) whereClause.active = query.active
         if (query.holder_id) whereClause.holder_id = query.holder_id
         if (query.name) whereClause['$holder.user.name$'] = { [Op.like]: `%${query.name}%` }
+        if (query.agreement_name) whereClause['$agreement.agreement_name$'] = query.agreement_name
     }
 
 
