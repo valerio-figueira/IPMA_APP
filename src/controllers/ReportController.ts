@@ -14,15 +14,38 @@ class ReportController {
 
 
 
-    async Create(req: Request, res: Response) {
+    async CreateSpreadsheet(req: Request, res: Response) {
         try {
-            const data = await this.reportService.Create(req.body)
+            const data = await this.reportService.CreateSpreadsheet(req.body)
 
             res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             res.setHeader('Content-Disposition', `attachment; filename=${data.fileName}`)
 
             data.readStream.pipe(res)
             data.readStream.on('end', () => fs.unlinkSync(data.filePath))
+        } catch (error: any) {
+            res.status(error.status || 500).json({ error: error.message })
+        }
+    }
+
+
+
+    async CreatePDF(req: Request, res: Response) {
+        try {
+            const data = await this.reportService.CreatePDF(req.body)
+
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename=${data.filename}`)
+
+            data.doc.on('error', (err) => {
+                console.error('Erro ao criar o documento PDF:', err)
+                throw new Error('Erro ao criar o documento PDF.')
+            })
+
+            data.doc.compress
+            data.doc.pipe(res)
+            data.doc.end()
+            data.doc.on('end', () => fs.unlinkSync(data.filePath))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }

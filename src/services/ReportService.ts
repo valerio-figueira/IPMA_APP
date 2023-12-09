@@ -6,15 +6,20 @@ import * as fs from "fs";
 import format from "date-fns/format";
 import { Op } from "sequelize";
 import { groupDetailedBillings } from "../utils/GroupBillings";
+import PDFDocument from 'pdfkit';
+import createTable, { createHeader } from "../utils/CreateTable";
+import ReportRepository from "../repositories/ReportRepository";
 
 
 export default class ReportService {
+    private reportRepository: ReportRepository
     private db: Database
-    private holder;
+    private holder
 
     constructor(db: Database) {
         this.db = db
         this.holder = this.db.models.Holder
+        this.reportRepository = new ReportRepository(this.db)
     }
 
 
@@ -22,13 +27,27 @@ export default class ReportService {
 
 
 
-    async Create(body: any) {
+    async CreateSpreadsheet(body: Record<string, any>) {
+        const mandatoryValues = ['holder_data', 'detailed_billings']
         const whereClause = { report_type: body.report_type }
 
+        if (!mandatoryValues.includes(body.report_type)) throw new Error('Verifique o tipo de relatório')
         if (whereClause.report_type === 'holder_data') return this.CreateHolderInfoReport(whereClause)
         if (whereClause.report_type === 'detailed_billings') return this.DetailedBillingReport(body)
 
         return { readStream: fs.createReadStream(''), fileName: '', filePath: '' }
+    }
+
+
+
+
+
+    async CreatePDF(body: Record<string, any>) {
+        const mandatoryValues = ['monthlyFee']
+        const whereClause = { report_type: body.report_type }
+
+        if (!mandatoryValues.includes(body.report_type)) throw new Error('Verifique o tipo de relatório')
+        return this.MonthlyFeePDFReport(body)
     }
 
 
@@ -94,6 +113,34 @@ export default class ReportService {
 
         return { readStream: fs.createReadStream(filePath), fileName, filePath }
     }
+
+
+
+
+
+
+    private async MonthlyFeePDFReport(query: Record<string, any>) {
+        if (!query.reference_month) throw new Error('Insira o mês de referência!')
+        if (!query.reference_year) throw new Error('Insira o ano de referência!')
+        if (!query.report_type) throw new Error('Insira o tipo de relatório!')
+
+        const billingsReport: any[] | null = await this.reportRepository.BillingReport(query)
+        if (!billingsReport) throw new Error('Nenhuma informação encontrada!')
+
+        const doc = new PDFDocument({ size: 'A4' })
+        const [month, year] = [Number(query.reference_month) + 1, Number(query.reference_year)]
+        const filename = `relatorio-${month}-${year}.pdf`
+        const filePath = path.join(__dirname, `../temp/${filename}`)
+        const writeStream = fs.createWriteStream(filePath)
+
+        doc.pipe(writeStream)
+
+        createHeader(doc, query)
+        createTable(doc, billingsReport, query)
+
+        return { filename, filePath, doc }
+    }
+
 
 
 

@@ -16,7 +16,8 @@ class ReportRoutes {
     }
 
     initialize() {
-        this.router.post('/', this.controller.Create.bind(this.controller))
+        this.router.post('/create-spreadsheet', this.controller.CreateSpreadsheet.bind(this.controller))
+        this.router.post('/create-pdf', this.controller.CreatePDF.bind(this.controller))
     }
 
 }
