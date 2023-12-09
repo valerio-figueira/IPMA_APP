@@ -6,10 +6,6 @@ import MonthlyFeeModel from "../models/MonthlyFeeModel";
 import Database from "../db/Database";
 import { validateMonthlyFee } from "../utils/decorators/validateBody";
 import { Transaction } from "sequelize";
-import PDFDocument from 'pdfkit';
-import * as fs from 'fs'
-import * as path from 'path'
-import createTable, { createHeader } from "../utils/CreateTable";
 import { groupDetailedBillings } from "../utils/GroupBillings";
 
 export default class MonthlyFeeService {
@@ -92,48 +88,6 @@ export default class MonthlyFeeService {
         if (affectedCount === 1) return { message: `Houve ${affectedCount} alteração.` }
         if (affectedCount > 1) return { message: `Houve ${affectedCount} alterações.` }
     }
-
-
-
-
-    async BillingReport(query: Record<string, any>) {
-        if (!query.reference_month) throw new Error('Insira o mês de referência!')
-        if (!query.reference_year) throw new Error('Insira o ano de referência!')
-        if (!query.report_type) throw new Error('Insira o tipo de relatório!')
-
-        const billingsReport: any[] | null = await this.fetchDataForReport(query)
-        if (!billingsReport) throw new Error('Nenhuma informação encontrada!')
-
-        const doc = new PDFDocument({ size: 'A4' })
-        const month = Number(query.reference_month) + 1
-        const year = query.reference_year
-
-        const filename = `relatorio-${month}-${year}.pdf`
-        const dir = path.join(__dirname, `../temp/${filename}`)
-        const writeStream = fs.createWriteStream(dir)
-
-        doc.pipe(writeStream)
-
-        createHeader(doc, query)
-        createTable(doc, billingsReport, query)
-
-        return { filename, doc }
-    }
-
-
-
-
-    private fetchDataForReport<T extends Record<string, string | number>>(query: T) {
-        if (query.report_type === 'monthlyFees') return this.monthlyFeeRepository.BillingReport(query)
-        if (query.report_type === 'appointments') return null
-        if (query.report_type === 'odontoCompanyMembers') return null
-        if (query.report_type === 'odontoCompanyInstallments') return null
-        if (query.report_type === 'uniodontoInstallments') return null
-        if (query.report_type === 'townhall') return null
-
-        return null
-    }
-
 
 
 
