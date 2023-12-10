@@ -3,5 +3,6 @@
 /src/temp
 /src/logs
 /src/json
+/src/backup
 .env
 dist
