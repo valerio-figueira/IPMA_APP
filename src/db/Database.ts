@@ -197,17 +197,22 @@ export default class Database {
 
 
 
-    async decryptBackup(encryptedFilePath: string) {
+    async decryptBackup(encryptedFile: UploadedFile) {
         try {
+            const encryptedTempFilePath = path.join(__dirname, '../temp', encryptedFile.name)
+
+            await this.moveUploadedFile(encryptedFile, encryptedTempFilePath)
+
             const { filePath } = this.createFilePath('../temp')
             const privateKeyFilePath = path.join(__dirname, '../certificates', 'secret-key.gpg')
             const importPrivateKeyCommand = `gpg --import ${privateKeyFilePath}`
             await this.runCommand(importPrivateKeyCommand, 'Chave privada foi importada com sucesso!')
 
             // Comando para descriptografar usando gpg
-            const decryptCommand = `gpg --output ${filePath} --decrypt ${encryptedFilePath}`
+            const decryptCommand = `gpg --output ${filePath} --decrypt ${encryptedTempFilePath}`
 
             await this.runCommand(decryptCommand, 'O backup foi descriptografado com sucesso!')
+            fs.unlinkSync(encryptedTempFilePath)
 
             return { readStream: fs.createReadStream(filePath), filePath }
         } catch (error: any) {
@@ -223,12 +228,7 @@ export default class Database {
         return new Promise(async (resolve, reject) => {
             const tempFilePath = path.join(__dirname, '../temp', file.name)
 
-            await new Promise<void>((resolve, reject) => {
-                file.mv(tempFilePath, (err) => {
-                    if (err) reject(err)
-                    else resolve()
-                })
-            })
+            await this.moveUploadedFile(file, tempFilePath)
 
             const { command, cnfFilePath } = this.createRestoreCommand(tempFilePath)
 
@@ -311,6 +311,19 @@ export default class Database {
     private fileExists(filePath: string) {
         fs.access(filePath, fs.constants.F_OK, (err) => {
             if (!err) fs.unlinkSync(filePath)
+        })
+    }
+
+
+
+
+
+    private moveUploadedFile(encryptedFile: UploadedFile, tempFilePath: string) {
+        return new Promise<void>((resolve, reject) => {
+            encryptedFile.mv(tempFilePath, (err) => {
+                if (err) reject(err)
+                else resolve()
+            })
         })
     }
 
