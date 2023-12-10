@@ -61,6 +61,8 @@ class AppointmentRepository {
         const whereClause: Record<string, any> = {}
 
         if (query.member_id) whereClause.member_id = query.member_id
+        if (query.reference_month) whereClause.reference_month = query.reference_month
+        if (query.reference_year) whereClause.reference_year = query.reference_year
 
         return this.models.Appointment.findAll({
             where: whereClause, nest: true, raw: true,
@@ -84,7 +86,19 @@ class AppointmentRepository {
 
     async ReadOne(appointment_id: string | number) {
         return this.models.Appointment.findAll({
-            where: { appointment_id }
+            where: { appointment_id }, nest: true, raw: true,
+            include: [{
+                model: MemberModel,
+                as: 'subscription',
+                include: [{
+                    model: HolderModel,
+                    as: 'holder',
+                    include: [{
+                        model: UserModel,
+                        as: 'user'
+                    }]
+                }]
+            }]
         })
     }
 
