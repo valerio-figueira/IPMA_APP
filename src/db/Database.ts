@@ -5,7 +5,9 @@ import * as dotenv from "dotenv";
 import Models from "../models";
 import { exec } from "child_process";
 import * as path from "path";
+import * as fs from "fs";
 import { format } from "date-fns";
+import { UploadedFile } from "express-fileupload";
 dotenv.config();
 
 type envProps = undefined | 'test' | 'development' | 'production'
@@ -23,6 +25,8 @@ export default class Database {
         this.sequelize = this.createSequelizeInstance()
         this.models = new Models(this.sequelize)
     }
+
+
 
 
 
@@ -44,6 +48,8 @@ export default class Database {
 
 
 
+
+
     async authenticate() {
         try {
             await this.sequelize.authenticate();
@@ -52,6 +58,8 @@ export default class Database {
             throw ERROR.DBAuthError
         }
     }
+
+
 
 
 
@@ -64,6 +72,8 @@ export default class Database {
             throw ERROR.DBSyncError
         }
     }
+
+
 
 
 
@@ -81,9 +91,13 @@ export default class Database {
 
 
 
+
+
     async startTransaction() {
         return this.sequelize.transaction();
     }
+
+
 
 
 
@@ -95,6 +109,8 @@ export default class Database {
 
 
 
+
+
     async rollbackTransaction(transaction: any) {
         if (transaction) {
             await transaction.rollback();
@@ -103,10 +119,14 @@ export default class Database {
 
 
 
+
+
     async createIndex(tableName: string, indexName: string, columns: string[]) {
         const sql = `CREATE INDEX ${indexName} ON ${tableName} (${columns.join(', ')})`;
         await this.sequelize.query(sql, { type: QueryTypes.RAW });
     }
+
+
 
 
 
@@ -118,10 +138,13 @@ export default class Database {
 
 
 
+
+
     async dropIndex(tableName: string, indexName: string) {
         const sql = `DROP INDEX ${indexName} ON ${tableName}`;
         await this.sequelize.query(sql, { type: QueryTypes.RAW });
     }
+
 
 
 
@@ -134,20 +157,17 @@ export default class Database {
 
             await this.authenticate()
 
-            const dumpCommand = this.createDumpCommand()
+            const { filePath, fileName } = this.createFilePath('../backup')
+            const dumpCommand = this.createDumpCommand(filePath)
 
             // Executa o comando mysqldump usando child_process
-            await new Promise((resolve, reject) => {
-                exec(dumpCommand, (error, stdout, stderr) => {
-                    if (error) {
-                        console.error(`Erro ao fazer backup do banco de dados: ${stderr}`)
-                        reject(error)
-                    } else {
-                        console.log(`Backup do banco de dados realizado com sucesso. Saída: ${stdout}`)
-                        resolve(true)
-                    }
-                })
-            })
+            await this.runCommand(dumpCommand,
+                'Backup do banco de dados realizado com sucesso!',
+                'Erro ao fazer backup do banco de dados')
+
+            const { encryptedFilePath, encryptedFileName } = await this.encryptBackup(filePath, fileName)
+
+            return { readStream: fs.createReadStream(encryptedFilePath), encryptedFileName }
         } catch (error: any) {
             throw new Error(`Erro ao fazer backup do banco de dados: ${error.message}`)
         }
@@ -156,23 +176,152 @@ export default class Database {
 
 
 
-    private createDumpCommand() {
-        const user = this.config.username
-        const host = this.config.host
-        const port = this.config.port
-        const dbname = this.config.database
-        const path = this.createFilePath()
-        return `mysqldump -u ${user} -p${this.config.password} -h ${host} --port ${port || ''} ${dbname} > ${path}`
+
+    private async encryptBackup(filePath: string, fileName: string) {
+        // Comando para criptografar o arquivo de backup usando gpg
+        const email = 'j.valerio.figueira@gmail.com'
+        const gpgCommand = `gpg --output ${filePath}.gpg --encrypt --recipient ${email} ${filePath}`
+
+        this.fileExists(filePath + '.gpg')
+
+        await this.runCommand(gpgCommand,
+            'Backup criptografado com sucesso!',
+            'Erro ao criptografar o backup!')
+
+        // Remova o arquivo de backup não criptografado
+        fs.unlinkSync(filePath)
+        return { encryptedFilePath: `${filePath}.gpg`, encryptedFileName: `${fileName}.gpg` }
     }
 
 
 
 
-    private createFilePath() {
+
+    async decryptBackup(encryptedFilePath: string) {
+        try {
+            const { filePath } = this.createFilePath('../temp')
+            const privateKeyFilePath = path.join(__dirname, '../certificates', 'secret-key.gpg')
+            const importPrivateKeyCommand = `gpg --import ${privateKeyFilePath}`
+            await this.runCommand(importPrivateKeyCommand, 'Chave privada foi importada com sucesso!')
+
+            // Comando para descriptografar usando gpg
+            const decryptCommand = `gpg --output ${filePath} --decrypt ${encryptedFilePath}`
+
+            await this.runCommand(decryptCommand, 'O backup foi descriptografado com sucesso!')
+
+            return { readStream: fs.createReadStream(filePath), filePath }
+        } catch (error: any) {
+            throw new Error(`Erro ao descriptografar o backup: ${error.message}`)
+        }
+    }
+
+
+
+
+
+    async restoreBackup(file: UploadedFile): Promise<Record<string, string>> {
+        return new Promise(async (resolve, reject) => {
+            const tempFilePath = path.join(__dirname, '../temp', file.name)
+
+            await new Promise<void>((resolve, reject) => {
+                file.mv(tempFilePath, (err) => {
+                    if (err) reject(err)
+                    else resolve()
+                })
+            })
+
+            const { command, cnfFilePath } = this.createRestoreCommand(tempFilePath)
+
+            const restoreProcess = exec(command, (error, stdout, stderr) => {
+                fs.unlinkSync(cnfFilePath)
+                if (error) {
+                    console.error(`Erro ao restaurar o backup: ${stderr}`)
+                    reject(error)
+                } else {
+                    console.log(`Backup restaurado com sucesso. Saída: ${stdout}`)
+                    fs.unlinkSync(tempFilePath)
+                    resolve({ message: 'Backup restaurado com sucesso' })
+                }
+            })
+
+            if (restoreProcess.stdout) {
+                restoreProcess.stdout.on('data', (data) => console.log(`Progresso da restauração: ${data}`))
+            }
+            if (restoreProcess.stderr) {
+                restoreProcess.stderr.on('data', (data) => console.error(`Erro durante a restauração: ${data}`))
+            }
+        })
+    }
+
+
+
+
+
+    private async runCommand(command: string, successMessage: string,
+        errorMessage: string | null = null): Promise<void> {
+        return new Promise((resolve, reject) => {
+            exec(command, (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`${errorMessage || 'Erro durante o comando.'} Saída: ${stderr}`);
+                    reject(error)
+                } else {
+                    console.log(`${successMessage} Saída: ${stdout}`);
+                    resolve()
+                }
+            })
+        })
+    }
+
+
+
+
+    private createDumpCommand(filePath: string) {
+        const user = this.config.username
+        const host = this.config.host
+        const port = this.config.port
+        const dbname = this.config.database
+        return `mysqldump -u ${user} -p${this.config.password} -h ${host} --port ${port || ''} ${dbname} > ${filePath}`
+    }
+
+
+
+
+
+    private createRestoreCommand(backupFilePath: string) {
+        const user = this.config.username
+        const host = this.config.host
+        const port = this.config.port
+        const dbname = this.config.database
+
+        // `mysql -h ${host} -P ${port || ''} -u ${user} -p${this.config.password} ${dbname} < ${backupFilePath}`
+        // Cria um arquivo my.cnf temporário com as credenciais
+        const cnfContents = `[client]\nuser=${user}\npassword=${this.config.password}\nhost=${host}\nport=${port}`
+        const cnfFilePath = path.join(__dirname, '../temp', 'db.cnf')
+        fs.writeFileSync(cnfFilePath, cnfContents)
+        const command = `mysql --defaults-file=${cnfFilePath} ${dbname} < ${backupFilePath}`
+
+        return { command, cnfFilePath }
+    }
+
+
+
+
+
+
+    private fileExists(filePath: string) {
+        fs.access(filePath, fs.constants.F_OK, (err) => {
+            if (!err) fs.unlinkSync(filePath)
+        })
+    }
+
+
+
+
+
+    private createFilePath(relativePath: string) {
         const currentTime = format(new Date(), 'dd-MM-yyyy')
         const fileName = `backup-database-${currentTime}.sql`
-        const filePath = path.join(__dirname, '../backup', fileName)
-        console.log(filePath)
-        return filePath
+        const filePath = path.join(__dirname, relativePath, fileName)
+        return { fileName, filePath }
     }
 }
