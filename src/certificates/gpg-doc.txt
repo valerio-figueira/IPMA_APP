@@ -1,0 +1,43 @@
+DOCUMENTAÇÃO PARA UTILIZAR O GPG/GNU Privacy Guard:
+
+
+++ Abra o terminal Linux
+
+
+
+INSTALAR GPG NO LINUX UBUNTU/DEBIAN:
+
+sudo apt-get update
+sudo apt-get install gnupg
+
+
+
+DESCRIPTOGRAFAR ARQUIVO:
+gpg --decrypt NOME_ARQUIVO.gpg > NOME_ARQUIVO_DESTINO
+
+
+
+EDITAR CHAVE PRIVADA:
+
+gpg --edit-key SENHA_DA_CHAVE_PRIVADA
+
+Dentro do editor, utilize os comandos:
+
+expire (alterar validade do certificado)
+passwd (alterar senha)
+save (salvar alterações)
+
+
+REGISTRAR NOVA CHAVE:
+
+gpg --gen-key
+
+
+EXPORTAR CHAVE PÚBLICA:
+gpg --armor --export CHAVE_NOVA > chave_nova.pub
+
+
+
+REVOGAR CHAVE ANTIGA:
+gpg --edit-key SENHA_DA_CHAVE_PRIVADA
+revkey
