@@ -161,7 +161,7 @@ function createFooter(sum: Record<string, any>, doc: PDFKit.PDFDocument, options
 
 
 export function createHeader(doc: PDFKit.PDFDocument, query: Record<string, any>) {
-    const month = Number(query.reference_month) + 1
+    const month = Number(query.reference_month)
     const year = query.reference_year
 
     doc.image(path.join(__dirname, `../../public/imgs/brasão.png`), 100, 30, { width: 40 })

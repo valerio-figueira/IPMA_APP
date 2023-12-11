@@ -128,7 +128,7 @@ export default class ReportService {
         if (!billingsReport) throw new Error('Nenhuma informação encontrada!')
 
         const doc = new PDFDocument({ size: 'A4' })
-        const [month, year] = [Number(query.reference_month) + 1, Number(query.reference_year)]
+        const [month, year] = [Number(query.reference_month), Number(query.reference_year)]
         const filename = `relatorio-${month}-${year}.pdf`
         const filePath = path.join(__dirname, `../temp/${filename}`)
         const writeStream = fs.createWriteStream(filePath)
