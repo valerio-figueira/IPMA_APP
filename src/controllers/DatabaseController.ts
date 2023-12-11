@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Database from "../db/Database";
-import * as path from "path";
 import * as fs from "fs";
 import CustomError from "../utils/CustomError";
 import { UploadedFile } from "express-fileupload";
@@ -46,7 +45,7 @@ class DatabaseController {
     async RestoreBackup(req: Request, res: Response) {
         try {
             if (!req.files || Object.keys(req.files).length === 0) {
-                throw new CustomError('Nenhuma arquivo de backup foi enviado!', 400)
+                throw new CustomError('Nenhum arquivo de backup foi enviado!', 400)
             }
 
             res.status(200).json(await this.db.restoreBackup(req.files.backup_file as UploadedFile))
