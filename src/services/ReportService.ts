@@ -5,9 +5,9 @@ import * as path from "path";
 import * as fs from "fs";
 import format from "date-fns/format";
 import { Op } from "sequelize";
-import { groupDetailedBillings } from "../utils/GroupBillings";
+import groupBillings, { groupDetailedBillings } from "../utils/GroupBillings";
 import PDFDocument from 'pdfkit';
-import createTable, { createHeader } from "../utils/CreateTable";
+import createPdfTable, { createHeader } from "../utils/CreatePDFTable";
 import ReportRepository from "../repositories/ReportRepository";
 
 
@@ -44,10 +44,11 @@ export default class ReportService {
 
 
     async CreatePDF(body: Record<string, any>) {
-        const mandatoryValues = ['monthlyFee']
+        const mandatoryValues = ['monthlyFee', 'townhall']
         const whereClause = { report_type: body.report_type }
 
         if (!mandatoryValues.includes(body.report_type)) throw new Error('Verifique o tipo de relatório')
+        if (whereClause.report_type === 'townhall') return this.TownhallPDFReport(body)
         return this.MonthlyFeePDFReport(body)
     }
 
@@ -163,8 +164,43 @@ export default class ReportService {
 
         doc.pipe(writeStream)
 
-        createHeader(doc, query)
-        createTable(doc, billingsReport, query)
+        const data = groupBillings(billingsReport)
+
+        createPdfTable(doc, data, query, {
+            startX: 40,
+            startY: 100,
+            colWidths: [50, 220, 75, 80],
+        }, 'Mensalidades')
+
+        return { filename, filePath, doc }
+    }
+
+
+
+
+
+    private async TownhallPDFReport(query: Record<string, any>) {
+        if (!query.reference_month) throw new Error('Insira o mês de referência!')
+        if (!query.reference_year) throw new Error('Insira o ano de referência!')
+
+        const billingsReport: any[] | null = await this.reportRepository.TownhallBillingReport(query)
+        if (!billingsReport) throw new Error('Nenhuma informação encontrada!')
+
+        const doc = new PDFDocument({ size: 'A4' })
+        const [month, year] = [Number(query.reference_month), Number(query.reference_year)]
+        const filename = `relatorio-prefeitura-${month}-${year}.pdf`
+        const filePath = path.join(__dirname, `../temp/${filename}`)
+        const writeStream = fs.createWriteStream(filePath)
+
+        doc.pipe(writeStream)
+
+        const data = groupBillings(billingsReport)
+
+        createPdfTable(doc, data, query, {
+            startX: 40,
+            startY: 100,
+            colWidths: [50, 220, 50, 55, 64],
+        }, 'Convênios')
 
         return { filename, filePath, doc }
     }

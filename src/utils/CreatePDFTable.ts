@@ -9,14 +9,17 @@ import groupBillings from './GroupBillings';
 
 
 
-const createColumns = (doc: PDFKit.PDFDocument, options: Record<string, number>) => {
-    const { startX, startY, col1Width, col2Width, col3Width, col4Width } = options
+const createColumns = (doc: PDFKit.PDFDocument, options: Record<string, any>) => {
+    const { startX, startY, colWidths, title } = options
     doc.font('Helvetica-Bold').fillColor('#233257').fontSize(9)
     doc.text('Matrícula', startX, startY)
-    doc.text('Nome', startX + col1Width, startY)
-    doc.text('Unimed', startX + col1Width + col2Width, startY)
-    doc.text('Uniodonto', startX + col1Width + col2Width + col3Width, startY)
-    doc.text('Od. Company', startX + col1Width + col2Width + col3Width + col4Width, startY)
+    doc.text('Nome', startX + colWidths[0], startY)
+    doc.text('Unimed', startX + colWidths[0] + colWidths[1], startY)
+    doc.text('Uniodonto', startX + colWidths[0] + colWidths[1] + colWidths[2], startY)
+    doc.text('Od. Company', startX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], startY)
+    if (title === 'Convênios') {
+        doc.text('Consultas', startX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + colWidths[4], startY)
+    }
     doc.moveTo(startX, startY + 15).lineTo(startX + 510, startY + 15).stroke('#303c57')
 }
 
@@ -26,22 +29,23 @@ const createColumns = (doc: PDFKit.PDFDocument, options: Record<string, number>)
 
 
 
-const selectActualColumnAndInsertData = (agreement: Record<string, any>, doc: PDFKit.PDFDocument, options: any) => {
-    const { sum, startX, currentY, col1Width, col2Width, col3Width, col4Width } = options
+const selectActualColumnAndInsertData = (agreement: Record<string, any>,
+    doc: PDFKit.PDFDocument, options: Record<string, any>) => {
+    const { sum, startX, currentY, colWidths } = options
     if (agreement.agreement_name === 'UNIMED') {
-        const currentX = startX + col1Width + col2Width
+        const currentX = startX + colWidths[0] + colWidths[1]
         sum.unimed += agreement.total_billing
         doc.text('R$ ' + Number(agreement.total_billing).toFixed(2), currentX, currentY)
     }
 
     if (agreement.agreement_name === 'ODONTO COMPANY') {
-        const currentX = startX + col1Width + col2Width + col3Width + col4Width
+        const currentX = startX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3]
         sum.odontoCompany += agreement.total_billing
         doc.text('R$ ' + Number(agreement.total_billing).toFixed(2), currentX, currentY)
     }
 
     if (agreement.agreement_name === 'UNIODONTO') {
-        const currentX = startX + col1Width + col2Width + col3Width
+        const currentX = startX + colWidths[0] + colWidths[1] + colWidths[2]
         sum.uniodonto += agreement.total_billing
         doc.text('R$ ' + Number(agreement.total_billing).toFixed(2), currentX, currentY)
     }
@@ -54,18 +58,18 @@ const selectActualColumnAndInsertData = (agreement: Record<string, any>, doc: PD
 
 
 const insertRows = (billing: any, doc: PDFKit.PDFDocument, options: any) => {
-    const { sum, startX, currentY, col1Width, col2Width, col3Width, col4Width } = options
+    const { sum, startX, currentY, colWidths } = options
 
     // const name = billing.name.length >= 32 ? billing.name.slice(0, 32).trim() : billing.name
 
     doc.font('Helvetica')
     doc.text(billing.subscription_number, startX, currentY)
-    doc.text(billing.name, startX + col1Width, currentY)
+    doc.text(billing.name, startX + colWidths[0], currentY)
     sum.usersCount++
 
     billing.agreements.forEach((agreement: Record<string, any>) => {
         selectActualColumnAndInsertData(agreement, doc, {
-            sum, startX, currentY, col1Width, col2Width, col3Width, col4Width
+            sum, startX, currentY, colWidths
         })
     })
 
@@ -96,25 +100,25 @@ const addDateAndPageNumberAtBottom = (doc: PDFKit.PDFDocument, options: Record<s
 
 
 // Função para criar uma tabela no PDF
-function createTable(doc: PDFKit.PDFDocument, data: any, query: any) {
+function createPdfTable(doc: PDFKit.PDFDocument,
+    data: any,
+    query: any,
+    coordinates: any,
+    title: any) {
     // Definir as coordenadas iniciais da tabela
-    const startX = 40
-    const startY = 100
-    const [col1Width, col2Width, col3Width, col4Width] = [50, 220, 75, 80]
+    const { startX, startY, colWidths } = coordinates
     const availableSpaceOnPage = doc.page.height - startY
-    const spaceInY = 15
-    const rowHeight = 15
+    const [spaceInY, rowHeight] = [15, 15]
 
-    // Adicionar cabeçalhos da tabela
-    createColumns(doc, { startX, startY, col1Width, col2Width, col3Width, col4Width })
+    createHeader(doc, query, title)
+    createColumns(doc, { startX, startY, colWidths, title })
 
     // Adicionar dados da tabela
-    const group = groupBillings(data)
     const sum = { unimed: 0, odontoCompany: 0, uniodonto: 0, usersCount: 0 }
     let index = 1
     let pageNumber = 1
 
-    for (let billing of group) {
+    for (let billing of data) {
         let currentY = startY + spaceInY + index * rowHeight
 
         // Verificar se há espaço suficiente na página atual
@@ -122,17 +126,17 @@ function createTable(doc: PDFKit.PDFDocument, data: any, query: any) {
             addDateAndPageNumberAtBottom(doc, { pageNumber })
             pageNumber++
             doc.addPage()
-            createHeader(doc, query)
+            createHeader(doc, query, title)
             index = 1
             currentY = startY + spaceInY + index * rowHeight
             // Adicionar cabeçalhos da tabela na nova página
-            createColumns(doc, { startX, startY, col1Width, col2Width, col3Width, col4Width })
+            createColumns(doc, { startX, startY, colWidths, title })
         }
-        insertRows(billing, doc, { sum, startX, currentY, col1Width, col2Width, col3Width, col4Width })
+        insertRows(billing, doc, { sum, startX, currentY, colWidths })
         index++
     }
 
-    createFooter(sum, doc, { col1Width, pageNumber })
+    createFooter(sum, doc, { colWidths, pageNumber })
 }
 
 
@@ -142,15 +146,15 @@ function createTable(doc: PDFKit.PDFDocument, data: any, query: any) {
 
 
 function createFooter(sum: Record<string, any>, doc: PDFKit.PDFDocument, options: any) {
-    const { col1Width, pageNumber } = options
+    const { colWidths, pageNumber } = options
 
     const color = '#233257'
     doc.moveDown()
     doc.font('Helvetica-Bold').fillColor(color)
-    doc.text(`Qtd Usuários: ${sum.usersCount}`, col1Width)
+    doc.text(`Qtd Usuários: ${sum.usersCount}`, colWidths[0])
     doc.text(`Total Unimed: R$ ${Number(sum.unimed).toFixed(2)}`)
-    doc.text(`Total Odonto Company: R$ ${Number(sum.odontoCompany).toFixed(2)}`, col1Width)
-    doc.text(`Total Uniodonto: R$ ${Number(sum.uniodonto).toFixed(2)}`, col1Width)
+    doc.text(`Total Odonto Company: R$ ${Number(sum.odontoCompany).toFixed(2)}`, colWidths[0])
+    doc.text(`Total Uniodonto: R$ ${Number(sum.uniodonto).toFixed(2)}`, colWidths[0])
     addDateAndPageNumberAtBottom(doc, { pageNumber })
 }
 
@@ -160,13 +164,13 @@ function createFooter(sum: Record<string, any>, doc: PDFKit.PDFDocument, options
 
 
 
-export function createHeader(doc: PDFKit.PDFDocument, query: Record<string, any>) {
+export function createHeader(doc: PDFKit.PDFDocument, query: Record<string, any>, title: string) {
     const month = Number(query.reference_month)
     const year = query.reference_year
 
     doc.image(path.join(__dirname, `../../public/imgs/brasão.png`), 100, 30, { width: 40 })
     doc.font('Helvetica-Bold').fillColor('#233257').fontSize(15).y = 30
-    doc.text(`IPMA - Relatório de Mensalidades ${month}/${year}`, { align: 'left', wordSpacing: 2, width: 400, indent: 80 })
+    doc.text(`IPMA - Relatório de ${title} ${month}/${year}`, { align: 'left', wordSpacing: 2, width: 400, indent: 80 })
     doc.font('Helvetica').fontSize(9)
     doc.text(`Rua Amélia Rezende de Oliveira, N°. 40 - CNPJ 03.650.395/0001-66`, { align: 'left', wordSpacing: 3.7, width: 400, indent: 80 })
     doc.text('Monte Alegre de Minas - Estado de Minas Gerais - (34) 3283-3102', { align: 'left', wordSpacing: 3.8, width: 400, indent: 80 })
@@ -174,4 +178,4 @@ export function createHeader(doc: PDFKit.PDFDocument, query: Record<string, any>
 }
 
 
-export default createTable
+export default createPdfTable

@@ -132,27 +132,39 @@ export default class ReportRepository {
         if (query.reference_month)
             whereClause['$billing.reference_month$'] = query.reference_month;
 
+        if (query.reference_year)
+            whereClause['$appointment.reference_year$'] = query.reference_year;
+
+        if (query.reference_month)
+            whereClause['$appointment.reference_month$'] = query.reference_month;
+
         return this.models.Member.findAll({
             where: whereClause,
             attributes: [
                 'holder.subscription_number',
                 'holder.holder_id',
                 'holder.status',
+                'appointment.member_id',
                 [this.db.sequelize.fn('SUM', this.db.sequelize.col('billing.amount')), 'total_billing'],
                 [this.db.sequelize.fn('SUM', this.db.sequelize.col('appointment.amount')), 'total_appointments'],
                 'holder.user.name',
                 'agreement.agreement_id',
                 'billing.reference_month',
-                'billing.reference_year'
+                'billing.reference_year',
+                'appointment.reference_month',
+                'appointment.reference_year'
             ],
             include: Queries.MemberIncludeAllBillings,
             group: [
                 'holder.subscription_number',
                 'holder.holder_id',
                 'holder.status',
+                'appointment.member_id',
                 'holder.user.name',
                 'billing.reference_month',
                 'billing.reference_year',
+                'appointment.reference_month',
+                'appointment.reference_year',
                 'agreement.agreement_id'],
             raw: true, nest: true
         })
