@@ -1,6 +1,7 @@
 import { DataTypes, Model, ModelStatic, Sequelize } from "sequelize";
 import IAppointment from "../interfaces/IAppointment";
 import MemberModel from "./MemberModel";
+import HolderModel from "./HolderModel";
 
 
 class AppointmentModel extends Model<IAppointment> {
@@ -13,6 +14,7 @@ class AppointmentModel extends Model<IAppointment> {
     declare reference_month: number;
     declare reference_year: number;
     declare created_at: Date;
+    subscription?: MemberModel;
 
     static INIT(sequelize: Sequelize)
         : ModelStatic<AppointmentModel> {
@@ -88,6 +90,18 @@ class AppointmentModel extends Model<IAppointment> {
             foreignKey: 'member_id'
         })
 
+/*
+        AppointmentTotalModel.hasOne(this, {
+            as: 'appointment',
+            foreignKey: 'member_id',
+        })
+
+
+        this.belongsTo(AppointmentTotalModel, {
+            as: 'appointmentTotal',
+            foreignKey: 'member_id',
+        })
+*/
 
         return this
     }

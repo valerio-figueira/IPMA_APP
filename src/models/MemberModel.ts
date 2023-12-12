@@ -3,6 +3,7 @@ import HolderModel from './HolderModel';
 import DependentModel from './DependentModel';
 import AgreementModel from './AgreementModel';
 import IMember from '../interfaces/IMember';
+import MonthlyFeeModel from './MonthlyFeeModel';
 
 
 class MemberModel extends Model<IMember> {
@@ -15,9 +16,9 @@ class MemberModel extends Model<IMember> {
     declare created_at: Date;
     declare exclusion_date?: Date | null;
     declare agreement?: AgreementModel;
-    declare dependent?: any;
-    declare holder?: any;
-    declare billing?: any;
+    declare dependent?: DependentModel;
+    declare holder?: HolderModel;
+    declare billing?: MonthlyFeeModel;
 
     static INIT(sequelize: Sequelize): ModelStatic<MemberModel> {
         super.init({
