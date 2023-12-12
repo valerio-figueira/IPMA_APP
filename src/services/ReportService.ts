@@ -28,12 +28,13 @@ export default class ReportService {
 
 
     async CreateSpreadsheet(body: Record<string, any>) {
-        const mandatoryValues = ['holder_data', 'detailed_billings']
+        const mandatoryValues = ['holder_data', 'detailed_billings', 'appointments_billings']
         const whereClause = { report_type: body.report_type }
 
         if (!mandatoryValues.includes(body.report_type)) throw new Error('Verifique o tipo de relatório')
         if (whereClause.report_type === 'holder_data') return this.CreateHolderInfoReport(whereClause)
         if (whereClause.report_type === 'detailed_billings') return this.DetailedBillingReport(body)
+        if (whereClause.report_type === 'appointments_billings') return this.AppointmentsReport(body)
 
         return { readStream: fs.createReadStream(''), fileName: '', filePath: '' }
     }
@@ -109,6 +110,33 @@ export default class ReportService {
 
         // Salvar o arquivo
         const { filePath, fileName } = this.createPathAndFile('cobrancas-detalhadas')
+        await workbook.xlsx.writeFile(filePath) // Arquivo xlsx gerado com sucesso!
+
+        return { readStream: fs.createReadStream(filePath), fileName, filePath }
+    }
+
+
+
+
+    private async AppointmentsReport(query: Record<string, any>) {
+        if (!query.reference_month) throw new Error('Insira o mês de referência!')
+        if (!query.reference_year) throw new Error('Insira o ano de referência!')
+        if (!query.report_type) throw new Error('Insira o tipo de relatório!')
+
+        const appointments = await this.reportRepository.AppointmentReport(query)
+
+        const workbook = new ExcelJS.Workbook()
+        const worksheet = workbook.addWorksheet('Titulares')
+
+        // Adicionar cabeçalho
+        worksheet.addRow(['ID_TITULAR', 'ID_DEPENDENTE', 'ID_CONVÊNIO', 'NOME', 'CONVÊNIO', 'DESCRIÇÃO', 'VALOR', 'MÊS', 'ANO'])
+
+        appointments.forEach(appointment => {
+            worksheet.addRow([appointment.subscription?.holder_id, appointment.subscription?.dependent_id, appointment.subscription?.agreement_id, appointment.subscription?.dependent?.user?.name || appointment.subscription?.holder?.user?.name, appointment.subscription?.agreement?.agreement_name, appointment.description, appointment.amount, appointment.reference_month, appointment.reference_year])
+        })
+
+        // Salvar o arquivo
+        const { filePath, fileName } = this.createPathAndFile('cobrancas-de-coparticipacao')
         await workbook.xlsx.writeFile(filePath) // Arquivo xlsx gerado com sucesso!
 
         return { readStream: fs.createReadStream(filePath), fileName, filePath }
