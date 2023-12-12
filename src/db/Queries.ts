@@ -9,6 +9,7 @@ import AccessHierarchyModel from "../models/AccessHierarchyModel";
 import AuthenticationModel from "../models/AuthenticationModel";
 import MemberModel from "../models/MemberModel";
 import DependentModel from "../models/DependentModel";
+import AppointmentModel from "../models/AppointmentModel";
 
 
 export default class Queries {
@@ -105,6 +106,33 @@ export default class Queries {
     static MemberIncludeAll = [{
         model: MonthlyFeeModel,
         as: 'billing',
+        attributes: [],
+    }, {
+        model: AgreementModel,
+        as: 'agreement',
+        attributes: ['agreement_name']
+    }, {
+        model: HolderModel,
+        as: 'holder',
+        attributes: [],
+        include: [{
+            model: UserModel,
+            as: 'user',
+            attributes: []
+        }]
+    }]
+
+
+
+
+
+    static MemberIncludeAllBillings = [{
+        model: MonthlyFeeModel,
+        as: 'billing',
+        attributes: [],
+    }, {
+        model: AppointmentModel,
+        as: 'appointment',
         attributes: [],
     }, {
         model: AgreementModel,
