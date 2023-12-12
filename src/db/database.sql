@@ -141,13 +141,23 @@ CONSTRAINT FK_DEPENDENT_MEMBER FOREIGN KEY (dependent_id) REFERENCES DEPENDENT (
 CONSTRAINT FK_AGREEMENT_MEMBER FOREIGN KEY (agreement_id) REFERENCES AGREEMENT (agreement_id)
 ) DEFAULT CHARSET UTF8;
 
+CREATE TABLE ORTHO_HISTORY (
+ortho_history_id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+member_id INT NOT NULL,
+reference_month INT NOT NULL CHECK (reference_month >= 1 AND reference_month <= 12),
+reference_year INT NOT NULL CHECK (reference_year >= 2015 AND reference_year <= 2100),
+has_orthodontic_device BOOLEAN NOT NULL,
+ortho_value DECIMAL(10, 2),
+created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+CONSTRAINT FK_MEMBER_ORTHO_HISTORY FOREIGN KEY (member_id) REFERENCES MEMBER (member_id)
+) DEFAULT CHARSET UTF8;
+
 CREATE TABLE MONTHLY_FEE (
 monthly_fee_id INT NOT NULL AUTO_INCREMENT,
 member_id INT NOT NULL,
 amount DECIMAL(10,2) NOT NULL,
 reference_month INT NOT NULL CHECK (reference_month >= 1 AND reference_month <= 12),
 reference_year INT NOT NULL CHECK (reference_year >= 2015 AND reference_year <= 2100),
-status ENUM('PENDENTE', 'PAGO', 'ANULADO') NOT NULL DEFAULT 'PENDENTE',
 reference_date DATE NOT NULL,
 payment_date DATE DEFAULT NULL,
 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -187,7 +197,6 @@ appointment_amount DECIMAL(7,2) NOT NULL,
 appointment_date DATE DEFAULT NULL,
 reference_month INT NOT NULL CHECK (reference_month >= 1 AND reference_month <= 12),
 reference_year INT NOT NULL CHECK (reference_year >= 2015 AND reference_year <= 2100),
-status ENUM('PENDENTE', 'PAGO', 'ANULADO') NOT NULL DEFAULT 'PENDENTE',
 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 CONSTRAINT PK_APPOINTMENT PRIMARY KEY (appointment_id),
 CONSTRAINT FK_MEMBER_APPOINTMENT FOREIGN KEY (member_id) REFERENCES MEMBER (member_id)
