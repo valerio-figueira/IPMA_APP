@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import MonthlyFeeService from "../services/MonthlyFeeService";
 import Database from "../db/Database";
+import * as fs from "fs";
 
 
 class MonthlyFeeController {
@@ -17,6 +18,18 @@ class MonthlyFeeController {
     async Create(req: Request, res: Response) {
         try {
             res.status(201).json(await this.monthlyFeeService.Create(req.body))
+        } catch (error: any) {
+            res.status(error.status || 500).json({ error: error.message })
+        }
+    }
+
+
+
+    async BulkCreate(req: Request, res: Response) {
+        try {
+            const data = await this.monthlyFeeService.BulkCreate(req)
+            fs.unlinkSync(data.filePath)
+            res.status(201).json({ message: data.message })
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
         }
