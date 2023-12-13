@@ -137,7 +137,7 @@ export default class Queries {
     }, {
         model: AgreementModel,
         as: 'agreement',
-        attributes: ['agreement_name']
+        attributes: []
     }, {
         model: HolderModel,
         as: 'holder',
