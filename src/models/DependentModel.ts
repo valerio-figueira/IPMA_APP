@@ -2,7 +2,7 @@ import { Model, DataTypes, Sequelize, ModelStatic } from 'sequelize';
 import UserModel from './user/UserModel';
 import HolderModel from './HolderModel';
 import { IDependentBase } from '../interfaces/IDependent';
-import { IUser } from '../interfaces/IUser';
+
 
 
 class DependentModel extends Model<IDependentBase> {
@@ -11,7 +11,7 @@ class DependentModel extends Model<IDependentBase> {
   declare holder_id: number;
   declare relationship_degree?: string | null;
   declare created_at: Date;
-  declare user?: IUser
+  declare user?: UserModel;
 
   static INIT(sequelize: Sequelize): ModelStatic<DependentModel> {
     super.init({

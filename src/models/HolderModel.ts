@@ -4,6 +4,7 @@ import { IHolderBase } from '../interfaces/IHolder';
 import { UserNestedProps } from '../interfaces/IUser';
 import IAuthentication from '../interfaces/IAuthentication';
 import IMember from '../interfaces/IMember';
+import DependentModel from './DependentModel';
 
 
 class HolderModel extends Model<IHolderBase> {
@@ -15,6 +16,7 @@ class HolderModel extends Model<IHolderBase> {
     authentication?: IAuthentication
     user?: UserNestedProps
     subscription?: IMember
+    dependent?: DependentModel
 
     static INIT(sequelize: Sequelize): ModelStatic<HolderModel> {
         super.init({

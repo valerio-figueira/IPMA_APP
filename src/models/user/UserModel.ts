@@ -1,5 +1,8 @@
 import { Model, DataTypes, ModelStatic, Sequelize } from 'sequelize';
 import { IUser } from '../../interfaces/IUser';
+import DocumentModel from './DocumentModel';
+import LocationModel from './LocationModel';
+import ContactModel from './ContactModel';
 
 
 class UserModel extends Model<IUser> {
@@ -11,6 +14,9 @@ class UserModel extends Model<IUser> {
     declare father_name?: string | null;
     declare mother_name?: string | null;
     declare created_at: Date;
+    document?: DocumentModel;
+    location?: LocationModel;
+    contact?: ContactModel;
 
     static INIT(sequelize: Sequelize)
         : ModelStatic<UserModel> {
