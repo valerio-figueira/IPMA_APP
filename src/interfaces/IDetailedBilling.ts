@@ -9,8 +9,9 @@ export default interface IDetailedBilling {
             name: string | null
             agreement_id: number
             monthly_fee_id: number
+            member_id: number
             agreement_name: string
-            amount: number
+            amount: number | undefined
             reference_month: number
             reference_year: number
             created_at: Date
