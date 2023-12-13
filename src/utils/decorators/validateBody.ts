@@ -74,8 +74,7 @@ export function validateMonthlyFee(target: any, propertyKey: string, descriptor:
 
 function validateMonth(month: number | string) {
     month = Number(month)
-    console.log(month)
-    if (month >= 0 && month <= 11) return
+    if (month >= 1 && month <= 12) return
 
     throw new CustomError('Mês de referência não é válido!', 400)
 }

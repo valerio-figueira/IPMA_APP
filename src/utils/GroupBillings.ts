@@ -1,4 +1,5 @@
 import IDetailedBilling from "../interfaces/IDetailedBilling"
+import MemberModel from "../models/MemberModel"
 
 const sortByName = (a: any, b: any) => {
     const nameA = a.name.toUpperCase()
@@ -96,17 +97,17 @@ const addTotalPrice = (acc: any, curr: any, holderId: any, data: Record<string, 
 
 
 
-export const groupDetailedBillings = (billings: any[]): IDetailedBilling[] => {
-    const groupedResults = billings.reduce((acc, curr) => {
+export const groupDetailedBillings = (billings: MemberModel[]): IDetailedBilling[] => {
+    const groupedResults = billings.reduce((acc: any, curr) => {
         const holderId = curr.holder_id
 
         if (!acc[holderId]) {
             acc[holderId] = {
                 holder_id: curr.holder_id,
-                user_id: curr.holder.user.user_id,
+                user_id: curr.holder?.user?.user_id,
                 agreement_card: curr.agreement_card,
                 created_at: curr.created_at,
-                name: curr.holder.user.name,
+                name: curr.holder?.user?.name,
                 agreements: [],
                 totalPrice: {
                     all: 0,
@@ -119,17 +120,18 @@ export const groupDetailedBillings = (billings: any[]): IDetailedBilling[] => {
 
         const data = {
             name: null,
-            monthly_fee_id: curr.billing.monthly_fee_id,
+            monthly_fee_id: curr.billing?.monthly_fee_id,
             agreement_id: curr.agreement_id,
-            agreement_name: curr.agreement.agreement_name,
-            amount: parseFloat(curr.billing.amount),
-            reference_month: curr.billing.reference_month,
-            reference_year: curr.billing.reference_year,
-            created_at: curr.billing.created_at
+            member_id: curr.member_id,
+            agreement_name: curr.agreement?.agreement_name,
+            amount: parseFloat(curr.billing!.amount as any),
+            reference_month: curr.billing?.reference_month,
+            reference_year: curr.billing?.reference_year,
+            created_at: curr.billing?.created_at
         }
 
-        if (!curr.dependent.user.user_id) {
-            acc[holderId].agreements.push({ ...data, name: curr.holder.user.name })
+        if (!curr.dependent?.user?.user_id) {
+            acc[holderId].agreements.push({ ...data, name: curr.holder?.user?.name })
         } else {
             acc[holderId].agreements.push({ ...data, name: curr.dependent.user.name })
         }
@@ -141,7 +143,7 @@ export const groupDetailedBillings = (billings: any[]): IDetailedBilling[] => {
     }, {})
 
     // Converter o objeto agrupado em uma matriz de valores
-    return Object.values(groupedResults).sort(sortByDateDesc) as IDetailedBilling[]
+    return Object.values(groupedResults).sort(sortByName) as IDetailedBilling[]
 }
 
 
