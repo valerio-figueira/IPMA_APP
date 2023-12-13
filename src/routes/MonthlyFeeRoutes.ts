@@ -17,6 +17,7 @@ class MonthlyFeeRoutes {
 
     initialize() {
         this.router.post('/', this.controller.Create.bind(this.controller))
+        this.router.post('/bulk-create', this.controller.BulkCreate.bind(this.controller))
         this.router.get('/', this.controller.ReadAll.bind(this.controller))
         this.router.get('/group-billings/:holder_id', this.controller.ReadAllSummary.bind(this.controller))
         this.router.get('/:id', this.controller.ReadOne.bind(this.controller))
