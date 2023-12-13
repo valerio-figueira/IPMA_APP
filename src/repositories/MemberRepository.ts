@@ -1,7 +1,7 @@
 import IMember from "../interfaces/IMember";
 import CustomError from "../utils/CustomError";
 import Database from "../db/Database";
-import { Op, Transaction } from "sequelize";
+import { Op, Transaction, where } from "sequelize";
 import Queries from "../db/Queries";
 
 
@@ -94,35 +94,32 @@ export default class MemberRepository {
 
 
     async BulkCreate(json: any[]) {
-        for (let user of json) {
-            const transaction: Transaction = await this.db.sequelize.transaction()
-            const { holder_id, agreement_id } = user
+        const transaction: Transaction = await this.db.sequelize.transaction()
 
-            try {
+        try {
+            for (let user of json) {
+                const { holder_id, agreement_id } = user
+
                 const result = await this.models.Member.findOne({
                     where: {
                         holder_id,
-                        agreement_id
-                    }
+                        agreement_id,
+                    }, transaction
                 })
 
                 if (result && user.agreement_id === result.agreement_id) {
                     await this.models.Member.update(user, { where: { member_id: result.member_id }, transaction })
-                    await this.models.MonthlyFee.update(user, { where: { member_id: result.member_id } })
                 } else {
-                    const member = await this.models.Member.create(user, { transaction })
-                    user.member_id = member.member_id
-                    await this.models.MonthlyFee.create(user, { transaction })
+                    await this.models.Member.create(user, { transaction })
                 }
-
-                await transaction.commit()
-            } catch (error: any) {
-                await transaction.rollback()
-                console.error(error)
-                throw new Error(error.message)
             }
-        }
 
+            await transaction.commit()
+        } catch (error: any) {
+            await transaction.rollback()
+            console.error(error)
+            throw new Error(error.message)
+        }
 
         return { message: 'Banco de dados atualizado!' }
     }

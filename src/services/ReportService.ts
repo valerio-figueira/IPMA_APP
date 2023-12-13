@@ -7,8 +7,9 @@ import format from "date-fns/format";
 import { Op } from "sequelize";
 import groupBillings, { groupDetailedBillings } from "../utils/GroupBillings";
 import PDFDocument from 'pdfkit';
-import createPdfTable, { createHeader } from "../utils/CreatePDFTable";
+import createPdfTable from "../utils/CreatePDFTable";
 import ReportRepository from "../repositories/ReportRepository";
+import groupDependents, { groupMembersSummary } from "../utils/GroupUsersInfo";
 
 
 export default class ReportService {
@@ -27,14 +28,15 @@ export default class ReportService {
 
 
 
-    async CreateSpreadsheet(body: Record<string, any>) {
-        const mandatoryValues = ['holder_data', 'detailed_billings', 'appointments_billings']
-        const whereClause = { report_type: body.report_type }
+    async CreateSpreadsheet(query: Record<string, any>) {
+        const mandatoryValues = ['holder_data', 'holders_and_dependents', 'member_data', 'detailed_billings', 'appointments_billings']
 
-        if (!mandatoryValues.includes(body.report_type)) throw new Error('Verifique o tipo de relatório')
-        if (whereClause.report_type === 'holder_data') return this.CreateHolderInfoReport(whereClause)
-        if (whereClause.report_type === 'detailed_billings') return this.DetailedBillingReport(body)
-        if (whereClause.report_type === 'appointments_billings') return this.AppointmentsReport(body)
+        if (!mandatoryValues.includes(query.report_type)) throw new Error('Verifique o tipo de relatório')
+        if (query.report_type === 'holder_data') return this.CreateHolderInfoReport(query)
+        if (query.report_type === 'member_data') return this.CreateMemberInfoReport(query)
+        if (query.report_type === 'detailed_billings') return this.DetailedBillingReport(query)
+        if (query.report_type === 'appointments_billings') return this.AppointmentsReport(query)
+        if (query.report_type === 'holders_and_dependents') return this.CreateHolderAndDependentReport(query)
 
         return { readStream: fs.createReadStream(''), fileName: '', filePath: '' }
     }
@@ -87,6 +89,67 @@ export default class ReportService {
 
 
 
+    private async CreateMemberInfoReport(query: Record<string, any>) {
+        const members = await this.reportRepository.MembersReport(query)
+
+        const workbook = new ExcelJS.Workbook()
+        const worksheet = workbook.addWorksheet('Conveniados')
+
+        // Adicionar cabeçalho
+        worksheet.addRow(['user_id', 'holder_id', 'member_id', 'dependent_id', 'agreement_id', 'holder', 'dependent', 'cpf', 'agreement_name'])
+
+        // Adicionar dados da tabela de usuários
+        groupMembersSummary(members).forEach(member => {
+            worksheet.addRow([member.user_id, member.holder_id, member.member_id, '', member.agreement_id, member.holder, '', member.cpf, member.agreement_name])
+
+            member.dependents.forEach(dependent => {
+                worksheet.addRow([dependent.user_id, dependent.holder_id, dependent.member_id, dependent.dependent_id, dependent.agreement_id, '', dependent.dependent, dependent.cpf, dependent.agreement_name])
+            })
+        })
+
+        // Salvar o arquivo
+        const { filePath, fileName } = this.createPathAndFile('conveniados')
+        await workbook.xlsx.writeFile(filePath) // Arquivo xlsx gerado com sucesso!
+
+        return { readStream: fs.createReadStream(filePath), fileName, filePath }
+    }
+
+
+
+
+
+    private async CreateHolderAndDependentReport(query: Record<string, any>) {
+        const whereClause: Record<string, any> = {}
+        if (whereClause.holder_status) whereClause.status = query.holder_status
+
+        const holders = await this.reportRepository.HoldersAndDependentsReport(query)
+
+        const workbook = new ExcelJS.Workbook()
+        const worksheet = workbook.addWorksheet('Titulares e Dependentes')
+
+        // Adicionar cabeçalho
+        worksheet.addRow(this.createRowsForHolderAndDependentReport())
+
+        // Adicionar dados da tabela de usuários
+        groupDependents(holders).forEach(holder => {
+            worksheet.addRow([holder.user_id, holder.holder_id, '', holder.holder, '', holder.birth_date, holder.gender, holder.marital_status, holder.father_name, holder.mother_name, holder.cpf, holder.identity, holder.issue_date, holder.health_card, holder.address, holder.number, holder.neighborhood, holder.city, holder.zipcode, holder.state, holder.phone_number, holder.residential_phone, holder.email])
+
+            holder.dependents.forEach(dependent => {
+                worksheet.addRow([dependent.user_id, dependent.holder_id, dependent.dependent_id, '', dependent.dependent, dependent.birth_date, dependent.gender, dependent.marital_status, dependent.father_name, dependent.mother_name, dependent.cpf, dependent.identity, dependent.issue_date, dependent.health_card, dependent.address, dependent.number, dependent.neighborhood, dependent.city, dependent.zipcode, dependent.state, dependent.phone_number, dependent.residential_phone, dependent.email])
+            })
+        })
+
+        // Salvar o arquivo
+        const { filePath, fileName } = this.createPathAndFile('titulares-e-dependentes')
+        await workbook.xlsx.writeFile(filePath) // Arquivo xlsx gerado com sucesso!
+
+        return { readStream: fs.createReadStream(filePath), fileName, filePath }
+    }
+
+
+
+
+
     private async DetailedBillingReport(query: Record<string, any>) {
         const whereClause = this.setDetailedBillingParams(query)
         const billings = await this.db.models.Member.findAll({
@@ -98,14 +161,14 @@ export default class ReportService {
         const worksheet = workbook.addWorksheet('Titulares')
 
         // Adicionar cabeçalho
-        worksheet.addRow(['ID_TITULAR', 'ID_CONVÊNIO', 'TITULAR', 'NOME', 'CONVÊNIO', 'MENSALIDADE', 'MÊS', 'ANO'])
+        worksheet.addRow(['ID_TITULAR', 'ID_CONVÊNIO', 'ID_CONVENIADO', 'TITULAR', 'NOME', 'CONVÊNIO', 'MENSALIDADE', 'MÊS', 'ANO'])
 
         // Adicionar dados da tabela de usuários
         const nestedInfo = groupDetailedBillings(billings)
         nestedInfo.forEach(billing => {
-            worksheet.addRow([billing.holder_id, '', billing.name])
+            worksheet.addRow([billing.holder_id, '', '', billing.name])
             billing.agreements.forEach(agreement => {
-                worksheet.addRow([billing.holder_id, agreement.agreement_id, '', agreement.name, agreement.agreement_name, agreement.amount, agreement.reference_month, agreement.reference_year])
+                worksheet.addRow([billing.holder_id, agreement.agreement_id, agreement.member_id, '', agreement.name, agreement.agreement_name, agreement.amount, agreement.reference_month, agreement.reference_year])
             })
         })
 
@@ -184,7 +247,6 @@ export default class ReportService {
         if (!query.reference_year) throw new Error('Insira o ano de referência!')
 
         const billingsReport: any[] | null = await this.reportRepository.TownhallBillingReport(query)
-        if (!billingsReport) throw new Error('Nenhuma informação encontrada!')
 
         const doc = new PDFDocument({ size: 'A4' })
         const [month, year] = [Number(query.reference_month), Number(query.reference_year)]
@@ -193,7 +255,8 @@ export default class ReportService {
         const writeStream = fs.createWriteStream(filePath)
 
         doc.pipe(writeStream)
-
+        console.log(billingsReport)
+        console.log(billingsReport.find(entry => entry.name.match('ROSANGELA')))
         const data = groupBillings(billingsReport)
 
         createPdfTable(doc, data, query, {
@@ -244,6 +307,38 @@ export default class ReportService {
             'user_id',
             'holder_id',
             'name',
+            'birth_date',
+            'gender',
+            'marital_status',
+            'father_name',
+            'mother_name',
+            'cpf',
+            'identity',
+            'issue_date',
+            'health_card',
+            'address',
+            'number',
+            'neighborhood',
+            'city',
+            'zipcode',
+            'state',
+            'phone_number',
+            'residential_phone',
+            'email'
+        ]
+    }
+
+
+
+
+
+    private createRowsForHolderAndDependentReport() {
+        return [
+            'user_id',
+            'holder_id',
+            'dependent_id',
+            'holder',
+            'dependent',
             'birth_date',
             'gender',
             'marital_status',

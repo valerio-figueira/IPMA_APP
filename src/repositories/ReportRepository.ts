@@ -120,23 +120,126 @@ export default class ReportRepository {
 
 
 
+
+    async MembersReport(query: Record<string, any>) {
+        const whereClause: Record<string, any> = { active: query.active || 1 }
+
+        if (query.holder_status) whereClause['$holder.status$'] = query.holder_status
+        if (query.agreement_name) whereClause['$agreement.agreement_name$'] = query.agreement_name
+
+        return this.models.Member.findAll({
+            where: whereClause,
+            include: [{
+                model: this.models.Holder,
+                as: 'holder',
+                include: [{
+                    model: this.models.User,
+                    as: 'user',
+                    attributes: { exclude: ['user_id'] },
+                    include: [{
+                        model: this.models.Document,
+                        as: 'document',
+                        attributes: { exclude: ['user_id', 'document_id'] },
+                    }]
+                }]
+            }, {
+                model: this.models.Dependent,
+                as: 'dependent',
+                include: [{
+                    model: this.models.User,
+                    as: 'user',
+                    attributes: { exclude: ['user_id'] },
+                    include: [{
+                        model: this.models.Document,
+                        as: 'document',
+                        attributes: { exclude: ['user_id', 'document_id'] },
+                    }]
+                }]
+            }, {
+                model: this.models.Agreement,
+                as: 'agreement'
+            }],
+            raw: true, nest: true
+        })
+    }
+
+
+
+
+
+    async HoldersAndDependentsReport(query: Record<string, any>) {
+        const whereClause: Record<string, any> = {}
+
+        if (query.holder_status) whereClause['status'] = query.holder_status
+
+        return this.models.Holder.findAll({
+            where: whereClause,
+            include: [{
+                model: this.models.User,
+                as: 'user',
+                attributes: { exclude: ['user_id'] },
+                include: [{
+                    model: this.models.Contact,
+                    as: 'contact',
+                    attributes: { exclude: ['user_id', 'contact_id'] }
+                },
+                {
+                    model: this.models.Document,
+                    as: 'document',
+                    attributes: { exclude: ['user_id', 'document_id'] },
+                },
+                {
+                    model: this.models.Location,
+                    as: 'location',
+                    attributes: { exclude: ['user_id', 'location_id'] }
+                }]
+            }, {
+                model: this.models.Dependent,
+                as: 'dependent',
+                include: [{
+                    model: this.models.User,
+                    as: 'user',
+                    attributes: { exclude: ['user_id'] },
+                    include: [{
+                        model: this.models.Contact,
+                        as: 'contact',
+                        attributes: { exclude: ['user_id', 'contact_id'] }
+                    },
+                    {
+                        model: this.models.Document,
+                        as: 'document',
+                        attributes: { exclude: ['user_id', 'document_id'] },
+                    },
+                    {
+                        model: this.models.Location,
+                        as: 'location',
+                        attributes: { exclude: ['user_id', 'location_id'] }
+                    }]
+                }]
+            }],
+            raw: true, nest: true
+        })
+    }
+
+
+
+
+
+
+
     async TownhallBillingReport(query: Record<string, any>) {
         const whereClause: Record<string, any> = {
             active: query.active || 1,
-            '$billing.member_id$': { [Op.not]: null }
+            '$billing.member_id$': { [Op.not]: null, }
         }
 
-        if (query.reference_year)
-            whereClause['$billing.reference_year$'] = query.reference_year;
+        if (query.reference_year) {
+            whereClause['$billing.reference_year$'] = query.reference_year
+        }
 
-        if (query.reference_month)
-            whereClause['$billing.reference_month$'] = query.reference_month;
-
-        if (query.reference_year)
-            whereClause['$appointment.reference_year$'] = query.reference_year;
-
-        if (query.reference_month)
-            whereClause['$appointment.reference_month$'] = query.reference_month;
+        if (query.reference_month) {
+            whereClause['$billing.reference_month$'] = query.reference_month
+        }
 
         return this.models.Member.findAll({
             where: whereClause,
@@ -144,28 +247,25 @@ export default class ReportRepository {
                 'holder.subscription_number',
                 'holder.holder_id',
                 'holder.status',
-                'appointment.member_id',
+                'member_id',
                 [this.db.sequelize.fn('SUM', this.db.sequelize.col('billing.amount')), 'total_billing'],
                 [this.db.sequelize.fn('SUM', this.db.sequelize.col('appointment.amount')), 'total_appointments'],
                 'holder.user.name',
-                'agreement.agreement_id',
                 'billing.reference_month',
                 'billing.reference_year',
-                'appointment.reference_month',
-                'appointment.reference_year'
+                'agreement.agreement_name'
             ],
             include: Queries.MemberIncludeAllBillings,
             group: [
                 'holder.subscription_number',
                 'holder.holder_id',
                 'holder.status',
-                'appointment.member_id',
+                'member_id',
                 'holder.user.name',
+                'agreement.agreement_name',
                 'billing.reference_month',
                 'billing.reference_year',
-                'appointment.reference_month',
-                'appointment.reference_year',
-                'agreement.agreement_id'],
+            ],
             raw: true, nest: true
         })
     }

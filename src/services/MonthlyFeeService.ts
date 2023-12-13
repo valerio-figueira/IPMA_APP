@@ -7,6 +7,9 @@ import Database from "../db/Database";
 import { validateMonthlyFee } from "../utils/decorators/validateBody";
 import { Transaction } from "sequelize";
 import { groupDetailedBillings } from "../utils/GroupBillings";
+import { UploadedFile } from "express-fileupload";
+import { Request } from "express";
+import ExtractAndCreateData from "../helpers/ExtractAndCreateData";
 
 export default class MonthlyFeeService {
     private monthlyFeeRepository: MonthlyFeeRepository;
@@ -31,6 +34,24 @@ export default class MonthlyFeeService {
         if (!createdBilling) throw new CustomError('Não foi possível salvar a mensalidade', 500)
 
         return createdBilling
+    }
+
+
+
+
+    async BulkCreate(req: Request) {
+        if (!req.files || Object.keys(req.files).length === 0) {
+            throw new CustomError('Nenhuma planilha foi enviada', 400)
+        }
+
+        const table = req.files.table as UploadedFile
+
+        const { message, fileName, filePath } = await ExtractAndCreateData(
+            table, 'monthlyfee-list',
+            this.createJsonFromTable.bind(this),
+            this.monthlyFeeRepository.BulkCreate.bind(this.monthlyFeeRepository))
+
+        return { message, fileName, filePath }
     }
 
 
@@ -122,6 +143,22 @@ export default class MonthlyFeeService {
                 throw new CustomError('Já existe o registro dessa cobrança', 400)
             }
         }
+    }
+
+
+
+
+    private createJsonFromTable(columns: any, rows: any[]) {
+        return rows.slice(1).map((row: any) => {
+            const monthlyfee: Record<string, any> = {}
+
+            row.forEach((value: any, index: any) => {
+                const column = columns[index]
+                monthlyfee[column] = value
+            })
+
+            return monthlyfee
+        }).filter(Boolean)
     }
 
 }

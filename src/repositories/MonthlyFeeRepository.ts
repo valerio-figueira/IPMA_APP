@@ -3,7 +3,7 @@ import MonthlyFee from "../models/MonthlyFeeModel";
 import HolderModel from "../models/HolderModel";
 import UserModel from "../models/user/UserModel";
 import AgreementModel from "../models/AgreementModel";
-import { Op, QueryTypes, Transaction } from "sequelize";
+import { Op, QueryTypes, Transaction, where } from "sequelize";
 import Queries from "../db/Queries";
 import Database from "../db/Database";
 
@@ -111,6 +111,39 @@ export default class MonthlyFeeRepository {
             .destroy({
                 where: { monthly_fee_id }
             })
+    }
+
+
+
+
+    async BulkCreate(json: any[]) {
+        const transaction: Transaction = await this.db.sequelize.transaction()
+
+        try {
+            for (let billing of json) {
+                const { holder_id, member_id, agreement_id, reference_month, reference_year } = billing
+
+                const memberExists = await this.models.Member.findOne({
+                    where: { holder_id, member_id, agreement_id }, transaction
+                })
+
+                if (memberExists) {
+                    const billingExists = await this.models.MonthlyFee.findOne({
+                        where: { reference_month, reference_year, member_id }, transaction
+                    })
+
+                    if (!billingExists) await this.models.MonthlyFee.create(billing, { transaction })
+                }
+            }
+
+            await transaction.commit()
+        } catch (error: any) {
+            await transaction.rollback()
+            console.error(error)
+            throw new Error(error.message)
+        }
+
+        return { message: 'Banco de dados atualizado!' }
     }
 
 
