@@ -1,7 +1,7 @@
 import IMember from "../interfaces/IMember";
 import CustomError from "../utils/CustomError";
 import Database from "../db/Database";
-import { Op, Transaction, where } from "sequelize";
+import { Op, Transaction } from "sequelize";
 import Queries from "../db/Queries";
 
 
@@ -12,13 +12,7 @@ export default class MemberRepository {
 
     constructor(db: Database) {
         this.db = db
-        this.models = {
-            Agreement: this.db.models.Agreement,
-            Holder: this.db.models.Holder,
-            Dependent: this.db.models.Dependent,
-            Member: this.db.models.Member,
-            MonthlyFee: this.db.models.MonthlyFee
-        }
+        this.models = this.db.models
     }
 
 
@@ -55,6 +49,9 @@ export default class MemberRepository {
     async ReadOne(subscription_id: string | number) {
         return this.models.Holder.findOne({
             include: [{
+                model: this.models.User,
+                as: 'user',
+            }, {
                 model: this.models.Member,
                 as: 'subscription',
                 where: { member_id: subscription_id },
@@ -97,8 +94,8 @@ export default class MemberRepository {
         const transaction: Transaction = await this.db.sequelize.transaction()
 
         try {
-            for (let user of json) {
-                const { holder_id, agreement_id } = user
+            for (let member of json) {
+                const { holder_id, agreement_id } = member
 
                 const result = await this.models.Member.findOne({
                     where: {
@@ -107,10 +104,10 @@ export default class MemberRepository {
                     }, transaction
                 })
 
-                if (result && user.agreement_id === result.agreement_id) {
-                    await this.models.Member.update(user, { where: { member_id: result.member_id }, transaction })
+                if (result && member.agreement_id === result.agreement_id) {
+                    await this.models.Member.update(member, { where: { member_id: result.member_id }, transaction })
                 } else {
-                    await this.models.Member.create(user, { transaction })
+                    await this.models.Member.create(member, { transaction })
                 }
             }
 

@@ -1,13 +1,13 @@
 import { DataTypes, Model, ModelStatic, Sequelize } from "sequelize";
 import IAppointment from "../interfaces/IAppointment";
 import MemberModel from "./MemberModel";
-import HolderModel from "./HolderModel";
 
 
 class AppointmentModel extends Model<IAppointment> {
     declare appointment_id: number;
     declare member_id: number;
     declare description: number;
+    declare contract_number: number;
     declare amount: number;
     declare total_amount: number;
     declare appointment_date: Date;
@@ -38,6 +38,10 @@ class AppointmentModel extends Model<IAppointment> {
             },
             cpf: {
                 type: DataTypes.STRING(14),
+                allowNull: false,
+            },
+            contract_number: {
+                type: DataTypes.INTEGER,
                 allowNull: false,
             },
             amount: {

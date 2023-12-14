@@ -4,10 +4,8 @@ import Database from "../db/Database";
 import CustomError from '../utils/CustomError';
 import { Op, Transaction } from 'sequelize';
 import Queries from "../db/Queries";
-import MemberModel from "../models/MemberModel";
 import RES from "../utils/messages/HolderResponses";
 import HolderBundleEntities from "../entities/HolderBundleEntities";
-import MonthlyFeeModel from "../models/MonthlyFeeModel";
 
 
 
@@ -19,11 +17,7 @@ export default class HolderRepository {
     constructor(db: Database) {
         this.db = db
         this.userRepository = new UserRepository(this.db)
-        this.models = {
-            Authentication: this.db.models.Authentication,
-            Holder: this.db.models.Holder,
-            AccessHierarchy: this.db.models.AccessHierarchy,
-        }
+        this.models = this.db.models
     }
 
 
@@ -154,16 +148,16 @@ export default class HolderRepository {
         const t: Transaction = await this.db.sequelize.transaction();
 
         try {
-            const subscriptions = await MemberModel
+            const subscriptions = await this.models.Member
                 .findAll({ where: { holder_id } })
 
             subscriptions.forEach(async subscription => {
-                await MonthlyFeeModel.destroy({
+                await this.models.MonthlyFee.destroy({
                     where: { member_id: subscription.member_id }, transaction: t
                 })
             })
 
-            await MemberModel.destroy({
+            await this.models.Member.destroy({
                 where: { holder_id },
                 transaction: t,
             })

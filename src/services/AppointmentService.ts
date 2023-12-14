@@ -97,6 +97,7 @@ class AppointmentService {
 
 
     private validateAppointmentInfo(appointment: Record<string, any>) {
+        if (!appointment.contract_number) throw new CustomError('Está faltando o número de contrato!', 400)
         if (!appointment.cpf) throw new CustomError('Está faltando o CPF do usuário!', 400)
         if (!appointment.reference_month) throw new CustomError('Está faltando o mês de referência!', 400)
         if (!appointment.reference_year) throw new CustomError('Está faltando o ano de referência!', 400)

@@ -68,6 +68,7 @@ export default class Database {
             await this.authenticate()
             new Models(this.sequelize)
             await this.sequelize.sync()
+            return { message: 'Banco de dados sincronizado com sucesso!' }
         } catch (error: any) {
             throw ERROR.DBSyncError
         }

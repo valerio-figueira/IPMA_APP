@@ -126,11 +126,13 @@ class AppointmentRepository {
     private async ClearBeforeBulk(json: IAppointment[]) {
         if (!json[0].reference_month) throw new CustomError('Mês de referência não encontrado!', 400)
         if (!json[0].reference_year) throw new CustomError('Ano de referência não encontrado!', 400)
+        if (!json[0].contract_number) throw new CustomError('Número do contrato não encontrado!', 400)
 
         return this.models.Appointment.destroy({
             where: {
                 reference_month: json[0].reference_month,
-                reference_year: json[0].reference_year
+                reference_year: json[0].reference_year,
+                contract_number: json[0].contract_number
             }
         })
     }
