@@ -17,9 +17,11 @@ export default class AgreementService {
 
 
     async Create(body: IAgreement) {
-        const agreement = new AgreementSchema(body);
+        const agreement = new AgreementSchema(body)
+        if (!agreement.agreement_name) throw new CustomError('Insira o nome do convênio!', 400)
+        if (!agreement.contract_number) throw new CustomError('Insira o número do contrato!', 400)
 
-        return this.agreementRepository.Create(agreement);
+        return this.agreementRepository.Create(agreement)
     }
 
 
@@ -27,7 +29,7 @@ export default class AgreementService {
 
 
     async ReadAll() {
-        const agreement = await this.agreementRepository.ReadAll();
+        const agreement = await this.agreementRepository.ReadAll()
 
         if (agreement.length === 0) throw new CustomError('Nenhum convênio registrado', 404)
 
@@ -39,9 +41,9 @@ export default class AgreementService {
 
 
     async ReadOne(agreement_id: string | number) {
-        const contract = await this.agreementRepository.ReadOne(agreement_id);
+        const contract = await this.agreementRepository.ReadOne(agreement_id)
 
-        if (!contract) throw new CustomError('O Convênio não foi alterado ou localizado', 404)
+        if (!contract) throw new CustomError('O Convênio não foi localizado!', 404)
 
         return contract
     }
@@ -51,11 +53,11 @@ export default class AgreementService {
 
 
     async Update(body: IAgreement) {
-        const agreement = new AgreementSchema(body);
+        const agreement = new AgreementSchema(body)
 
         if (!agreement.agreement_id) throw new CustomError('Convênio não localizado', 404)
 
-        const [affectedCount] = await this.agreementRepository.Update(agreement);
+        const [affectedCount] = await this.agreementRepository.Update(agreement)
 
         if (!affectedCount) throw new CustomError('O Convênio não foi alterado ou localizado', 404)
 
@@ -68,7 +70,7 @@ export default class AgreementService {
 
     async Delete(agreement_id: string | number) {
         if (!agreement_id) throw new CustomError('Convênio não localizado', 404)
-        const contract = await this.agreementRepository.Delete(agreement_id);
+        const contract = await this.agreementRepository.Delete(agreement_id)
 
         if (!contract) throw new CustomError('O Convênio não foi removido ou localizado', 400)
 
