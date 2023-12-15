@@ -1,4 +1,5 @@
 import express, { Application, NextFunction, Request, Response } from "express";
+import helmet from "helmet";
 import path from "path";
 import cors from 'cors';
 import https from 'https'
@@ -54,6 +55,7 @@ export default class Server {
         this.APP.use(BodyParser.json())
 
         this.APP.use(session(Session.config))
+        this.APP.use(helmet())
         this.APP.use(fileUpload())
 
         this.APP.use(express.static(path.join("public")))
