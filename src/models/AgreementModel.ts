@@ -6,6 +6,7 @@ import IAgreement from '../interfaces/IAgreement';
 class AgreementModel extends Model<IAgreement> {
     declare agreement_id: number;
     declare agreement_name: string;
+    declare contract_number: string;
     declare description: string | null;
     declare registration_date: Date;
 
@@ -20,6 +21,11 @@ class AgreementModel extends Model<IAgreement> {
             agreement_name: {
                 type: DataTypes.STRING(20),
                 allowNull: false,
+            },
+            contract_number: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                unique: true
             },
             description: {
                 type: DataTypes.STRING(255),
