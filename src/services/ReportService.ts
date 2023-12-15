@@ -96,7 +96,7 @@ export default class ReportService {
         const worksheet = workbook.addWorksheet('Conveniados')
 
         // Adicionar cabeçalho
-        worksheet.addRow(['user_id', 'holder_id', 'member_id', 'dependent_id', 'agreement_id', 'holder', 'dependent', 'cpf', 'agreement_name'])
+        worksheet.addRow(['ID_USUARIO', 'ID_TITULAR', 'ID_CONVENIADO', 'ID_DEPENDENTE', 'ID_CONVENIO', 'TITULAR', 'DEPENDENTE', 'CPF', 'NOME_CONVENIO'])
 
         // Adicionar dados da tabela de usuários
         groupMembersSummary(members).forEach(member => {
@@ -161,7 +161,7 @@ export default class ReportService {
         const worksheet = workbook.addWorksheet('Titulares')
 
         // Adicionar cabeçalho
-        worksheet.addRow(['ID_TITULAR', 'ID_CONVÊNIO', 'ID_CONVENIADO', 'TITULAR', 'NOME', 'CONVÊNIO', 'MENSALIDADE', 'MÊS', 'ANO'])
+        worksheet.addRow(['ID_TITULAR', 'ID_CONVENIO', 'ID_CONVENIADO', 'TITULAR', 'NOME', 'CONVENIO', 'MENSALIDADE', 'MES', 'ANO'])
 
         // Adicionar dados da tabela de usuários
         const nestedInfo = groupDetailedBillings(billings)
@@ -193,7 +193,7 @@ export default class ReportService {
         const worksheet = workbook.addWorksheet('Titulares')
 
         // Adicionar cabeçalho
-        worksheet.addRow(['ID_TITULAR', 'ID_DEPENDENTE', 'ID_CONVÊNIO', 'NOME', 'CONVÊNIO', 'DESCRIÇÃO', 'VALOR', 'MÊS', 'ANO'])
+        worksheet.addRow(['ID_TITULAR', 'ID_DEPENDENTE', 'ID_CONVENIO', 'NOME', 'CONVENIO', 'DESCRICAO', 'VALOR', 'MES', 'ANO'])
 
         appointments.forEach(appointment => {
             worksheet.addRow([appointment.subscription?.holder_id, appointment.subscription?.dependent_id, appointment.subscription?.agreement_id, appointment.subscription?.dependent?.user?.name || appointment.subscription?.holder?.user?.name, appointment.subscription?.agreement?.agreement_name, appointment.description, appointment.amount, appointment.reference_month, appointment.reference_year])
@@ -304,27 +304,27 @@ export default class ReportService {
 
     private createRowsForHolderReport() {
         return [
-            'user_id',
-            'holder_id',
-            'name',
-            'birth_date',
-            'gender',
-            'marital_status',
-            'father_name',
-            'mother_name',
-            'cpf',
-            'identity',
-            'issue_date',
-            'health_card',
-            'address',
-            'number',
-            'neighborhood',
-            'city',
-            'zipcode',
-            'state',
-            'phone_number',
-            'residential_phone',
-            'email'
+            'ID_USUARIO',
+            'ID_TITULAR',
+            'NOME',
+            'DATA_NASCIMENTO',
+            'GENERO',
+            'ESTADO_CIVIL',
+            'NOME_DO_PAI',
+            'NOME_DA_MAE',
+            'CPF',
+            'IDENTIDADE',
+            'DATA_EXP',
+            'CARTAO_SAUDE',
+            'ENDERECO',
+            'NUMERO',
+            'BAIRRO',
+            'CIDADE',
+            'CEP',
+            'ESTADO',
+            'TELEFONE_MOVEL',
+            'TELEFONE_RESIDENCIAL',
+            'EMAIL'
         ]
     }
 
@@ -334,29 +334,29 @@ export default class ReportService {
 
     private createRowsForHolderAndDependentReport() {
         return [
-            'user_id',
-            'holder_id',
-            'dependent_id',
-            'holder',
-            'dependent',
-            'birth_date',
-            'gender',
-            'marital_status',
-            'father_name',
-            'mother_name',
-            'cpf',
-            'identity',
-            'issue_date',
-            'health_card',
-            'address',
-            'number',
-            'neighborhood',
-            'city',
-            'zipcode',
-            'state',
-            'phone_number',
-            'residential_phone',
-            'email'
+            'ID_USUARIO',
+            'ID_TITULAR',
+            'ID_DEPENDENTE',
+            'TITULAR',
+            'DEPENDENTE',
+            'DATA_NASCIMENTO',
+            'SEXO',
+            'ESTADO_CIVIL',
+            'NOME_DO_PAI',
+            'NOME_DA_MAE',
+            'CPF',
+            'IDENTIDADE',
+            'DATA_EXPEDICAO',
+            'CARTAO_SAUDE',
+            'ENDERECO',
+            'NUMERO',
+            'BAIRRO',
+            'CIDADE',
+            'CEP',
+            'ESTADO',
+            'TELEFONE_MOVEL',
+            'TELEFONE_RESIDENCIAL',
+            'EMAIL'
         ]
     }
 }
