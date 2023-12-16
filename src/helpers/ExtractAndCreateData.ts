@@ -47,12 +47,12 @@ const ExtractAndCreateData = async (
             const { message } = await bulkCreateFn(jsonResult)
             return { message, fileName, filePath }
         } else {
-            throw new Error('Ocorreu um erro ao processar os dados!')
+            throw new Error('Ocorreu um erro ao inserir os dados!')
         }
     } catch (error: any) {
         console.log(error)
         fs.unlinkSync(filePath)
-        throw new CustomError('Erro ao processar a planilha.', 500)
+        throw new CustomError(`Erro ao processar a planilha: ${error.message}`, error.status || 500)
     }
 }
 
