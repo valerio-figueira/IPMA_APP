@@ -156,7 +156,7 @@ export default class MemberRepository {
         if (query.active) whereClause.active = query.active
         if (query.holder_id) whereClause.holder_id = query.holder_id
         if (query.name) whereClause['$holder.user.name$'] = { [Op.like]: `%${query.name}%` }
-        if (query.agreement_name) whereClause['$agreement.agreement_name$'] = query.agreement_name
+        if (query.agreement_name) whereClause['$agreement.agreement_name$'] = { [Op.like]: `%${query.agreement_name}%` }
     }
 
 
