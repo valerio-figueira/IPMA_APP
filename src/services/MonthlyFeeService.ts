@@ -153,12 +153,43 @@ export default class MonthlyFeeService {
             const monthlyfee: Record<string, any> = {}
 
             row.forEach((value: any, index: any) => {
-                const column = columns[index]
+                const column = this.convertExcelColumnName(columns[index])
                 monthlyfee[column] = value
             })
 
+            this.validateMemberObj(monthlyfee)
             return monthlyfee
         }).filter(Boolean)
     }
 
+
+
+
+
+    private validateMemberObj(member: Record<string, any>) {
+        if (!member.user_id) throw new CustomError('Insira o campo ID_USUARIO na tabela!', 400)
+        if (!member.holder_id) throw new CustomError('Insira o campo ID_TITULAR na tabela!', 400)
+        if (!member.agreement_id) throw new CustomError('Insira o campo ID_CONVENIO na tabela!', 400)
+        if (!member.member_id) throw new CustomError('Insira o campo ID_CONVENIADO na tabela!', 400)
+        if (!member.reference_month) throw new CustomError('Insira o campo MES_REFERENCIA na tabela!', 400)
+        if (!member.reference_year) throw new CustomError('Insira o campo ANO_REFERENCIA na tabela!', 400)
+        if (!member.amount) throw new CustomError('Insira o campo MENSALIDADE na tabela!', 400)
+    }
+
+
+
+
+
+    private convertExcelColumnName(column: string) {
+        if (column === 'ID_USUARIO') return 'user_id'
+        if (column === 'ID_TITULAR') return 'holder_id'
+        if (column === 'ID_DEPENDENTE') return 'dependent_id'
+        if (column === 'ID_CONVENIO') return 'agreement_id'
+        if (column === 'ID_CONVENIADO') return 'member_id'
+        if (column === 'MES_REFERENCIA') return 'reference_month'
+        if (column === 'ANO_REFERENCIA') return 'reference_year'
+        if (column === 'MENSALIDADE') return 'amount'
+
+        return column
+    }
 }

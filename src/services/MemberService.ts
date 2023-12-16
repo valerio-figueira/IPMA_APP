@@ -253,21 +253,41 @@ export default class MemberService {
 
 
 
-    private createJsonFromTable(columns: any, rows: any[]) {
+    private createJsonFromTable(columns: any[], rows: any[]) {
         return rows.slice(1).map((row: any) => {
             const member: Record<string, any> = {}
-            const columnNames = ['amount', 'reference_month', 'reference_year']
+            const columnNames = ['MES_REFERENCIA', 'ANO_REFERENCIA', 'MENSALIDADE']
 
             row.forEach((value: any, index: any) => {
-                const column = columns[index]
+                const column = this.convertExcelColumnName(columns[index])
                 if (columnNames.includes(column)) value = Number(value)
                 member[column] = value
             })
 
-            if (member.holder_id) return member
-
-            return null
+            this.validateMemberObj(member)
+            return member
         }).filter(Boolean)
+    }
+
+
+
+
+    private validateMemberObj(member: Record<string, any>) {
+        if (!member.user_id) throw new CustomError('Insira o campo ID_USUARIO na tabela!', 400)
+        if (!member.holder_id) throw new CustomError('Insira o campo ID_TITULAR na tabela!', 400)
+        if (!member.agreement_id) throw new CustomError('Insira o campo ID_CONVENIO na tabela!', 400)
+    }
+
+
+
+
+    private convertExcelColumnName(column: string) {
+        if (column === 'ID_USUARIO') return 'user_id'
+        if (column === 'ID_TITULAR') return 'holder_id'
+        if (column === 'ID_DEPENDENTE') return 'dependent_id'
+        if (column === 'ID_CONVENIO') return 'agreement_id'
+
+        return column
     }
 
 
