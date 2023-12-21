@@ -81,7 +81,7 @@ class AppointmentService {
             const columnNames = ['amount', 'total_amount']
 
             row.forEach((value: any, index: any) => {
-                const column = columns[index]
+                const column = this.convertExcelColumnName(columns[index])
                 if (column === 'appointment_date') value = validateAndConvertDate(value)
                 if (columnNames.includes(column)) value = Number(value)
                 appointment[column] = value
@@ -104,6 +104,22 @@ class AppointmentService {
         if (!appointment.description) throw new CustomError('Está faltando a descrição!', 400)
         if (!appointment.amount) throw new CustomError('Está faltando o valor de cobrança!', 400)
         if (!appointment.total_amount) throw new CustomError('Está faltando o valor total!', 400)
+    }
+
+
+
+    private convertExcelColumnName(column: string) {
+        if (column === 'MES_REFERENCIA') return 'reference_month'
+        if (column === 'ANO_REFERENCIA') return 'reference_year'
+        if (column === 'CONTRATO') return 'contract_number'
+        if (column === 'CPFUtilizador') return 'cpf'
+        if (column === 'DataProcedimento') return 'appointment_date'
+        if (column === 'Procedimento') return 'description'
+        if (column === 'Valor') return 'amount'
+        if (column === 'ValorTotal') return 'total_amount'
+        if (column === 'NomeUtilizador') return 'name'
+
+        return column
     }
 }
 
