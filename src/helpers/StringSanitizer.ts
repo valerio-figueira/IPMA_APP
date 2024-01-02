@@ -3,7 +3,6 @@ export default class StringSanitizer {
     if (key === 'username') return data
     if (key === 'password') return data
     if (key === 'email') return data
-    if (key === 'marital_status') return data
     if (!data) return null;
     if (typeof data === 'string') {
       return data.toUpperCase();
