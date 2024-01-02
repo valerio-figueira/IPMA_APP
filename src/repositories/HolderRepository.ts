@@ -45,10 +45,10 @@ export default class HolderRepository {
 
 
     async BulkCreate(query: HolderBundleEntities[]) {
-        const transaction: Transaction = await this.db.sequelize.transaction()
+        for (let user of query) {
+            const transaction: Transaction = await this.db.sequelize.transaction()
 
-        try {
-            for (let user of query) {
+            try {
                 const result = await this.userRepository.CreateOrUpdate(user, transaction)
 
                 if (result && result.status === 'UPDATE') {
@@ -59,12 +59,13 @@ export default class HolderRepository {
                         await this.models.Holder.create(user.holder, { transaction })
                     }
                 }
+
+                await transaction.commit()
+            } catch (error: any) {
+                await transaction.rollback()
+                console.error(error)
+                throw new Error(error.message)
             }
-            await transaction.commit()
-        } catch (error: any) {
-            await transaction.rollback()
-            console.error(error)
-            throw new Error(error.message)
         }
 
         return { message: 'O banco de dados foi atualizado!' }
