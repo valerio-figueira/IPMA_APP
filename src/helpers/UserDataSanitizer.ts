@@ -5,15 +5,18 @@ import format from "date-fns/format"
 export default class UserDataSanitizer {
     static sanitizeBody(data: any) {
         for (const key in data) {
-            data[key] = key === 'cpf' ? this.formatCPF(data[key]) : data[key]
+            data[key] = key === 'cpf' ? data[key].replace(/\D/g, '') : data[key]
             data[key] = key === 'birth_date' ? this.filterDate(data[key]) : data[key]
             data[key] = key === 'issue_date' ? this.filterDate(data[key]) : data[key]
+            data[key] = key === 'cep' ? data[key].replace(/\D/g, '') : data[key]
             data[key] = this.sanitizeFields(key, data[key])
             data[key] = StringSanitizer.convertToUpperCase(key, data[key])
             data[key] = StringSanitizer.sanitizeEmptyFields(data[key])
             data[key] = StringSanitizer.sanitizeLetters(data[key])
         }
     }
+
+
 
     static sanitizeQuery(data: any) {
         for (const key in data) {
@@ -22,6 +25,8 @@ export default class UserDataSanitizer {
 
         return data;
     }
+
+
 
     static sanitizeNestedObject(data: any) {
         if (typeof data !== 'object') return
@@ -37,6 +42,8 @@ export default class UserDataSanitizer {
         }
     }
 
+
+
     static formatCPF(cpf: string) {
         const digits = cpf.replace(/\D/g, '')
 
@@ -50,6 +57,8 @@ export default class UserDataSanitizer {
         return `${firstGroup}.${secondGroup}.${thirdGroup}-${fourthGroup}`
     }
 
+
+
     static sanitizeFields(key: string, data: any) {
         if (!data) return null
         if (key.match('identity')) return data.replace(/\W/g, '');
@@ -57,6 +66,8 @@ export default class UserDataSanitizer {
         if (key.match('residential_phone')) return data.replace(/\D/g, '');
         return data
     }
+
+
 
     static sanitizeModel(model: any) {
         const newData: any = {}
@@ -72,11 +83,15 @@ export default class UserDataSanitizer {
         return newData
     }
 
+
+
     static removeUnnecessaryID(obj: any) {
         if (obj.document_id) delete obj.document_id
         if (obj.contact_id) delete obj.contact_id
         if (obj.location_id) delete obj.location_id
     }
+
+
 
     static filterDate(value: any) {
         const regex = /^\d{4}-\d{2}-\d{2}$/;
@@ -91,6 +106,8 @@ export default class UserDataSanitizer {
 
         return validateAndConvertDate(value)
     }
+
+
 
     static formatDate(str: string) {
         const pieces = str.split('/')
