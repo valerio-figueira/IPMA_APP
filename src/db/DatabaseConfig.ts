@@ -14,18 +14,18 @@ export type DB_ConfigType = {
 
 const DB_Config: Record<string, DB_ConfigType> = {
     development: {
-        username: 'root',
-        password: 'root',
-        database: 'SOCIAL_SECURITY_DEV',
-        host: '172.17.0.2',
+        username: process.env.DB_USERNAME as string,
+        password: process.env.DB_PASSWORD as string,
+        database: process.env.DB_DATABASE as string,
+        host: process.env.DB_HOST as string,
         dialect: 'mysql',
         port: 3306
     },
     test: {
-        username: 'root',
-        password: 'root',
-        database: 'SOCIAL_SECURITY_TEST',
-        host: '172.17.0.2',
+        username: process.env.DB_USERNAME as string,
+        password: process.env.DB_PASSWORD as string,
+        database: process.env.DB_DATABASE as string,
+        host: process.env.DB_HOST as string,
         dialect: 'mysql',
         port: 3306
     },
