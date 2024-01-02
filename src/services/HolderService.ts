@@ -157,12 +157,12 @@ export default class HolderService {
     private createJsonFromTable(columns: any, rows: any[]) {
         return rows.slice(1).map((row: any) => {
             const user: Record<string, any> = {}
-            const valueNames = [/Solteiro/i, /Casado/i, /Viúvo/i, /Divorciado/i]
+            const mandatoryMaritalStatus = ['Solteiro', 'Casado', 'Viúvo', 'Divorciado']
 
-            row.forEach((value: any, index: any) => {
+            row.forEach((value: any, index: number) => {
                 const column = columns[index]
                 if (column === 'marital_status') {
-                    if (valueNames.includes(value)) value += '(a)';
+                    if (mandatoryMaritalStatus.includes(value.trim())) value = `${value}(a)`
                 }
 
                 if (column === 'birth_date') value = getJsDateFromExcel(value)
