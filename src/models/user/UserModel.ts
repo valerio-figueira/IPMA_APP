@@ -8,7 +8,7 @@ import ContactModel from './ContactModel';
 class UserModel extends Model<IUser> {
     declare user_id: number;
     declare name: string;
-    declare gender: 'Masculino' | 'Feminino' | 'Outro';
+    declare gender: 'MASCULINO' | 'FEMININO' | 'OUTRO';
     declare marital_status?: string | null;
     declare birth_date?: Date | null;
     declare father_name?: string | null;
@@ -31,7 +31,7 @@ class UserModel extends Model<IUser> {
                 allowNull: false,
             },
             gender: {
-                type: DataTypes.ENUM('Masculino', 'Feminino', 'Outro'),
+                type: DataTypes.ENUM('MASCULINO', 'FEMININO', 'OUTRO'),
             },
             marital_status: {
                 type: DataTypes.STRING(13),
