@@ -166,7 +166,9 @@ export default class HolderService {
                 user[column] = value
             })
 
-            if (user.name) {
+            this.validateHolderInfo(user)
+
+            if (user.name && user.cpf) {
                 UserDataSanitizer.sanitizeBody(user)
                 user.birth_date = new Date(user.birth_date).toLocaleDateString()
                 return this.bundleEntities(user)
@@ -174,5 +176,11 @@ export default class HolderService {
 
             return null
         }).filter(Boolean)
+    }
+
+
+    private validateHolderInfo(holder: Record<string, any>) {
+        if (!holder.name) throw new CustomError('Está faltando o nome do titular!', 400)
+        if (!holder.cpf) throw new CustomError('Está faltando o CPF do titular!', 400)
     }
 }
