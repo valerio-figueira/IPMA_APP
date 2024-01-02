@@ -14,6 +14,7 @@ import UserService from "./UserService";
 import { Request } from "express";
 import { UploadedFile } from "express-fileupload";
 import ExtractAndCreateData from "../helpers/ExtractAndCreateData";
+import { getJsDateFromExcel } from "../helpers/ConvertDate";
 
 
 export default class HolderService {
@@ -163,6 +164,9 @@ export default class HolderService {
                 if (column === 'marital_status') {
                     if (valueNames.includes(value)) value += '(a)';
                 }
+
+                if (column === 'birth_date') value = getJsDateFromExcel(value)
+
                 user[column] = value
             })
 
@@ -170,7 +174,7 @@ export default class HolderService {
 
             if (user.name && user.cpf) {
                 UserDataSanitizer.sanitizeBody(user)
-                user.birth_date = new Date(user.birth_date).toLocaleDateString()
+                //user.birth_date = new Date(user.birth_date).toLocaleDateString()
                 return this.bundleEntities(user)
             }
 
