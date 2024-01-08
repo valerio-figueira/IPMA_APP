@@ -10,6 +10,8 @@ import { validate } from "../utils/decorators/validateBody";
 import HolderService from "./HolderService";
 import SocialSecurityTeamService from "./SocialSecurityTeamService";
 import ERROR from "../utils/errors/Errors";
+import * as bcrypt from "bcryptjs"
+import PasswordEncryption from "../authentication/PasswordEncryption";
 
 
 export default class AuthenticationService {
@@ -42,6 +44,7 @@ export default class AuthenticationService {
         const userType = await this.findTypeOfUser(authEntity.user_id)
 
         await this.verifyPermissionLevel(userType, authEntity.hierarchy_id)
+        authEntity.password = await PasswordEncryption.createHash(authEntity.password, 10)
 
         return this.authenticationRepository.Create(authEntity)
     }
@@ -65,6 +68,7 @@ export default class AuthenticationService {
     //@validate
     async Update(query: IAuthentication) {
         if (!query.authentication_id) throw ERROR.UserIdRequired
+        query.password = await PasswordEncryption.createHash(query.password, 10)
 
         const [affectedCount] = await this.authenticationRepository.Update(query)
 
