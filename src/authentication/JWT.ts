@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import AccessHierarchyModel from "../models/AccessHierarchyModel";
 import Database from "../db/Database";
 import CustomError from "../utils/CustomError";
+import PasswordEncryption from "./PasswordEncryption";
 require("dotenv").config();
 
 type TUser = { user_id: number; username: string; role: string };
@@ -81,9 +82,10 @@ export default class JWT {
       throw new CustomError('Falha ao processar o nível de permissão.', 400)
     }
 
-    if (password !== userFound.password) {
+    /*if (password !== userFound.password) {
       throw new CustomError('Credenciais inválidas. Autenticação negada.', 401)
-    }
+    }*/
+    await PasswordEncryption.verifyPassword(password, userFound.password)
 
     if (!userFound.user_photo) userFound.user_photo = 'http://localhost:9292/imgs/blank-profile.webp'
 
