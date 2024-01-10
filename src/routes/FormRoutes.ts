@@ -16,7 +16,7 @@ class FormRoutes {
     }
 
     initialize() {
-        this.router.get('/:unimed', this.controller.CreateForm.bind(this.controller))
+        this.router.get('/:type', this.controller.CreateForm.bind(this.controller))
     }
 
 }

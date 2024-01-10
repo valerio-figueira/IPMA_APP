@@ -13,13 +13,18 @@ class FormService {
     }
 
 
-    async CreateForm(query: Record<string, any>) {
+    async CreateForm(type: string) {
+        return this.drawUnimedForm()
+    }
+
+
+    async drawUnimedForm() {
         const doc = new PDFDocument({ size: 'A4' })
 
-        const [month, year] = [Number(query.reference_month), Number(query.reference_year)]
+        const [month, year] = [new Date().getMonth() + 1, new Date().getFullYear()]
         const filename = `formulario-${month}-${year}.pdf`
         const filePath = path.join(__dirname, `../temp/${filename}`)
-        const writeStream = fs.createWriteStream(filePath)
+        fs.createWriteStream(filePath)
 
         CreateUnimedForm.drawForm(doc, [], {
             startX: 20,

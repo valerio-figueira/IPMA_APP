@@ -13,7 +13,7 @@ class FormController {
 
     async CreateForm(req: Request, res: Response) {
         try {
-            const data = await this.formService.CreateForm(req.body)
+            const data = await this.formService.CreateForm(req.params.type)
 
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', `attachment; filename=${data.filename}`)
