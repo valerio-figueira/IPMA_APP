@@ -168,7 +168,7 @@ export function createHeader(doc: PDFKit.PDFDocument, query: Record<string, any>
     const month = Number(query.reference_month)
     const year = query.reference_year
 
-    doc.image(path.join(__dirname, `../../public/imgs/brasão.png`), 100, 30, { width: 40 })
+    doc.image(path.join(__dirname, `../../public/imgs/logo.png`), 100, 26, { width: 40 })
     doc.font('Helvetica-Bold').fillColor('#233257').fontSize(15).y = 30
     doc.text(`IPMA - Relatório de ${title} ${month}/${year}`, { align: 'left', wordSpacing: 2, width: 400, indent: 80 })
     doc.font('Helvetica').fontSize(9)
