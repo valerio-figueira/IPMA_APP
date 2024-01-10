@@ -82,9 +82,6 @@ export default class JWT {
       throw new CustomError('Falha ao processar o nível de permissão.', 400)
     }
 
-    /*if (password !== userFound.password) {
-      throw new CustomError('Credenciais inválidas. Autenticação negada.', 401)
-    }*/
     await PasswordEncryption.verifyPassword(password, userFound.password)
 
     if (!userFound.user_photo) userFound.user_photo = 'http://localhost:9292/imgs/blank-profile.webp'
