@@ -76,4 +76,14 @@ export default class AuthenticationRepository {
         })
     }
 
+
+
+    async findByUsername(username: string) {
+        return this.models.Authentication.findOne({
+            where: { username },
+            attributes: { exclude: ['password'] },
+            raw: true
+        })
+    }
+
 }
