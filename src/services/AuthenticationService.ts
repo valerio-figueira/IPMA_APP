@@ -10,7 +10,6 @@ import { validate } from "../utils/decorators/validateBody";
 import HolderService from "./HolderService";
 import SocialSecurityTeamService from "./SocialSecurityTeamService";
 import ERROR from "../utils/errors/Errors";
-import * as bcrypt from "bcryptjs"
 import PasswordEncryption from "../authentication/PasswordEncryption";
 
 
@@ -40,6 +39,7 @@ export default class AuthenticationService {
 
         // THE USER IS HOLDER, DEPENDENT OR MEMBER OF ORGANIZATION?
         await this.throwErrorIfAlreadyExists(authEntity.user_id)
+        await this.verifyIfUsernameExists(authEntity.username)
         await this.userService.throwErrorIfNotExists(authEntity.user_id)
         const userType = await this.findTypeOfUser(authEntity.user_id)
 
@@ -114,7 +114,7 @@ export default class AuthenticationService {
         if (!permissionLevel) throw ERROR.BadRequest
         const levelName = permissionLevel.level_name
 
-        if (levelName.match('Root')) throw ERROR.BadRequest
+        // if (levelName.match('Root')) throw ERROR.BadRequest
 
         if (userType === 'Holder') {
             // CHECK IF HIERARCHY LEVEL IS FOR COMMON USER
@@ -144,4 +144,18 @@ export default class AuthenticationService {
     }
 
 
+
+    private async verifyIfUsernameExists(username: string) {
+        const prohibitedValues = ['Root', 'Administrator']
+        const exists = await this.authenticationRepository
+            .findByUsername(username)
+
+        if (exists && prohibitedValues.includes(exists.username)) {
+            throw new CustomError('Não é possível registrar este nome de usuário!', BadRequest.STATUS)
+        }
+
+        if (exists) throw new CustomError('O nome de usuário já está registrado!', BadRequest.STATUS)
+
+        return
+    }
 }
