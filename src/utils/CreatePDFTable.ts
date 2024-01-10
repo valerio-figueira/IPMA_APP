@@ -169,7 +169,7 @@ export function createHeader(doc: PDFKit.PDFDocument, query: Record<string, any>
     const year = query.reference_year
 
     doc.image(path.join(__dirname, `../../public/imgs/logo.png`), 100, 26, { width: 40 })
-    doc.font('Helvetica-Bold').fillColor('#233257').fontSize(15).y = 30
+    doc.font('Helvetica-Bold').fillColor('#2C1D70').fontSize(15).y = 30
     doc.text(`IPMA - Relatório de ${title} ${month}/${year}`, { align: 'left', wordSpacing: 2, width: 400, indent: 80 })
     doc.font('Helvetica').fontSize(9)
     doc.text(`Rua Amélia Rezende de Oliveira, N°. 40 - CNPJ 03.650.395/0001-66`, { align: 'left', wordSpacing: 3.7, width: 400, indent: 80 })
