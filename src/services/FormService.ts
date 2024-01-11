@@ -22,9 +22,8 @@ class FormService {
         const doc = new PDFDocument({ size: 'A4' })
 
         const [month, year] = [new Date().getMonth() + 1, new Date().getFullYear()]
-        const filename = `formulario-${month}-${year}.pdf`
+        const filename = `form-inscricao-unimed-${month}-${year}.pdf`
         const filePath = path.join(__dirname, `../temp/${filename}`)
-        fs.createWriteStream(filePath)
 
         CreateUnimedForm.drawForm(doc, [], {
             startX: 20,
