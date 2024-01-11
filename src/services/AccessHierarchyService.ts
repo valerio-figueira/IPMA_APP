@@ -17,7 +17,7 @@ export default class AccessHierarchyService {
 
     async Create(body: IAccessHierarchy) {
         const mandatoryLevels = ['Root', 'Administrator', 'Advanced_Employee', 'Basic_Employee', 'Common_User']
-        if (mandatoryLevels.includes(body.level_name)) throw new CustomError('Nível de Permissão Inválida!', 400)
+        if (!mandatoryLevels.includes(body.level_name)) throw new CustomError('Nível de Permissão Inválida!', 400)
 
         const hierarchyFound = await this.accessHierarchyRepository
             .Exists(body)

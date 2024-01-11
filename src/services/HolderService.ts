@@ -160,12 +160,14 @@ export default class HolderService {
             const mandatoryMaritalStatus = ['Solteiro', 'Casado', 'Viúvo', 'Divorciado']
 
             row.forEach((value: any, index: number) => {
-                const column = columns[index]
+                const column = this.convertExcelColumnName(columns[index])
                 if (column === 'marital_status') {
                     if (mandatoryMaritalStatus.includes(value.trim())) value = `${value}(a)`
                 }
 
-                if (column === 'birth_date') value = getJsDateFromExcel(value)
+                if (column === 'birth_date' && typeof value === 'number') {
+                    value = getJsDateFromExcel(value)
+                }
 
                 user[column] = value
             })
@@ -186,5 +188,34 @@ export default class HolderService {
     private validateHolderInfo(holder: Record<string, any>) {
         if (!holder.name) throw new CustomError('Está faltando o nome do titular!', 400)
         if (!holder.cpf) throw new CustomError('Está faltando o CPF do titular!', 400)
+    }
+
+
+
+    private convertExcelColumnName(column: string) {
+        if (column === 'ID_USUARIO') return 'user_id'
+        if (column === 'ID_TITULAR') return 'holder_id'
+        if (column === 'STATUS') return 'status'
+        if (column === 'NOME') return 'name'
+        if (column === 'DATA_NASCIMENTO') return 'birth_date'
+        if (column === 'GENERO') return 'gender'
+        if (column === 'ESTADO_CIVIL') return 'marital_status'
+        if (column === 'NOME_DO_PAI') return 'father_name'
+        if (column === 'NOME_DA_MAE') return 'mother_name'
+        if (column === 'CPF') return 'cpf'
+        if (column === 'IDENTIDADE') return 'identity'
+        if (column === 'DATA_EXPEDICAO') return 'issue_date'
+        if (column === 'CARTAO_SAUDE') return 'health_card'
+        if (column === 'ENDERECO') return 'address'
+        if (column === 'NUMERO') return 'number'
+        if (column === 'BAIRRO') return 'neighborhood'
+        if (column === 'CIDADE') return 'city'
+        if (column === 'CEP') return 'zip_code'
+        if (column === 'ESTADO') return 'state'
+        if (column === 'TELEFONE_RESIDENCIAL') return 'residential_phone'
+        if (column === 'TELEFONE_MOVEL') return 'phone_number'
+        if (column === 'EMAIL') return 'email'
+
+        return column
     }
 }
