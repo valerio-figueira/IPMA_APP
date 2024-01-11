@@ -69,7 +69,7 @@ export default class UserService {
 
             return this.ReadOne(user.user_id)
         } catch (error: any) {
-            throw new CustomError(error.message || BadRequest.MESSAGE, BadRequest.STATUS)
+            throw new CustomError(error.message, BadRequest.STATUS)
         }
     }
 
