@@ -291,7 +291,7 @@ export default class UserRepository {
 
 
 
-    private checkAffectedCount(data: any) {
+    private checkAffectedCount(data: Record<string, number>) {
         for (let entry in data) {
             if (data[entry]) return true
         }
