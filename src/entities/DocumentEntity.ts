@@ -7,6 +7,7 @@ export class DocumentEntity {
     identity: string;
     issue_date: Date | null;
     issuing_authority: string;
+    pis_pasep: string;
     health_card: string | null;
     created_at?: Date;
 
@@ -16,6 +17,7 @@ export class DocumentEntity {
         this.identity = document.identity;
         this.issue_date = document.issue_date;
         this.issuing_authority = document.issuing_authority;
+        this.pis_pasep = document.pis_pasep;
         this.health_card = document.health_card;
         this.created_at = document.created_at;
     }

@@ -44,6 +44,7 @@ export interface IDocument {
     identity: string;
     issue_date: Date | null;
     issuing_authority: string;
+    pis_pasep: string;
     health_card: string | null;
     created_at?: Date;
 }
