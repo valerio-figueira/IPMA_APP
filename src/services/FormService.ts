@@ -1,7 +1,6 @@
 import Database from "../db/Database";
 import CreateUnimedForm from "../utils/CreateUnimedForm";
 import PDFDocument from 'pdfkit';
-import * as fs from 'fs';
 import * as path from 'path';
 
 
@@ -13,12 +12,7 @@ class FormService {
     }
 
 
-    async CreateForm(type: string) {
-        return this.drawUnimedForm()
-    }
-
-
-    async drawUnimedForm() {
+    async CreateUnimedFormSubscription() {
         const doc = new PDFDocument({ size: 'A4' })
 
         const [month, year] = [new Date().getMonth() + 1, new Date().getFullYear()]

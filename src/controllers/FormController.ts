@@ -11,9 +11,9 @@ class FormController {
         this.formService = new FormService(database)
     }
 
-    async CreateForm(req: Request, res: Response) {
+    async CreateUnimedFormSubscription(req: Request, res: Response) {
         try {
-            const data = await this.formService.CreateForm(req.params.type)
+            const data = await this.formService.CreateUnimedFormSubscription()
 
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', `attachment; filename=${data.filename}`)
