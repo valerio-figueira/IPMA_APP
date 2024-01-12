@@ -6,6 +6,7 @@ import { Request } from "express";
 import CustomError from "../utils/CustomError";
 import ExtractAndCreateData from "../helpers/ExtractAndCreateData";
 import { validateAndConvertDate } from "../helpers/ConvertDate";
+import UserDataSanitizer from "../helpers/UserDataSanitizer";
 
 
 
@@ -88,9 +89,9 @@ class AppointmentService {
             })
 
             this.validateAppointmentInfo(appointment)
-            if (appointment.cpf) return appointment
+            appointment['cpf'] = appointment['cpf'].replace(/\D/g, '')
 
-            return null
+            return appointment
         }).filter(Boolean)
     }
 
