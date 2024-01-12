@@ -1,7 +1,8 @@
 import Database from "../db/Database";
-import CreateUnimedForm from "../utils/CreateUnimedForm";
+import UnimedForm from "../utils/UnimedForm";
 import PDFDocument from 'pdfkit';
 import * as path from 'path';
+import * as fs from 'fs';
 
 
 class FormService {
@@ -18,8 +19,9 @@ class FormService {
         const [month, year] = [new Date().getMonth() + 1, new Date().getFullYear()]
         const filename = `form-inscricao-unimed-${month}-${year}.pdf`
         const filePath = path.join(__dirname, `../temp/${filename}`)
+        fs.createWriteStream(filePath)
 
-        CreateUnimedForm.drawForm(doc, [], {
+        UnimedForm.drawForm(doc, [], {
             startX: 20,
             startY: 0,
             colWidths: []

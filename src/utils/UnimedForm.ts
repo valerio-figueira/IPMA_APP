@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 
-class CreateUnimedForm {
+class UnimedForm {
     private static greenColor = '#158466'
     private static blackColor = '#000000'
     private static whiteColor = '#ffffff'
@@ -109,4 +109,4 @@ class CreateUnimedForm {
 }
 
 
-export default CreateUnimedForm
+export default UnimedForm
