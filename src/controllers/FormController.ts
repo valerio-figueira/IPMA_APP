@@ -32,6 +32,29 @@ class FormController {
         }
     }
 
+
+
+    async CreateUniodontoForm(req: Request, res: Response) {
+        try {
+            const data = await this.formService.CreateUniodontoForm(req.params.holder_id)
+
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename=${data.filename}`)
+
+            data.doc.on('error', (err: any) => {
+                console.error('Erro ao criar o documento PDF:', err)
+                throw new Error('Erro ao criar o documento PDF.')
+            })
+
+            data.doc.compress
+            data.doc.pipe(res)
+            data.doc.end()
+            data.doc.on('end', () => fs.unlinkSync(data.filePath))
+        } catch (error: any) {
+            res.status(error.status || 500).json({ error: error.message })
+        }
+    }
+
 }
 
 
