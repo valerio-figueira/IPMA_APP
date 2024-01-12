@@ -9,6 +9,7 @@ class DocumentModel extends Model<IDocument> {
     declare cpf: string;
     declare identity: string;
     declare issue_date?: Date | null;
+    declare issuing_authority?: string;
     declare health_card?: string | null;
     declare created_at: Date;
 
@@ -41,6 +42,10 @@ class DocumentModel extends Model<IDocument> {
             },
             issue_date: {
                 type: DataTypes.DATEONLY,
+                defaultValue: null
+            },
+            issuing_authority: {
+                type: DataTypes.STRING(7),
                 defaultValue: null
             },
             health_card: {

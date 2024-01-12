@@ -6,6 +6,7 @@ export class DocumentEntity {
     cpf: string;
     identity: string;
     issue_date: Date | null;
+    issuing_authority: string;
     health_card: string | null;
     created_at?: Date;
 
@@ -14,6 +15,7 @@ export class DocumentEntity {
         this.cpf = document.cpf;
         this.identity = document.identity;
         this.issue_date = document.issue_date;
+        this.issuing_authority = document.issuing_authority;
         this.health_card = document.health_card;
         this.created_at = document.created_at;
     }

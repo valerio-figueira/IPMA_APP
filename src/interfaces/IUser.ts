@@ -43,6 +43,7 @@ export interface IDocument {
     cpf: string;
     identity: string;
     issue_date: Date | null;
+    issuing_authority: string;
     health_card: string | null;
     created_at?: Date;
 }
