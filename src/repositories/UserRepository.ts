@@ -183,7 +183,7 @@ export default class UserRepository {
 
         const [document] = await this.models.DocumentModel
             .update(query.document, {
-                where: { user_id }, transaction, fields: ['health_card', 'identity', 'issue_date']
+                where: { user_id }, transaction, fields: ['health_card', 'identity', 'issue_date', 'issuing_authority', 'pis_pasep']
             })
 
         const [location] = await this.models.LocationModel
