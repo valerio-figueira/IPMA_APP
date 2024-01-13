@@ -18,7 +18,7 @@ class ConvertSQLData {
 
 
 
-    static convertPhoneNumber(str: string) {
+    static convertPhoneNumber(str: string | undefined | null) {
         if (!str) return
         if (str.length === 11) return '(' + str.slice(0, 2) + ') ' + str.slice(2, 7) + '-' + str.slice(7, 11)
         if (str.length === 10) return '(' + str.slice(0, 2) + ') ' + str.slice(2, 6) + '-' + str.slice(6, 11)
