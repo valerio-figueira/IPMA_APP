@@ -126,7 +126,7 @@ class UniodontoForm {
 
 
 
-    private static drawDependentsInfo(doc: PDFKit.PDFDocument, dependents: Record<string, any>) {
+    private static drawDependentsInfo(doc: PDFKit.PDFDocument, dependents: any[]) {
         doc.font('Helvetica-Bold').fontSize(14).text('DADOS DOS DEPENDENTES', 10, 241)
         doc.moveDown(16)
         console.log(dependents)
@@ -149,9 +149,9 @@ class UniodontoForm {
 
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)
 
-            doc.text('CPF:', 15, lineHeight + 4).text(dependent ? dependent.user.document.cpf : '', 45, lineHeight + 4)
+            doc.text('CPF:', 15, lineHeight + 4).text(ConvertSQLData.convertCPF(dependent ? dependent.user.document.cpf : null) || '', 45, lineHeight + 4)
                 .text('Estado Civil:', 160, lineHeight + 4).text(dependent ? dependent.user.marital_status : '', 225, lineHeight + 4)
-                .text('Data Nasc:', 440, lineHeight + 4).text(dependent ? dependent.user.birth_date : '', 500, lineHeight + 4, { width: 200 })
+                .text('Data Nasc:', 440, lineHeight + 4).text(ConvertSQLData.convertDate(dependent ? dependent.user.birth_date : '') || '', 500, lineHeight + 4, { width: 200 })
 
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)
 
@@ -161,14 +161,16 @@ class UniodontoForm {
 
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)
 
-            doc.text('Cidade:', 15, lineHeight + 4).text('MONTE ALEGRE - MG', 60, lineHeight + 4)
+            doc.text('Cidade:', 15, lineHeight + 4).text(dependent ? dependent.user.location.city : '', 60, lineHeight + 4)
                 .text('SUS:', 195, lineHeight + 4).text(dependent ? dependent.user.document.health_card : '', 225, lineHeight + 4)
                 .text('Grau de Parentesco:', 350, lineHeight + 4).text(dependent ? dependent.relationship_degree : '', 460, lineHeight + 4, { width: 200 })
 
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)
 
             doc.text('Nome da mãe:', 15, lineHeight + 4).text(dependent ? dependent.user.mother_name : '', 95, lineHeight + 4)
-                .text('Fone:', 350, lineHeight + 4).text(dependent ? dependent.user.father_name : '', 385, lineHeight + 4)
+                .text('Fone:', 350, lineHeight + 4)
+                .text(ConvertSQLData.convertPhoneNumber(dependent ? dependent.user.contact.phone_number
+                    || dependent.user.contact.residential_phone : '') || '', 385, lineHeight + 4)
 
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)

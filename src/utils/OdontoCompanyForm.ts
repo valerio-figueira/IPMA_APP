@@ -14,7 +14,7 @@ class OdontoCompanyForm {
 
 
     static drawForm(doc: PDFKit.PDFDocument, data: Record<string, any>) {
-        this.drawHeader(doc)
+        this.drawHeader(doc, data.formType)
         this.drawBody(doc, data)
         this.drawFooter(doc)
     }
@@ -24,9 +24,17 @@ class OdontoCompanyForm {
 
 
 
-    private static drawHeader(doc: PDFKit.PDFDocument) {
+    private static drawHeader(doc: PDFKit.PDFDocument, formType: string) {
         const logo = path.join(__dirname, '../../public/imgs', 'odonto-company-logo.png')
         doc.image(logo, 10, 10, { height: 45 })
+
+        const subscription = formType === 'subscription' ? 'X' : '  '
+        const inclusion = formType === 'inclusion' ? 'X' : '  '
+
+        doc.font('Helvetica-Bold').fontSize(14).text('TERMO DE ADESÃO', 0, 65, { align: 'center', width: doc.page.width })
+        doc.font('Helvetica').fontSize(12).text(`Inscrição (${subscription})`, -55, 85, { align: 'center', width: doc.page.width })
+            .text(`Inclusão (${inclusion})`, 60, 85, { align: 'center', width: doc.page.width })
+            .rect(205, 82, 190, 17).stroke()
     }
 
 
@@ -35,8 +43,8 @@ class OdontoCompanyForm {
 
 
     private static drawBody(doc: PDFKit.PDFDocument, data: Record<string, any>) {
-        this.drawHolderInfo(doc, data.holderData)
-        this.drawDependentsInfo(doc, data)
+        this.drawHolderInfo(doc, data.holder)
+        this.drawDependentsInfo(doc, data.dependents)
         this.drawAgreementInfo(doc)
     }
 
@@ -67,11 +75,6 @@ class OdontoCompanyForm {
 
 
     private static drawHolderInfo(doc: PDFKit.PDFDocument, holder: Record<string, any>) {
-        doc.font('Helvetica-Bold').fontSize(14).text('TERMO DE ADESÃO', 0, 65, { align: 'center', width: doc.page.width })
-        doc.font('Helvetica').fontSize(12).text('Inscrição (  )', -55, 85, { align: 'center', width: doc.page.width })
-            .text('Inclusão (  )', 60, 85, { align: 'center', width: doc.page.width })
-            .rect(205, 82, 190, 17).stroke()
-
         doc.font('Helvetica-Bold').fontSize(14).text('DADOS DO TITULAR', 10, 109)
             .font('Helvetica').text('MATRÍCULA: ', doc.page.width - 240, 109)
             .image(path.join(__dirname, '../../public/imgs', 'squares.png'), doc.page.width - 150, 105, { height: 17 })
@@ -95,7 +98,7 @@ class OdontoCompanyForm {
 
         doc.text('RG:', 15, 141).text(holder.user.document.identity, 40, 141)
             .text('Data de Exp:', 160, 141).text(ConvertSQLData.convertDate(holder.user.document.issue_date) || '', 230, 141)
-            .text('Órgão Emissor:', 330, 141).text('-----------', 415, 141)
+            .text('Órgão Emissor:', 330, 141).text(holder.user.document.issuing_authority || '', 415, 141)
             .text('Sexo:', 470, 141).text(holder.user.gender, 505, 141, { width: 200 })
 
         doc.text('CPF:', 15, 157).text(ConvertSQLData.convertCPF(holder.user.document.cpf) || '', 45, 157)
@@ -108,9 +111,9 @@ class OdontoCompanyForm {
 
         doc.text('Cidade:', 15, 189).text(holder.user.location.city, 60, 189)
             .text('SUS:', 290, 189).text(holder.user.document.health_card, 320, 189)
-            .text('Fone:', 440, 189).text(
-                ConvertSQLData.convertPhoneNumber(holder.user.contact.phone_number || holder.user.contact.residential_phone) || '',
-                475, 189, { width: 200 })
+            .text('Fone:', 440, 189)
+            .text(ConvertSQLData.convertPhoneNumber(holder.user.contact.phone_number
+                || holder.user.contact.residential_phone) || '', 475, 189, { width: 200 })
 
         doc.text('Empresa:', 15, 205).text('PREFEITURA DE MONTE ALEGRE', 70, 205)
             .text('Fone:', 290, 205).text('(34) 3283-3102', 325, 205)
@@ -127,7 +130,7 @@ class OdontoCompanyForm {
 
 
 
-    private static drawDependentsInfo(doc: PDFKit.PDFDocument, data: Record<string, any>) {
+    private static drawDependentsInfo(doc: PDFKit.PDFDocument, dependents: any[]) {
         doc.font('Helvetica-Bold').fontSize(14).text('DADOS DOS DEPENDENTES', 10, 241)
         doc.moveDown(16)
 
@@ -136,39 +139,42 @@ class OdontoCompanyForm {
         // ADD FOUR BLOCKS OF INFO
         for (let i = 0; i < 4; i++) {
             let [verticalLineStart, verticalLineEnd] = [lineHeight, 0]
+            const dependent = typeof dependents[i] === 'object' ? dependents[i] : undefined
 
             doc.font('Helvetica').fontSize(11)
-            doc.text('Nome:', 15, lineHeight + 4).text('--------------------', 60, lineHeight + 4)
+            doc.text('Nome:', 15, lineHeight + 4).text(dependent ? dependent.user.name : '', 60, lineHeight + 4)
 
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)
 
-            doc.text('RG:', 15, lineHeight + 4).text('----------------', 50, lineHeight + 4)
-                .text('Data de Exp:', 160, lineHeight + 4).text('----/----/-------', 230, lineHeight + 4)
-                .text('Órgão Emissor:', 330, lineHeight + 4).text('-----------', 415, lineHeight + 4)
-                .text('Sexo:', 470, lineHeight + 4).text('-------------------', 510, lineHeight + 4, { width: 200 })
+            doc.text('RG:', 15, lineHeight + 4).text(dependent ? dependent.user.document.identity : '', 50, lineHeight + 4)
+                .text('Data de Exp:', 160, lineHeight + 4).text(dependent ? dependent.user.document.issue_date : '', 230, lineHeight + 4)
+                .text('Órgão Emissor:', 330, lineHeight + 4).text(dependent ? dependent.user.document.issuing_authority : '', 415, lineHeight + 4)
+                .text('Sexo:', 470, lineHeight + 4).text(dependent ? dependent.user.gender : '', 510, lineHeight + 4, { width: 200 })
 
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)
 
-            doc.text('CPF:', 15, lineHeight + 4).text('------------------', 50, lineHeight + 4)
-                .text('Estado Civil:', 160, lineHeight + 4).text('--------------------', 230, lineHeight + 4)
-                .text('Data Nasc:', 440, lineHeight + 4).text('-----/-----/--------', 500, lineHeight + 4, { width: 200 })
+            doc.text('CPF:', 15, lineHeight + 4).text(ConvertSQLData.convertCPF(dependent ? dependent.user.document.cpf : null) || '', 50, lineHeight + 4)
+                .text('Estado Civil:', 160, lineHeight + 4).text(dependent ? dependent.user.marital_status : '', 230, lineHeight + 4)
+                .text('Data Nasc:', 440, lineHeight + 4).text(ConvertSQLData.convertDate(dependent ? dependent.user.birth_date : '') || '', 500, lineHeight + 4, { width: 200 })
 
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)
 
-            doc.text('Endereço:', 15, lineHeight + 4).text('------------------------------', 75, lineHeight + 4)
-                .text('Nº:', 290, lineHeight + 4).text('--------------', 310, lineHeight + 4)
-                .text('Bairro:', 440, lineHeight + 4).text('--------------------', 480, lineHeight + 4, { width: 200 })
+            doc.text('Endereço:', 15, lineHeight + 4).text(dependent ? dependent.user.location.address : '', 75, lineHeight + 4)
+                .text('Nº:', 290, lineHeight + 4).text(dependent ? dependent.user.location.number : '', 310, lineHeight + 4)
+                .text('Bairro:', 440, lineHeight + 4).text(dependent ? dependent.user.location.neighborhood : '', 480, lineHeight + 4, { width: 200 })
 
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)
 
-            doc.text('Cidade:', 15, lineHeight + 4).text('MONTE ALEGRE - MG', 60, lineHeight + 4)
-                .text('SUS:', 195, lineHeight + 4).text('000-0000-0000-0000', 225, lineHeight + 4)
-                .text('Grau de Parentesco:', 350, lineHeight + 4).text('--------------------', 460, lineHeight + 4, { width: 200 })
+            doc.text('Cidade:', 15, lineHeight + 4).text(dependent ? dependent.user.location.city : '', 60, lineHeight + 4)
+                .text('SUS:', 195, lineHeight + 4).text(dependent ? dependent.user.document.health_card : '', 225, lineHeight + 4)
+                .text('Grau de Parentesco:', 350, lineHeight + 4).text(dependent ? dependent.relationship_degree : '', 460, lineHeight + 4, { width: 200 })
 
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)
 
-            doc.text('Nome da mãe:', 15, lineHeight + 4).text('----------------------------', 95, lineHeight + 4)
-                .text('Fone:', 350, lineHeight + 4).text('---------------------', 385, lineHeight + 4)
+            doc.text('Nome da mãe:', 15, lineHeight + 4).text(dependent ? dependent.user.mother_name : '', 95, lineHeight + 4)
+                .text('Fone:', 350, lineHeight + 4)
+                .text(ConvertSQLData.convertPhoneNumber(dependent ? dependent.user.contact.phone_number
+                    || dependent.user.contact.residential_phone : '') || '', 385, lineHeight + 4)
 
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)
