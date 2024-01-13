@@ -205,6 +205,8 @@ export default class HolderService {
         if (column === 'CPF') return 'cpf'
         if (column === 'IDENTIDADE') return 'identity'
         if (column === 'DATA_EXPEDICAO') return 'issue_date'
+        if (column === 'ORGAO_EMISSOR') return 'issuing_authority'
+        if (column === 'PIS_PASEP') return 'pis_pasep'
         if (column === 'CARTAO_SAUDE') return 'health_card'
         if (column === 'ENDERECO') return 'address'
         if (column === 'NUMERO') return 'number'
