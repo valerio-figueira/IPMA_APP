@@ -6,6 +6,7 @@ import PDFDocument from 'pdfkit';
 import * as path from 'path';
 import * as fs from 'fs';
 import CustomError from "../utils/CustomError";
+import OdontoCompanyForm from "../utils/OdontoCompanyForm";
 
 
 class FormService {
@@ -58,6 +59,22 @@ class FormService {
         const { filename, filePath } = this.createTempFile('inscricao-uniodonto')
 
         UniodontoForm.drawForm(doc, { holderData: holder })
+
+        return { filename, filePath, doc }
+    }
+
+
+
+
+
+    async CreateOdontoCompanyForm(holder_id: string) {
+        const holder = await this.formRepository.ReadHolderInfo(holder_id)
+        if (!holder) throw new CustomError('Usuário não encontrado!', 400)
+
+        const doc = new PDFDocument({ size: 'A4' })
+        const { filename, filePath } = this.createTempFile('inscricao-odonto-company')
+
+        OdontoCompanyForm.drawForm(doc, { holderData: holder })
 
         return { filename, filePath, doc }
     }
