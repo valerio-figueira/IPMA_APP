@@ -64,13 +64,13 @@ class UniodontoForm {
 
 
     private static drawHolderInfo(doc: PDFKit.PDFDocument, holder: Record<string, any>) {
-        doc.font('Helvetica-Bold').fontSize(14).text('TERMO DE ADESÃO', { align: 'center', width: doc.page.width })
-        doc.font('Helvetica').fontSize(12).text('Inscrição (  )', -40, 85, { align: 'center', width: doc.page.width })
+        doc.font('Helvetica-Bold').fontSize(14).text('TERMO DE ADESÃO', 0, 65, { align: 'center', width: doc.page.width })
+        doc.font('Helvetica').fontSize(12).text('Inscrição (  )', -55, 85, { align: 'center', width: doc.page.width })
             .text('Inclusão (  )', 60, 85, { align: 'center', width: doc.page.width })
-            .rect(215, 82, 185, 17).stroke()
+            .rect(205, 82, 190, 17).stroke()
 
-        doc.font('Helvetica-Bold').fontSize(14).text('DADOS DO TITULAR', 10, 110)
-            .font('Helvetica').text('MATRÍCULA: ', doc.page.width - 240, 110)
+        doc.font('Helvetica-Bold').fontSize(14).text('DADOS DO TITULAR', 10, 109)
+            .font('Helvetica').text('MATRÍCULA: ', doc.page.width - 240, 109)
             .image(path.join(__dirname, '../../public/imgs', 'squares.png'), doc.page.width - 150, 105, { height: 17 })
 
 
@@ -125,7 +125,7 @@ class UniodontoForm {
 
 
     private static drawDependentsInfo(doc: PDFKit.PDFDocument, data: Record<string, any>) {
-        doc.font('Helvetica-Bold').fontSize(14).text('DADOS DOS DEPENDENTES', 10, 237)
+        doc.font('Helvetica-Bold').fontSize(14).text('DADOS DOS DEPENDENTES', 10, 241)
         doc.moveDown(16)
 
         let [lineWidth, lineHeight] = [doc.page.width - 10, 260]
