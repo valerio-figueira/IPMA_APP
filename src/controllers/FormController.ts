@@ -59,7 +59,7 @@ class FormController {
 
     async CreateOdontoCompanyForm(req: Request, res: Response) {
         try {
-            const data = await this.formService.CreateOdontoCompanyForm(req.params.holder_id)
+            const data = await this.formService.CreateOdontoCompanyForm(req.body, req.params.holder_id)
 
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', `attachment; filename=${data.filename}`)
