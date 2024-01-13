@@ -132,10 +132,10 @@ export default class ReportService {
 
         // Adicionar dados da tabela de usuários
         groupDependents(holders).forEach(holder => {
-            worksheet.addRow([holder.user_id, holder.holder_id, '', holder.holder, holder.status, '', holder.birth_date, holder.gender, holder.marital_status, holder.father_name, holder.mother_name, holder.cpf, holder.identity, holder.issue_date, holder.health_card, holder.address, holder.number, holder.neighborhood, holder.city, holder.zipcode, holder.state, holder.phone_number, holder.residential_phone, holder.email])
+            worksheet.addRow([holder.user_id, holder.holder_id, '', holder.holder, '', holder.status, holder.birth_date, holder.gender, holder.marital_status, holder.father_name, holder.mother_name, holder.cpf, holder.identity, holder.issue_date, holder.health_card, holder.address, holder.number, holder.neighborhood, holder.city, holder.zipcode, holder.state, holder.phone_number, holder.residential_phone, holder.email])
 
             holder.dependents.forEach(dependent => {
-                worksheet.addRow([dependent.user_id, dependent.holder_id, dependent.dependent_id, '', dependent.dependent, dependent.birth_date, dependent.gender, dependent.marital_status, dependent.father_name, dependent.mother_name, dependent.cpf, dependent.identity, dependent.issue_date, dependent.health_card, dependent.address, dependent.number, dependent.neighborhood, dependent.city, dependent.zipcode, dependent.state, dependent.phone_number, dependent.residential_phone, dependent.email])
+                worksheet.addRow([dependent.user_id, dependent.holder_id, dependent.dependent_id, '', dependent.dependent, '', dependent.birth_date, dependent.gender, dependent.marital_status, dependent.father_name, dependent.mother_name, dependent.cpf, dependent.identity, dependent.issue_date, dependent.health_card, dependent.address, dependent.number, dependent.neighborhood, dependent.city, dependent.zipcode, dependent.state, dependent.phone_number, dependent.residential_phone, dependent.email])
             })
         })
 
@@ -339,8 +339,8 @@ export default class ReportService {
             'ID_TITULAR',
             'ID_DEPENDENTE',
             'TITULAR',
-            'STATUS',
             'DEPENDENTE',
+            'STATUS',
             'DATA_NASCIMENTO',
             'SEXO',
             'ESTADO_CIVIL',
