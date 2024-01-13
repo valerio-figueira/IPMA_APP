@@ -14,7 +14,7 @@ class UniodontoForm {
 
 
     static drawForm(doc: PDFKit.PDFDocument, data: Record<string, any>) {
-        this.drawHeader(doc)
+        this.drawHeader(doc, data.formType)
         this.drawBody(doc, data)
         this.drawFooter(doc)
     }
@@ -24,12 +24,19 @@ class UniodontoForm {
 
 
 
-    private static drawHeader(doc: PDFKit.PDFDocument) {
+    private static drawHeader(doc: PDFKit.PDFDocument, formType: string) {
         const logo = path.join(__dirname, '../../public/imgs', 'uniodonto-logo.png')
         const ansImg = path.join(__dirname, '../../public/imgs', 'ans-code.png')
+        const subscription = formType === 'subscription' ? 'X' : '  '
+        const inclusion = formType === 'inclusion' ? 'X' : '  '
 
         doc.image(logo, 10, 10, { height: 40 }).image(ansImg, doc.page.width - 150, 20, { height: 30 })
             .font('Times-Bold').fontSize(14).text('"Quem tem, valoriza!"', 10, 52)
+
+        doc.font('Helvetica-Bold').fontSize(14).text('TERMO DE ADESÃO', 0, 65, { align: 'center', width: doc.page.width })
+        doc.font('Helvetica').fontSize(12).text(`Inscrição (${subscription})`, -55, 85, { align: 'center', width: doc.page.width })
+            .text(`Inclusão (${inclusion})`, 60, 85, { align: 'center', width: doc.page.width })
+            .rect(205, 82, 190, 17).stroke()
     }
 
 
@@ -38,8 +45,8 @@ class UniodontoForm {
 
 
     private static drawBody(doc: PDFKit.PDFDocument, data: Record<string, any>) {
-        this.drawHolderInfo(doc, data.holderData)
-        this.drawDependentsInfo(doc, data)
+        this.drawHolderInfo(doc, data.holder)
+        this.drawDependentsInfo(doc, data.dependents)
         this.drawAgreementInfo(doc)
     }
 
@@ -64,11 +71,6 @@ class UniodontoForm {
 
 
     private static drawHolderInfo(doc: PDFKit.PDFDocument, holder: Record<string, any>) {
-        doc.font('Helvetica-Bold').fontSize(14).text('TERMO DE ADESÃO', 0, 65, { align: 'center', width: doc.page.width })
-        doc.font('Helvetica').fontSize(12).text('Inscrição (  )', -55, 85, { align: 'center', width: doc.page.width })
-            .text('Inclusão (  )', 60, 85, { align: 'center', width: doc.page.width })
-            .rect(205, 82, 190, 17).stroke()
-
         doc.font('Helvetica-Bold').fontSize(14).text('DADOS DO TITULAR', 10, 109)
             .font('Helvetica').text('MATRÍCULA: ', doc.page.width - 240, 109)
             .image(path.join(__dirname, '../../public/imgs', 'squares.png'), doc.page.width - 150, 105, { height: 17 })
@@ -124,48 +126,49 @@ class UniodontoForm {
 
 
 
-    private static drawDependentsInfo(doc: PDFKit.PDFDocument, data: Record<string, any>) {
+    private static drawDependentsInfo(doc: PDFKit.PDFDocument, dependents: Record<string, any>) {
         doc.font('Helvetica-Bold').fontSize(14).text('DADOS DOS DEPENDENTES', 10, 241)
         doc.moveDown(16)
-
+        console.log(dependents)
         let [lineWidth, lineHeight] = [doc.page.width - 10, 260]
 
         // ADD FOUR BLOCKS OF INFO
         for (let i = 0; i < 4; i++) {
             let [verticalLineStart, verticalLineEnd] = [lineHeight, 0]
+            const dependent = typeof dependents[i] === 'object' ? dependents[i] : undefined
 
             doc.font('Helvetica').fontSize(11)
-            doc.text('Nome:', 15, lineHeight + 4).text('--------------------', 60, lineHeight + 4)
+            doc.text('Nome:', 15, lineHeight + 4).text(dependent ? dependent.user.name : '', 55, lineHeight + 4)
 
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)
 
-            doc.text('RG:', 15, lineHeight + 4).text('----------------', 50, lineHeight + 4)
-                .text('Data de Exp:', 160, lineHeight + 4).text('----/----/-------', 230, lineHeight + 4)
-                .text('Órgão Emissor:', 330, lineHeight + 4).text('-----------', 415, lineHeight + 4)
-                .text('Sexo:', 470, lineHeight + 4).text('-------------------', 510, lineHeight + 4, { width: 200 })
+            doc.text('RG:', 15, lineHeight + 4).text(dependent ? dependent.user.document.identity : '', 40, lineHeight + 4)
+                .text('Data de Exp:', 160, lineHeight + 4).text(dependent ? dependent.user.document.issue_date : '', 230, lineHeight + 4)
+                .text('Órgão Emissor:', 330, lineHeight + 4).text(dependent ? dependent.user.document.issuing_authority : '', 415, lineHeight + 4)
+                .text('Sexo:', 470, lineHeight + 4).text(dependent ? dependent.user.gender : '', 510, lineHeight + 4, { width: 200 })
 
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)
 
-            doc.text('CPF:', 15, lineHeight + 4).text('------------------', 50, lineHeight + 4)
-                .text('Estado Civil:', 160, lineHeight + 4).text('--------------------', 230, lineHeight + 4)
-                .text('Data Nasc:', 440, lineHeight + 4).text('-----/-----/--------', 500, lineHeight + 4, { width: 200 })
+            doc.text('CPF:', 15, lineHeight + 4).text(dependent ? dependent.user.document.cpf : '', 45, lineHeight + 4)
+                .text('Estado Civil:', 160, lineHeight + 4).text(dependent ? dependent.user.marital_status : '', 225, lineHeight + 4)
+                .text('Data Nasc:', 440, lineHeight + 4).text(dependent ? dependent.user.birth_date : '', 500, lineHeight + 4, { width: 200 })
 
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)
 
-            doc.text('Endereço:', 15, lineHeight + 4).text('------------------------------', 75, lineHeight + 4)
-                .text('Nº:', 290, lineHeight + 4).text('--------------', 310, lineHeight + 4)
-                .text('Bairro:', 440, lineHeight + 4).text('--------------------', 480, lineHeight + 4, { width: 200 })
+            doc.text('Endereço:', 15, lineHeight + 4).text(dependent ? dependent.user.location.address : '', 75, lineHeight + 4)
+                .text('Nº:', 290, lineHeight + 4).text(dependent ? dependent.user.location.number : '', 310, lineHeight + 4)
+                .text('Bairro:', 440, lineHeight + 4).text(dependent ? dependent.user.location.neighborhood : '', 480, lineHeight + 4, { width: 200 })
 
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)
 
             doc.text('Cidade:', 15, lineHeight + 4).text('MONTE ALEGRE - MG', 60, lineHeight + 4)
-                .text('SUS:', 195, lineHeight + 4).text('000-0000-0000-0000', 225, lineHeight + 4)
-                .text('Grau de Parentesco:', 350, lineHeight + 4).text('--------------------', 460, lineHeight + 4, { width: 200 })
+                .text('SUS:', 195, lineHeight + 4).text(dependent ? dependent.user.document.health_card : '', 225, lineHeight + 4)
+                .text('Grau de Parentesco:', 350, lineHeight + 4).text(dependent ? dependent.relationship_degree : '', 460, lineHeight + 4, { width: 200 })
 
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)
 
-            doc.text('Nome da mãe:', 15, lineHeight + 4).text('----------------------------', 95, lineHeight + 4)
-                .text('Fone:', 350, lineHeight + 4).text('---------------------', 385, lineHeight + 4)
+            doc.text('Nome da mãe:', 15, lineHeight + 4).text(dependent ? dependent.user.mother_name : '', 95, lineHeight + 4)
+                .text('Fone:', 350, lineHeight + 4).text(dependent ? dependent.user.father_name : '', 385, lineHeight + 4)
 
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)
             lineHeight += this.drawLine(doc, lineWidth, lineHeight)

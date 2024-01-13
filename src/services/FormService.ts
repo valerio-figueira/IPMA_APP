@@ -51,14 +51,22 @@ class FormService {
 
 
 
-    async CreateUniodontoForm(holder_id: string) {
+    async CreateUniodontoForm(query: Record<string, any>, holder_id: string) {
         const holder = await this.formRepository.ReadHolderInfo(holder_id)
+        const dependents = []
+
         if (!holder) throw new CustomError('Usuário não encontrado!', 400)
+
+        if (query.dependents.length > 0) {
+            for (let dependent_id of query.dependents) {
+                dependents.push(await this.formRepository.ReadDependentsInfo(dependent_id))
+            }
+        }
 
         const doc = new PDFDocument({ size: 'A4' })
         const { filename, filePath } = this.createTempFile('inscricao-uniodonto')
 
-        UniodontoForm.drawForm(doc, { holderData: holder })
+        UniodontoForm.drawForm(doc, { holder, dependents, formType: query.form_type })
 
         return { filename, filePath, doc }
     }

@@ -36,7 +36,7 @@ class FormController {
 
     async CreateUniodontoForm(req: Request, res: Response) {
         try {
-            const data = await this.formService.CreateUniodontoForm(req.params.holder_id)
+            const data = await this.formService.CreateUniodontoForm(req.body, req.params.holder_id)
 
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', `attachment; filename=${data.filename}`)

@@ -16,9 +16,9 @@ class FormRoutes {
     }
 
     initialize() {
-        this.router.get('/unimed/:holder_id', this.controller.CreateUnimedFormSubscription.bind(this.controller))
-        this.router.get('/uniodonto/:holder_id', this.controller.CreateUniodontoForm.bind(this.controller))
-        this.router.get('/odonto-company/:holder_id', this.controller.CreateOdontoCompanyForm.bind(this.controller))
+        this.router.post('/unimed/:holder_id', this.controller.CreateUnimedFormSubscription.bind(this.controller))
+        this.router.post('/uniodonto/:holder_id', this.controller.CreateUniodontoForm.bind(this.controller))
+        this.router.post('/odonto-company/:holder_id', this.controller.CreateOdontoCompanyForm.bind(this.controller))
     }
 
 }
