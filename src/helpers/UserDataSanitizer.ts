@@ -8,6 +8,8 @@ export default class UserDataSanitizer {
             data[key] = key === 'cpf' ? data[key].replace(/\D/g, '') : data[key]
             data[key] = key === 'birth_date' ? this.filterDate(data[key]) : data[key]
             data[key] = key === 'issue_date' ? this.filterDate(data[key]) : data[key]
+            data[key] = key === 'pis_pasep' ? data[key].replace(/\D/g, '') : data[key]
+            data[key] = key === 'health_card' ? data[key].replace(/\D/g, '') : data[key]
             data[key] = key === 'cep' ? data[key].replace(/\D/g, '') : data[key]
             data[key] = this.sanitizeFields(key, data[key])
             data[key] = StringSanitizer.convertToUpperCase(key, data[key])
