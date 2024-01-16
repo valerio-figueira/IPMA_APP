@@ -55,7 +55,11 @@ export default class Server {
         this.APP.use(BodyParser.json())
 
         this.APP.use(session(Session.config))
-        this.APP.use(helmet())
+        this.APP.use(helmet({
+            xFrameOptions: { action: 'sameorigin' },
+            crossOriginResourcePolicy: { policy: 'cross-origin' }
+        }))
+
         this.APP.use(fileUpload())
 
         this.APP.use(express.static(path.join("public")))
