@@ -44,7 +44,6 @@ export default class DependentRepository {
     async ReadOne(holder_id: ID, dependent_id: ID) {
         return this.model.findOne({
             where: { holder_id, dependent_id },
-            attributes: { exclude: ['user_id'] },
             include: Queries.IncludeDependentUserData,
             raw: true, nest: true
         })
