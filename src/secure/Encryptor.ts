@@ -57,8 +57,10 @@ class Encryptor {
 
     static async createGpgEncryption(filePath: string, fileName: string) {
         // Comando para criptografar o arquivo de backup usando gpg
-        const email = '7092BEAB8BCE5B71645DE4EA255221D0ABE263AC'
-        const gpgCommand = `gpg --debug lookup --output ${filePath}.gpg --encrypt --recipient ${email} ${filePath}`
+        const pb_key = process.env.PUBLIC_KEY
+        if (!pb_key) throw new Error('Está faltando a chave pública!')
+
+        const gpgCommand = `gpg --debug lookup --output ${filePath}.gpg --encrypt --recipient ${pb_key} ${filePath}`
 
         this.fileExists(filePath + '.gpg')
 
@@ -107,7 +109,7 @@ class Encryptor {
                     console.error(`${errorMessage || 'Erro durante o comando.'} Saída: ${stderr}`);
                     reject(error)
                 } else {
-                    console.log(`${successMessage} Saída: ${stdout}`);
+                    console.log(`${successMessage}`);
                     resolve()
                 }
             })
