@@ -17,6 +17,7 @@ import PostAuthorModel from "./PostAuthor";
 import * as ModelTypes from "../types/TModels";
 import QuoteModel from "./QuoteModel";
 import AppointmentModel from "./AppointmentModel";
+import SymmetricKeyModel from "./SymmetricKeyModel"
 
 
 class Models {
@@ -37,6 +38,7 @@ class Models {
     BlogPost: ModelTypes.TBlogPostModel
     PostAuthor: ModelTypes.TPostAuthorModel
     Quotes: ModelTypes.TQuotesModel
+    SymmetricKey: ModelTypes.TSymmetricKeyModel
 
     constructor(sequelize: Sequelize) {
         this.User = UserModel.INIT(sequelize)
@@ -56,6 +58,7 @@ class Models {
         this.BlogPost = BlogPostModel.INIT(sequelize)
         this.PostAuthor = PostAuthorModel.INIT(sequelize)
         this.Quotes = QuoteModel.INIT(sequelize)
+        this.SymmetricKey = SymmetricKeyModel.INIT(sequelize)
     }
 
 
