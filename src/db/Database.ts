@@ -8,17 +8,24 @@ import * as path from "path";
 import * as fs from "fs";
 import { format } from "date-fns";
 import { UploadedFile } from "express-fileupload";
+import mysqldump from "mysqldump";
+import Encryptor from "../secure/Encryptor";
 dotenv.config();
+
+
 
 type envProps = undefined | 'test' | 'development' | 'production'
 
-export default class Database {
+
+
+class Database {
     private environment
     private config: DB_ConfigType
     sequelize: Sequelize
     models: Models
 
     constructor() {
+        this.validateEnv()
         const DB_ENV = process.env.DB_ENV as envProps
         this.environment = DB_ENV || 'test'
         this.config = DB_Config[this.environment]
@@ -44,6 +51,19 @@ export default class Database {
                 timestamps: true
             }
         })
+    }
+
+
+
+
+    validateEnv() {
+        if (!process.env.DB_USERNAME
+            || !process.env.DB_PASSWORD
+            || !process.env.DB_DATABASE
+            || !process.env.DB_HOST
+            || !process.env.DB_ENV) {
+            throw new Error('Erro: Algumas variáveis de ambiente não foram definidas.');
+        }
     }
 
 
@@ -159,39 +179,23 @@ export default class Database {
             await this.authenticate()
 
             const { filePath, fileName } = this.createFilePath('../backup')
-            const dumpCommand = this.createDumpCommand(filePath)
 
-            // Executa o comando mysqldump usando child_process
-            await this.runCommand(dumpCommand,
-                'Backup do banco de dados realizado com sucesso!',
-                'Erro ao fazer backup do banco de dados')
+            await mysqldump({
+                connection: {
+                    host: this.config.host,
+                    user: this.config.username,
+                    password: this.config.password,
+                    database: this.config.database
+                }, dumpToFile: filePath
+            })
 
-            const { encryptedFilePath, encryptedFileName } = await this.encryptBackup(filePath, fileName)
+            // Encryptor.encryptSQLBackup(filePath)
+            const { encryptedFilePath, encryptedFileName } = await Encryptor.createGpgEncryption(filePath, fileName)
 
             return { readStream: fs.createReadStream(encryptedFilePath), encryptedFileName }
         } catch (error: any) {
             throw new Error(`Erro ao fazer backup do banco de dados: ${error.message}`)
         }
-    }
-
-
-
-
-
-    private async encryptBackup(filePath: string, fileName: string) {
-        // Comando para criptografar o arquivo de backup usando gpg
-        const email = 'j.valerio.figueira@gmail.com'
-        const gpgCommand = `gpg --output ${filePath}.gpg --encrypt --recipient ${email} ${filePath}`
-
-        this.fileExists(filePath + '.gpg')
-
-        await this.runCommand(gpgCommand,
-            'Backup criptografado com sucesso!',
-            'Erro ao criptografar o backup!')
-
-        // Remova o arquivo de backup não criptografado
-        fs.unlinkSync(filePath)
-        return { encryptedFilePath: `${filePath}.gpg`, encryptedFileName: `${fileName}.gpg` }
     }
 
 
@@ -276,16 +280,6 @@ export default class Database {
 
 
 
-    private createDumpCommand(filePath: string) {
-        const user = this.config.username
-        const host = this.config.host
-        const port = this.config.port
-        const dbname = this.config.database
-        return `mysqldump -u ${user} -p${this.config.password} -h ${host} --port ${port || ''} ${dbname} > ${filePath}`
-    }
-
-
-
 
 
     private createRestoreCommand(backupFilePath: string) {
@@ -305,15 +299,6 @@ export default class Database {
     }
 
 
-
-
-
-
-    private fileExists(filePath: string) {
-        fs.access(filePath, fs.constants.F_OK, (err) => {
-            if (!err) fs.unlinkSync(filePath)
-        })
-    }
 
 
 
@@ -339,3 +324,7 @@ export default class Database {
         return { fileName, filePath }
     }
 }
+
+
+
+export default Database
