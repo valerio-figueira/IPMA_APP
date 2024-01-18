@@ -214,3 +214,12 @@ neighborhood VARCHAR(30) NOT NULL,
 phone_number VARCHAR(40) NOT NULL,
 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) DEFAULT CHARSET UTF8;
+
+CREATE TABLE SYMMETRIC_KEY (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    key_name VARCHAR(255) NOT NULL,
+    key_value VARCHAR(255) NOT NULL,  -- Armazenamento da chave simétrica como string (hex ou Base64)
+    iv_value VARCHAR(255) NOT NULL,   -- Armazenamento do IV como string (hex ou Base64)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+)
