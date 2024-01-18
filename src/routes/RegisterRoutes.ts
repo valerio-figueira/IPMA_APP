@@ -15,6 +15,7 @@ import DatabaseRoutes from "./DatabaseRoutes";
 import QuoteRoutes from "./QuoteRoutes";
 import ReportRoutes from "./ReportRoutes";
 import FormRoutes from "./FormRoutes";
+import SecurityKeyRoutes from "./SecurityKeyRoutes";
 
 class RegisterRoutes {
     private APP: Application
@@ -39,7 +40,8 @@ class RegisterRoutes {
             Quote: new QuoteRoutes(this.database).router,
             ReportRoutes: new ReportRoutes(this.database).router,
             AppointmentRoutes: new AppointmentRoutes(this.database).router,
-            FormRoutes: new FormRoutes(this.database).router
+            FormRoutes: new FormRoutes(this.database).router,
+            SecurityKeyRoutes: new SecurityKeyRoutes(this.database).router,
         }
         // this.printRoutes()
     }
@@ -60,6 +62,7 @@ class RegisterRoutes {
         this.APP.use('/api/v1/report', this.routes.ReportRoutes),
         this.APP.use('/api/v1/appointments', this.routes.AppointmentRoutes)
         this.APP.use('/api/v1/create-form', this.routes.FormRoutes)
+        this.APP.use('/api/v1/security-key', this.routes.SecurityKeyRoutes)
     }
 
     printRoutes() {
