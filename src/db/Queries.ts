@@ -195,8 +195,7 @@ export default class Queries {
 
     static MonthlyFeeQuery = [{
         model: AgreementModel,
-        as: 'agreement',
-        attributes: { exclude: ['agreement_id'] }
+        as: 'agreement'
     }, {
         model: HolderModel,
         as: 'holder',
