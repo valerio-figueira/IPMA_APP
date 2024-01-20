@@ -79,6 +79,16 @@ class MemberController {
         }
     }
 
+
+
+    async ReviveMember(req: Request, res: Response) {
+        try {
+            MemberValidator.validate(req.body)
+            res.status(201).json(await this.memberService.ReviveMember(req.body))
+        } catch (error: any) {
+            res.status(error.status || 500).json({ error: error.message })
+        }
+    }
 }
 
 
