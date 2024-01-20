@@ -3,6 +3,8 @@ import CustomError from "../utils/CustomError";
 import Database from "../db/Database";
 import { Op, Transaction } from "sequelize";
 import Queries from "../db/Queries";
+import DependentModel from "../models/DependentModel";
+import MemberEntity from "../entities/MemberEntity";
 
 
 
@@ -124,6 +126,37 @@ export default class MemberRepository {
 
 
 
+
+    async ReviveMember(body: MemberEntity) {
+        const { member_id, dependent_id } = await this.models.Member.create(body, { raw: true })
+        const query = {
+            include: [{
+                model: this.models.User,
+                as: 'user'
+            }, {
+                model: this.models.Member,
+                as: 'subscription',
+                where: { member_id: member_id },
+                attributes: { exclude: ['holder_id'] },
+                include: [{
+                    model: this.models.Agreement,
+                    as: 'agreement',
+                    attributes: { exclude: ['agreement_id'] }
+                }]
+            }], raw: true, nest: true
+        }
+
+        if (dependent_id) {
+            return this.models.Dependent.findOne(query)
+        } else {
+            return this.models.Holder.findOne(query)
+        }
+    }
+
+
+
+
+
     async totalCount(query: any) {
         const whereClause: any = {}
         this.setParams(query, whereClause)
@@ -139,7 +172,8 @@ export default class MemberRepository {
     async ifMemberExists(query: IMember, dependent_id: number | null = null) {
         const where: any = {
             holder_id: query.holder_id,
-            agreement_id: query.agreement_id
+            agreement_id: query.agreement_id,
+            active: true
         }
 
         if (dependent_id) where.dependent_id = dependent_id
@@ -162,40 +196,53 @@ export default class MemberRepository {
 
 
 
-    async updateExclusionOfDependents(query: IMember) {
+    async DeactiveMembers(query: IMember): Promise<[affectedCount: number]> {
         const dependents = await this.models.Dependent
             .findAll({ where: { holder_id: query.holder_id } })
 
-        if (dependents.length === 0) return
+        if (dependents.length > 0) {
+            const transaction = await this.db.sequelize.transaction()
 
-        const transaction = await this.db.sequelize.transaction()
-        try {
+            try {
+                let affectedCount = 0
 
+                for (let dependent of dependents) {
+                    const { dependent_id } = dependent
+                    let [count] = await this.deactiveMember(query, transaction, dependent_id)
+                    affectedCount += count
+                }
 
-            let affectedCount = 0
-            for (let dependent of dependents) {
-                let [count] = await this.models.Member.update({ active: false }, {
-                    where: {
-                        holder_id: query.holder_id,
-                        dependent_id: dependent.dependent_id
-                    }, transaction
-                })
+                const [count] = await this.deactiveMember(query, transaction)
+
+                transaction.commit()
                 affectedCount += count
+                return [affectedCount]
+            } catch (error: any) {
+                await transaction.rollback()
+                throw new CustomError(error.message, error.status || 500)
             }
-
-            let [count] = await this.models.Member.update({ active: false }, {
-                where: { holder_id: query.holder_id },
-                transaction
+        } else {
+            return this.models.Member.update(query, {
+                where: { member_id: query.member_id }
             })
-
-            transaction.commit()
-            affectedCount += count
-            return affectedCount
-        } catch (error: any) {
-            await transaction.rollback()
-            throw new CustomError(error.message || 'Não foi possível remover os dependentes ou titular', error.status || 500)
         }
     }
 
 
+
+
+
+    private async deactiveMember(query: IMember,
+        transaction: Transaction, dependent_id: number | null = null) {
+        const whereClause: Record<string, any> = {
+            member_id: query.member_id,
+            holder_id: query.holder_id
+        }
+
+        if (dependent_id) whereClause.dependent_id = dependent_id
+
+        return this.models.Member.update(query, {
+            where: whereClause, transaction
+        })
+    }
 }
