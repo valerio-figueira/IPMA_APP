@@ -71,7 +71,7 @@ export default class DependentService {
 
 
 
-    async ReadAll(holder: string) {
+    async ReadAll(holder: string | number) {
         const dependents: any[] = await this.dependentRepository
             .ReadAll(holder);
 

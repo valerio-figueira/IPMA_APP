@@ -30,7 +30,7 @@ export default class DependentRepository {
 
 
 
-    async ReadAll(holder: string) {
+    async ReadAll(holder: string | number) {
         return this.model.findAll({
             where: { holder_id: holder },
             include: Queries.IncludeDependentUserData,
