@@ -94,6 +94,7 @@ export default class MemberService {
 
         if (!subscription.member_id) throw new CustomError('Verifique a identificação do conveniado.', 400)
         if (!subscription.holder_id) throw new CustomError('Verifique a identificação do servidor.', 400)
+        if (!subscription.agreement_id) throw new CustomError('Verifique a identificação do convênio.', 400)
 
         await this.checkMemberExistence(subscription.member_id)
 
@@ -166,9 +167,10 @@ export default class MemberService {
     async ReviveMember(body: IMember) {
         const memberEntity = new MemberEntity(body)
         const dependent = await this.findDependent(memberEntity.dependent_id)
-        await this.checkIfMemberExists(memberEntity, dependent)
-        await this.findHolder(memberEntity.holder_id) // VALIDATE HOLDER
-        await this.findAgreement(memberEntity.agreement_id) // VALIDATE AGREEMENT
+        await this.checkIfMemberExists(memberEntity, dependent) // VALIDATE IF ALREADY EXISTS
+        await this.findHolder(memberEntity.holder_id) // VALIDATE HOLDER EXISTENCE
+        await this.findAgreement(memberEntity.agreement_id) // VALIDATE AGREEMENT EXISTENCE
+        await this.checkIfHolderIsActive(memberEntity) // VALIDATE IF HOLDER IS ENABLED IN AGREEMENT BEFORE REVIVE
 
         return this.memberRepository.ReviveMember(memberEntity)
     }
@@ -207,6 +209,25 @@ export default class MemberService {
         const holder = await this.db.models.Holder.findByPk(holder_id)
         if (!holder) throw new CustomError('Não foi possível localizar os dados do servidor', 400)
         return holder
+    }
+
+
+
+
+
+    private async checkIfHolderIsActive(member: MemberEntity) {
+        const { holder_id, agreement_id, dependent_id } = member
+        if (!dependent_id) return
+
+        const entries = await this.db.models.Member.findAll({
+            where: { holder_id, agreement_id, dependent_id: null }
+        })
+
+        for (let entry of entries) {
+            if (entry.active) return
+        }
+
+        throw new CustomError('O servidor não está ativo no convênio.', 400)
     }
 
 
