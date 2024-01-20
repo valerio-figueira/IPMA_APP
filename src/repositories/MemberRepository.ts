@@ -3,8 +3,8 @@ import CustomError from "../utils/CustomError";
 import Database from "../db/Database";
 import { Op, Transaction } from "sequelize";
 import Queries from "../db/Queries";
-import DependentModel from "../models/DependentModel";
 import MemberEntity from "../entities/MemberEntity";
+import MemberModel from "../models/MemberModel";
 
 
 
@@ -60,8 +60,7 @@ export default class MemberRepository {
                 attributes: { exclude: ['holder_id'] },
                 include: [{
                     model: this.models.Agreement,
-                    as: 'agreement',
-                    attributes: { exclude: ['agreement_id'] }
+                    as: 'agreement'
                 }]
             }], raw: true, nest: true,
         })
@@ -140,8 +139,7 @@ export default class MemberRepository {
                 attributes: { exclude: ['holder_id'] },
                 include: [{
                     model: this.models.Agreement,
-                    as: 'agreement',
-                    attributes: { exclude: ['agreement_id'] }
+                    as: 'agreement'
                 }]
             }], raw: true, nest: true
         }
@@ -208,11 +206,17 @@ export default class MemberRepository {
 
                 for (let dependent of dependents) {
                     const { dependent_id } = dependent
-                    let [count] = await this.deactiveMember(query, transaction, dependent_id)
-                    affectedCount += count
+                    const subscriptions = await this.db.models.Member.findAll({ where: { dependent_id } })
+
+                    subscriptions.forEach(async subscription => {
+                        if (subscription.agreement_id == query.agreement_id) {
+                            let [count] = await this.deactiveDependentMember(subscription, transaction)
+                            affectedCount += count
+                        }
+                    })
                 }
 
-                const [count] = await this.deactiveMember(query, transaction)
+                const [count] = await this.deactiveHolderMember(query, transaction)
 
                 transaction.commit()
                 affectedCount += count
@@ -232,7 +236,8 @@ export default class MemberRepository {
 
 
 
-    private async deactiveMember(query: IMember,
+
+    private async deactiveHolderMember(query: IMember,
         transaction: Transaction, dependent_id: number | null = null) {
         const whereClause: Record<string, any> = {
             member_id: query.member_id,
@@ -242,6 +247,31 @@ export default class MemberRepository {
         if (dependent_id) whereClause.dependent_id = dependent_id
 
         return this.models.Member.update(query, {
+            where: whereClause, transaction
+        })
+    }
+
+
+
+
+
+
+    private async deactiveDependentMember(query: MemberModel,
+        transaction: Transaction) {
+        const whereClause: Record<string, any> = {
+            member_id: query.member_id
+        }
+
+        const values = {
+            member_id: query.member_id,
+            holder_id: query.holder_id,
+            dependent_id: query.dependent_id,
+            agreement_id: query.agreement_id,
+            exclusion_date: query.exclusion_date = new Date(),
+            active: query.active = false
+        }
+
+        return this.models.Member.update(values, {
             where: whereClause, transaction
         })
     }
