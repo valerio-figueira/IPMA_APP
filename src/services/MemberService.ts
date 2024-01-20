@@ -33,6 +33,7 @@ export default class MemberService {
         await this.checkIfMemberExists(body, dependent)
         const holder = await this.findHolder(body.holder_id)
         const agreement = await this.findAgreement(body.agreement_id)
+        await this.checkIfHolderIsActive(body)
 
         const transaction = await this.db.sequelize.transaction()
 
@@ -46,7 +47,7 @@ export default class MemberService {
             throw new CustomError('Não foi possível concluir: ' + error.message, 500)
         }
 
-        const name = dependent?.user?.name || holder.user!.name
+        const name = dependent ? dependent.user?.name : holder.user!.name
 
         return { message: `${name} agora é conveniado(a) da ${agreement.agreement_name}` }
     }
@@ -181,7 +182,9 @@ export default class MemberService {
 
     private async findDependent(dependent_id: string | number | null | undefined) {
         if (!dependent_id) return
-        const dependent = this.db.models.Dependent.findByPk(dependent_id)
+        const dependent = this.db.models.Dependent.findByPk(dependent_id, {
+            include: [{ model: this.db.models.User, as: 'user' }], nest: true, raw: true
+        })
         if (!dependent) throw new CustomError('Não foi possível localizar os dados do dependente', 400)
         return dependent
     }
@@ -206,7 +209,9 @@ export default class MemberService {
 
 
     private async findHolder(holder_id: string | number) {
-        const holder = await this.db.models.Holder.findByPk(holder_id)
+        const holder = await this.db.models.Holder.findByPk(holder_id, {
+            include: [{ model: this.db.models.User, as: 'user' }], nest: true, raw: true
+        })
         if (!holder) throw new CustomError('Não foi possível localizar os dados do servidor', 400)
         return holder
     }
@@ -223,11 +228,13 @@ export default class MemberService {
             where: { holder_id, agreement_id, dependent_id: null }
         })
 
+        if(entries.length === 0) throw new CustomError('O titular não está registrado no convênio.', 400)
+
         for (let entry of entries) {
             if (entry.active) return
         }
 
-        throw new CustomError('O servidor não está ativo no convênio.', 400)
+        throw new CustomError('O titular não está ativo no convênio.', 400)
     }
 
 
