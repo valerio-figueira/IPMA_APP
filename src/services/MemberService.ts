@@ -228,13 +228,13 @@ export default class MemberService {
             where: { holder_id, agreement_id, dependent_id: null }
         })
 
-        if(entries.length === 0) throw new CustomError('O titular não está registrado no convênio.', 400)
+        if(entries.length === 0) throw new CustomError('O servidor não está registrado no convênio.', 400)
 
         for (let entry of entries) {
             if (entry.active) return
         }
 
-        throw new CustomError('O titular não está ativo no convênio.', 400)
+        throw new CustomError('O servidor não está ativo no convênio.', 400)
     }
 
 
@@ -263,7 +263,7 @@ export default class MemberService {
 
         const member = await this.memberRepository.ifMemberExists(body)
         if (member) { // IF MEMBER IS ENABLED
-            throw new CustomError(`O titular já existe na base de dados`, 400)
+            throw new CustomError(`O servidor já existe na base de dados`, 400)
         }
     }
 

@@ -38,7 +38,7 @@ export default class HolderService {
             const exists = await this.holderRepository.ReadAll({
                 subscription_number: holderData.holder.subscription_number
             })
-            const message = 'Já existe um titular com esta matrícula!'
+            const message = 'Já existe um servidor com esta matrícula!'
             if (exists.length > 0) throw new CustomError(message, 400)
         }
 
@@ -70,7 +70,7 @@ export default class HolderService {
     async ReadAll(query: any) {
         const holders = await this.holderRepository.ReadAll(query)
 
-        if (holders.length === 0) throw new CustomError('Nenhum titular foi encontrado', 400)
+        if (holders.length === 0) throw new CustomError('Nenhum servidor foi encontrado', 400)
 
         const totalCount = await this.holderRepository.totalCount(query)
         const totalPages = Math.ceil(totalCount / (query.pageSize || 10))
@@ -118,7 +118,7 @@ export default class HolderService {
         body.user_id = holder.user_id
         const holderData = this.bundleEntities(body)
 
-        if (!holderData.holder) throw new CustomError('Falha ao processar os dados do titular', 400)
+        if (!holderData.holder) throw new CustomError('Falha ao processar os dados do servidor', 400)
         return this.holderRepository.Update(holderData)
     }
 
@@ -186,8 +186,8 @@ export default class HolderService {
 
 
     private validateHolderInfo(holder: Record<string, any>) {
-        if (!holder.name) throw new CustomError('Está faltando o nome do titular!', 400)
-        if (!holder.cpf) throw new CustomError('Está faltando o CPF do titular!', 400)
+        if (!holder.name) throw new CustomError('Está faltando o nome do servidor!', 400)
+        if (!holder.cpf) throw new CustomError('Está faltando o CPF do servidor!', 400)
     }
 
 
