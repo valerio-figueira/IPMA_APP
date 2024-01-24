@@ -18,7 +18,7 @@ class HolderController {
 
     async Create(req: Request, res: Response) {
         try {
-            UserValidator.validate(req.body)
+            UserValidator.validateHolder(req.body)
             res.status(201).json(await this.holderService.Create(req.body))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
@@ -61,7 +61,8 @@ class HolderController {
 
     async Update(req: Request, res: Response) {
         try {
-            UserValidator.validateIdentifications(req.body)
+            UserValidator.validateID(req.body.holder_id)
+            UserValidator.validateHolder(req.body)
             res.status(200).json(await this.holderService.Update(req.body))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
