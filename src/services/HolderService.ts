@@ -9,7 +9,6 @@ import HolderBundleEntities from "../entities/HolderBundleEntities";
 import HolderEntity from "../entities/HolderEntity";
 import MemberEntity from "../entities/MemberEntity";
 import Database from "../db/Database";
-import { validateUser } from "../utils/decorators/validateBody";
 import UserService from "./UserService";
 import { Request } from "express";
 import { UploadedFile } from "express-fileupload";
@@ -27,7 +26,7 @@ export default class HolderService {
     }
 
 
-    @validateUser('Holder')
+
     async Create(body: any) {
         UserDataSanitizer.sanitizeBody(body)
         const holderData = this.bundleEntities(body)
