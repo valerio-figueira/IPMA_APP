@@ -3,6 +3,7 @@ import format from 'date-fns/format';
 import * as fs from 'fs';
 import * as path from 'path';
 import { exec } from 'child_process'
+import CustomError from '../utils/CustomError';
 
 
 class Encryptor {
@@ -56,7 +57,10 @@ class Encryptor {
 
 
     static async createGpgEncryption(filePath: string, fileName: string) {
-        // Comando para criptografar o arquivo de backup usando gpg
+        if (typeof filePath !== 'string' && typeof fileName !== 'string') {
+            throw new CustomError('Formato inválido.', 400)
+        }
+
         const pb_key = process.env.PUBLIC_KEY
         if (!pb_key) throw new Error('Está faltando a chave pública!')
 
