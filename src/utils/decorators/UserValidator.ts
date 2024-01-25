@@ -1,10 +1,8 @@
-import CustomError from "../CustomError";
-import { BadRequest } from "../messages/APIResponse";
 import UserValidator from "../../controllers/validation/UserValidator";
 
 
 
-export function validateUser(userType: string) {
+function userValidator(userType: string, method: string) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         const originalMethod = descriptor.value;
 
@@ -15,11 +13,23 @@ export function validateUser(userType: string) {
                 throw new Error(`Validation failed, parameter must be an object.`)
             }
 
-            if (userType === 'Holder') UserValidator.validateStatus(param.status)
+            if (method !== 'CREATE' && method !== 'UPDATE') {
+                throw new Error(`O decorator tem um parâmetro inválido.`)
+            }
+
+            if (userType === 'Holder') {
+                UserValidator.validateStatus(param.status)
+                if (method === 'UPDATE') UserValidator.validateID(param.holder_id)
+            }
+
+            if (userType === 'UserData') {
+                if (method === 'UPDATE') UserValidator.validateID(param.user_id)
+            }
+
             if (userType === 'SSTeam') UserValidator.validateRole(param.role)
             if (userType === 'Dependent') UserValidator.validateID(param.holder_id)
 
-            UserValidator.validate(param)
+            UserValidator.validate(param, method)
 
             return originalMethod.apply(this, args)
         }
@@ -30,13 +40,4 @@ export function validateUser(userType: string) {
 
 
 
-
-
-
-function validateStringField(value: string) {
-    const ERROR = new CustomError(BadRequest.MESSAGE, BadRequest.STATUS)
-
-    if (!value) throw ERROR
-    if (typeof value !== 'string') throw ERROR
-    if (value.length < 4) throw ERROR
-}
+export default userValidator
