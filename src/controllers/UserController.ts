@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import UserService from "../services/UserService";
 import Database from "../db/Database";
-import UserValidator from "./validation/UserValidator";
 
 
 
@@ -18,7 +17,6 @@ class UserController {
 
     async Create(req: Request, res: Response) {
         try {
-            UserValidator.validate(req.body)
             res.status(201).json(await this.userService.Create(req.body))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
@@ -49,7 +47,6 @@ class UserController {
 
     async Update(req: Request, res: Response) {
         try {
-            UserValidator.validateUserInUpdate(req.body)
             res.status(200).json(await this.userService.Update(req.body))
         } catch (error: any) {
             res.status(error.status || 500).json({ error: error.message })
