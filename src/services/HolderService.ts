@@ -14,6 +14,7 @@ import { Request } from "express";
 import { UploadedFile } from "express-fileupload";
 import ExtractAndCreateData from "../helpers/ExtractAndCreateData";
 import { getJsDateFromExcel } from "../helpers/ConvertDate";
+import userValidator from "../utils/decorators/UserValidator";
 
 
 export default class HolderService {
@@ -27,6 +28,7 @@ export default class HolderService {
 
 
 
+    @userValidator('Holder', 'CREATE')
     async Create(body: any) {
         UserDataSanitizer.sanitizeBody(body)
         const holderData = this.bundleEntities(body)
@@ -109,7 +111,7 @@ export default class HolderService {
 
 
 
-
+    @userValidator('Holder', 'UPDATE')
     async Update(body: any) {
         UserDataSanitizer.sanitizeBody(body)
         const holder = await this.ReadOne(body.holder_id ? body.holder_id : -1)

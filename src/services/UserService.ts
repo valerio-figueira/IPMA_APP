@@ -8,6 +8,7 @@ import UserAttributes from "../entities/UserAttributes";
 import Database from "../db/Database";
 import { BadRequest } from "../utils/messages/APIResponse";
 import UserDataSanitizer from "../helpers/UserDataSanitizer";
+import userValidator from "../utils/decorators/UserValidator";
 
 
 
@@ -20,7 +21,7 @@ export default class UserService {
     }
 
 
-
+    @userValidator('UserData', 'CREATE')
     async Create(body: any) {
         const user = new UserEntity(body)
         const document = new DocumentEntity(body)
@@ -51,7 +52,7 @@ export default class UserService {
 
 
 
-
+    @userValidator('UserData', 'UPDATE')
     async Update(body: any) {
         UserDataSanitizer.sanitizeBody(body)
         const user = new UserEntity(body)
