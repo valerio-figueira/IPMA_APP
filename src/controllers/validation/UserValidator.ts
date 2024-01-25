@@ -8,46 +8,8 @@ import { BadRequest } from "../../utils/messages/APIResponse";
 export default class UserValidator {
 
 
-    static validate(body: Record<string, any>) {
-        if (!body.name) throw new CustomError('Digite o nome', 400)
-        if (!body.cpf) throw new CustomError('Digite o número do CPF', 400)
-
-        this.validateStringOrNumber(body)
-        this.validateName(body.name)
-        this.validateGender(body.gender)
-        this.validateFatherName(body.father_name)
-        this.validateMotherName(body.mother_name)
-        this.validateDate(body.birth_date)
-        this.validateCPF(body.cpf)
-        this.validateIdentity(body.identity)
-        this.validateDate(body.issue_date)
-        this.validateHealthCard(body.health_card)
-        this.validateMaritalStatus(body.marital_status)
-        this.validateEmail(body.email)
-        this.validateAddress(body.address)
-        this.validateAddressNumber(body.number)
-        this.validatePisPasep(body.pis_pasep)
-        this.validateResidentialPhoneNumber(body.residential_phone)
-        this.validatePhoneNumber(body.phone_number)
-
-        return
-    }
-
-
-
-
-
-    static validateHolder(body: Record<string, any>) {
-        this.validateStatus(body.status)
-        this.validate(body)
-    }
-
-
-
-
-
-    static validateUserInUpdate(body: Record<string, any>) {
-        this.validateID(body.user_id)
+    static validate(body: Record<string, any>, method: string) {
+        if(method === 'CREATE') this.validateCPF(body.cpf)
         this.validateStringOrNumber(body)
         this.validateName(body.name)
         this.validateGender(body.gender)
@@ -67,6 +29,7 @@ export default class UserValidator {
 
         return
     }
+
 
 
 
@@ -318,7 +281,7 @@ export default class UserValidator {
         if (typeof cpf !== 'string') throw new CustomError('O formato do CPF é inválido', 400)
 
         const regex = [/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, /^\d{11}$/]
-        const message = 'CPF inválido'
+        const message = 'O número do CPF é inválido'
 
         if (cpf === '') throw new CustomError(message, 400)
         if (cpf === null) throw new CustomError(message, 400)
