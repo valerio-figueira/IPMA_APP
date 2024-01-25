@@ -9,7 +9,7 @@ export default class UserValidator {
 
 
     static validate(body: Record<string, any>, method: string) {
-        if(method === 'CREATE') this.validateCPF(body.cpf)
+        if (method === 'CREATE') this.validateCPF(body.cpf)
         this.validateStringOrNumber(body)
         this.validateName(body.name)
         this.validateGender(body.gender)
@@ -73,23 +73,27 @@ export default class UserValidator {
 
 
     static validateIdentity(identity: string | undefined) {
-        console.log(identity)
         if (typeof identity !== 'string') throw new CustomError('O formato do RG não é válido!', 400)
         if (!identity) return
 
-        const regex = [
+        const regexArr = [
             /^[A-z]{2}\d{8}$/,
             /^[A-z]{2}-\d{8}$/,
-            /^\d{8}$/,
+            /^[A-z]{1}-\d{2}\.\d{3}\.\d{3}$/,
+            /^[A-z]{2}-\d{2}\.\d{3}\.\d{3}$/,
+            /^[A-z]{1}\d{7,8}$/,
+            /^\d{5,9}$/,
         ]
 
-        if (!regex[0].test(identity)) {
-            if (!regex[1].test(identity)) {
-                if (!regex[2].test(identity)) {
-                    throw new CustomError('O RG não é válido! Siga o padrão: UF-00000000 ou UF00000000 ou apenas números.', 400)
-                }
-            }
+        for (let regex of regexArr) {
+            if (regex.test(identity)) return
         }
+
+        throw new CustomError(`
+        O RG não é válido! 
+        Siga um dos formatos: 
+        UF-00000000, UF00000000, UF-00.000.000, U-00.000.000, 
+        U00000000 ou apenas números.`, 400)
     }
 
 
