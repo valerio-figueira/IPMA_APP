@@ -48,8 +48,8 @@ export default class UserValidator {
 
 
     static validateRelationshipDegree(value: string | null) {
-        if (typeof value !== 'string') throw new CustomError('Formato de dados inválido para ', 400)
         if (!value) return
+        if (typeof value !== 'string') throw new CustomError('Formato de dados inválido para ', 400)
 
         const mandatoryValues = [
             'CONJUGE(A)',
@@ -73,8 +73,8 @@ export default class UserValidator {
 
 
     static validateIdentity(identity: string | undefined) {
-        if (typeof identity !== 'string') throw new CustomError('O formato do RG não é válido!', 400)
         if (!identity) return
+        if (typeof identity !== 'string') throw new CustomError('O formato do RG não é válido!', 400)
 
         const regexArr = [
             /^[A-z]{2}\d{8}$/,
@@ -112,6 +112,7 @@ export default class UserValidator {
 
 
     static validateDate(date: string | null) {
+        if (!date) return
         if (typeof date !== 'string') throw new CustomError('Data inválida', 400)
 
         const regexArr = [
@@ -121,15 +122,13 @@ export default class UserValidator {
             /^\d{2}\/\d{2}\/\d{4}$/
         ]
 
-        if (date === '') return
-        if (date !== null) {
-            for (let regex of regexArr) {
-                if (regex.test(date)) return
-            }
-            if (typeof date === 'object') {
-                const convertedDate = format(new Date(date), 'dd-MM-yyyy')
-                if (regexArr[0].test(convertedDate)) return
-            }
+        for (let regex of regexArr) {
+            if (regex.test(date)) return
+        }
+
+        if (typeof date === 'object') {
+            const convertedDate = format(new Date(date), 'dd-MM-yyyy')
+            if (regexArr[0].test(convertedDate)) return
         }
 
         throw new CustomError('Data inválida', 400)
@@ -181,8 +180,8 @@ export default class UserValidator {
 
 
     static validatePisPasep(value: string) {
-        if (typeof value !== 'string') throw new CustomError('Formato inválido para o PIS/PASEP', 400)
         if (!value) return
+        if (typeof value !== 'string') throw new CustomError('Formato inválido para o PIS/PASEP', 400)
 
         const regex = [/^\d{11}$/, /^\d{3}\.\d{5}\.\d{2}-\d{1}$/]
 
@@ -197,8 +196,8 @@ export default class UserValidator {
 
 
     static validateGender(value: string) {
-        if (typeof value !== 'string') throw new CustomError('Formato inválido para o gênero da pessoa', 400)
         if (!value) return
+        if (typeof value !== 'string') throw new CustomError('Formato inválido para o gênero da pessoa', 400)
 
         const mandatoryValues = ['MASCULINO', 'FEMININO', 'OUTRO']
 
@@ -211,8 +210,8 @@ export default class UserValidator {
 
 
     static validateAddress(value: string) {
-        if (typeof value !== 'string') throw new CustomError('Formato inválido para o endereço', 400)
         if (!value) return
+        if (typeof value !== 'string') throw new CustomError('Formato inválido para o endereço', 400)
 
         const regex = /^[a-zA-Z0-9\s.,\-']+$/
 
@@ -224,8 +223,8 @@ export default class UserValidator {
 
 
     static validateResidentialPhoneNumber(value: string) {
-        if (typeof value !== 'string') throw new CustomError('Formato inválido para o telefone residencial', 400)
         if (!value) return
+        if (typeof value !== 'string') throw new CustomError('Formato inválido para o telefone residencial', 400)
 
         const regex = /^\(\d{2}\)\s\d{4}-\d{4}/
 
@@ -238,8 +237,8 @@ export default class UserValidator {
 
 
     static validatePhoneNumber(value: string) {
-        if (typeof value !== 'string') throw new CustomError('Formato inválido para o número de telefone celular', 400)
         if (!value) return
+        if (typeof value !== 'string') throw new CustomError('Formato inválido para o número de telefone celular', 400)
 
         const regex = /^\(\d{2}\)\s\d{5}-\d{4}/
 
@@ -253,8 +252,8 @@ export default class UserValidator {
 
 
     static validateAddressNumber(value: string) {
-        if (typeof value !== 'string') throw new CustomError('Formato inválido para o número do endereço', 400)
         if (!value) return
+        if (typeof value !== 'string') throw new CustomError('Formato inválido para o número do endereço', 400)
 
         const regex = /^[0-9]{1,6}$/
 
@@ -267,8 +266,8 @@ export default class UserValidator {
 
 
     static validateEmail(value: string) {
-        if (typeof value !== 'string') throw new CustomError('O formato do e-mail é inválido', 400)
         if (!value) return
+        if (typeof value !== 'string') throw new CustomError('O formato do e-mail é inválido', 400)
 
         const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
@@ -299,8 +298,8 @@ export default class UserValidator {
 
 
     static validateHealthCard(value: string) {
-        if (typeof value !== 'string') throw new CustomError('O formato para o cartão de saúde é inválido', 400)
         if (!value) return
+        if (typeof value !== 'string') throw new CustomError('O formato para o cartão de saúde é inválido', 400)
 
         const regex = /^\d{3}\s\d{4}\s\d{4}\s\d{4}$/
 
