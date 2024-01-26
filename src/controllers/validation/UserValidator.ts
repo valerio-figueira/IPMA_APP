@@ -338,10 +338,9 @@ export default class UserValidator {
 
     static validateStatus(value: string) {
         if (typeof value !== 'string') throw new CustomError('Status inválido', 400)
+        const mandatoryValues = ['EFETIVO(A)', 'APOSENTADO(A)', 'PENSIONISTA', 'LICENÇA', 'CONTRATO']
 
-        if (value === 'ATIVO(A)') return
-        if (value === 'APOSENTADO(A)') return
-        if (value === 'LICENÇA') return
+        if (mandatoryValues.includes(value)) return
 
         throw new CustomError('Status inválido', 400)
     }
