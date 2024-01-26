@@ -114,7 +114,7 @@ export default class UserValidator {
     static validateDate(date: string | null) {
         if (typeof date !== 'string') throw new CustomError('Data inválida', 400)
 
-        const regex = [
+        const regexArr = [
             /^\d{2}-\d{2}-\d{4}$/,
             /^\d{4}\/\d{2}\/\d{2}$/,
             /^\d{4}-\d{2}-\d{2}$/,
@@ -123,13 +123,12 @@ export default class UserValidator {
 
         if (date === '') return
         if (date !== null) {
-            if (regex[0].test(date)) return
-            if (regex[1].test(date)) return
-            if (regex[2].test(date)) return
-            if (regex[3].test(date)) return
+            for (let regex of regexArr) {
+                if (regex.test(date)) return
+            }
             if (typeof date === 'object') {
                 const convertedDate = format(new Date(date), 'dd-MM-yyyy')
-                if (regex[0].test(convertedDate)) return
+                if (regexArr[0].test(convertedDate)) return
             }
         }
 
