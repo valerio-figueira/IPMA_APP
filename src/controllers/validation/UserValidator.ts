@@ -113,7 +113,7 @@ export default class UserValidator {
 
     static validateDate(date: string | null) {
         if (typeof date !== 'string') throw new CustomError('Data inválida', 400)
-        console.log(date)
+
         const regex = [
             /^\d{2}-\d{2}-\d{4}$/,
             /^\d{4}\/\d{2}\/\d{2}$/,
