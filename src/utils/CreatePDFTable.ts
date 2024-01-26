@@ -32,7 +32,7 @@ const createColumns = (doc: PDFKit.PDFDocument, options: Record<string, any>) =>
 const selectActualColumnAndInsertData = (agreement: Record<string, any>,
     doc: PDFKit.PDFDocument, options: Record<string, any>) => {
     const { sum, startX, currentY, colWidths } = options
-    if (agreement.agreement_name === 'UNIMED') {
+    if (agreement.agreement_name.match('UNIMED')) {
         const currentX = startX + colWidths[0] + colWidths[1]
         sum.unimed += agreement.total_billing
         doc.text('R$ ' + Number(agreement.total_billing).toFixed(2), currentX, currentY)

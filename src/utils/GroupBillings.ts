@@ -79,7 +79,7 @@ const addTotalPrice = (acc: any, curr: any, holderId: any, data: Record<string, 
         acc[holderId].totalPrice.odontoCompany += parseFloat(curr.billing.amount)
     }
 
-    if (curr.agreement.agreement_name === 'UNIMED') {
+    if (curr.agreement.agreement_name.match('UNIMED')) {
         acc[holderId].totalPrice.unimed += parseFloat(curr.billing.amount)
     }
 
