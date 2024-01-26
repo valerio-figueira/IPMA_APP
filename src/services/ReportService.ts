@@ -279,7 +279,7 @@ export default class ReportService {
         whereClause['$billing.member_id$'] = { [Op.not]: null }
         if (query.name) whereClause['$holder.user.name$'] = { [Op.like]: `%${query.name}%` }
         if (query.holder_status) whereClause['$holder.status$'] = query.holder_status
-        if (query.agreement_name) whereClause['$agreement.agreement_name$'] = { [Op.like]: `%${query.agreement_name}%` }
+        if (query.agreement_id) whereClause['agreement_id'] = query.agreement_id
         if (query.reference_year) whereClause['$billing.reference_year$'] = query.reference_year
         if (query.reference_month) whereClause['$billing.reference_month$'] = query.reference_month
         return whereClause
