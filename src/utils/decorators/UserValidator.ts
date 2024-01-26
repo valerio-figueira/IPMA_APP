@@ -14,22 +14,13 @@ function userValidator(userType: string, method: string) {
             }
 
             if (method !== 'CREATE' && method !== 'UPDATE') {
-                throw new Error(`O decorator tem um parâmetro inválido.`)
+                throw new Error(`O argumento passado é inválido.`)
             }
 
-            if (userType === 'Holder') {
-                UserValidator.validateStatus(param.status)
-                if (method === 'UPDATE') UserValidator.validateID(param.holder_id)
-            }
-
-            if (userType === 'UserData') {
-                if (method === 'UPDATE') UserValidator.validateID(param.user_id)
-            }
-
-            if (userType === 'SSTeam') UserValidator.validateRole(param.role)
-            if (userType === 'Dependent') UserValidator.validateID(param.holder_id)
-
-            UserValidator.validate(param, method)
+            if (userType === 'Holder') validateHolder(param, method)
+            if (userType === 'UserData') validateUserData(param, method)
+            if (userType === 'SSTeam') validateSSTeam(param, method)
+            if (userType === 'Dependent') validateDependent(param, method)
 
             return originalMethod.apply(this, args)
         }
@@ -39,5 +30,68 @@ function userValidator(userType: string, method: string) {
 }
 
 
+
+
+
+function validateHolder(param: Record<string, any>, method: string) {
+    const length = Object.keys(param).length
+
+    if (method === 'UPDATE') UserValidator.validateID(param.holder_id)
+
+    if (length === 3 && method === 'UPDATE') {
+        const result = checkHolderProperties(param)
+
+        if (result) {
+            UserValidator.validateStatus(param.status)
+            return
+        }
+    }
+
+    UserValidator.validateStatus(param.status)
+    UserValidator.validate(param, method)
+}
+
+
+
+
+
+
+function checkHolderProperties(param: Record<string, any>) {
+    const keyArr = ['holder_id', 'status', 'subscription_number']
+
+    for (let key of keyArr) {
+        if (!param.hasOwnProperty(key)) return false
+    }
+
+    return true
+}
+
+
+
+
+
+
+function validateDependent(param: Record<string, any>, method: string) {
+    UserValidator.validateID(param.holder_id)
+    UserValidator.validate(param, method)
+}
+
+
+
+
+
+function validateUserData(param: Record<string, any>, method: string) {
+    if (method === 'UPDATE') UserValidator.validateID(param.user_id)
+    UserValidator.validate(param, method)
+}
+
+
+
+
+
+function validateSSTeam(param: Record<string, any>, method: string) {
+    UserValidator.validateRole(param.role)
+    UserValidator.validate(param, method)
+}
 
 export default userValidator
