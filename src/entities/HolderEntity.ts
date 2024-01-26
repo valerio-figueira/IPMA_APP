@@ -4,7 +4,7 @@ class HolderEntity implements IHolderBase {
     holder_id?: number;
     user_id?: number;
     subscription_number?: number | null;
-    status: 'ATIVO(A)' | 'APOSENTADO(A)' | 'LICENÇA';
+    status: string;
     created_at?: Date;
 
     constructor(data: IHolderBase) {

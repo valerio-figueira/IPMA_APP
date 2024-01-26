@@ -11,7 +11,7 @@ class HolderModel extends Model<IHolderBase> {
     declare holder_id: number;
     declare user_id: number;
     declare subscription_number?: number | null;
-    declare status: 'ATIVO(A)' | 'APOSENTADO(A)' | 'LICENÇA';
+    declare status: string;
     declare created_at: Date;
     authentication?: IAuthentication
     user?: UserNestedProps
@@ -40,7 +40,7 @@ class HolderModel extends Model<IHolderBase> {
                 defaultValue: null
             },
             status: {
-                type: DataTypes.ENUM('ATIVO(A)', 'APOSENTADO(A)', 'LICENÇA'),
+                type: DataTypes.STRING(13),
                 allowNull: false,
             },
             created_at: {
