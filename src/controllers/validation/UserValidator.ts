@@ -228,7 +228,7 @@ export default class UserValidator {
 
         const regex = /^\(\d{2}\)\s\d{4}-\d{4}/
 
-        if (!regex.test(value)) throw new CustomError('', 400)
+        if (!regex.test(value)) throw new CustomError('Não é um telefone válido, utilize o formato: (00) 0000-0000', 400)
     }
 
 
@@ -242,7 +242,7 @@ export default class UserValidator {
 
         const regex = /^\(\d{2}\)\s\d{5}-\d{4}/
 
-        if (!regex.test(value)) throw new CustomError('', 400)
+        if (!regex.test(value)) throw new CustomError('Não é um telefone válido, utilize o formato: (00) 00000-0000', 400)
     }
 
 
