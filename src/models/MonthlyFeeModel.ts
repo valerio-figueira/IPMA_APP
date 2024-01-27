@@ -9,8 +9,6 @@ class MonthlyFeeModel extends Model<IMonthlyFee> {
     declare amount: number;
     declare reference_month: number;
     declare reference_year: number;
-    declare status: 'PENDENTE' | 'PAGO' | 'ANULADO';
-    declare payment_date?: Date;
     declare created_at: Date;
 
     static INIT(sequelize: Sequelize): ModelStatic<MonthlyFeeModel> {
@@ -48,16 +46,6 @@ class MonthlyFeeModel extends Model<IMonthlyFee> {
                     min: 2015,
                     max: 2100,
                 },
-            },
-            status: {
-                type: DataTypes.ENUM('PENDENTE', 'PAGO', 'ANULADO'),
-                allowNull: false,
-                defaultValue: 'PENDENTE',
-            },
-            payment_date: {
-                type: DataTypes.DATE,
-                allowNull: true,
-                defaultValue: null
             },
             created_at: {
                 type: DataTypes.DATE,

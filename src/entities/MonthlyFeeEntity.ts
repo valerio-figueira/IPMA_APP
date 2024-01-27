@@ -6,8 +6,6 @@ export default class MonthlyFeeEntity {
     amount: number;
     reference_month: number;
     reference_year: number;
-    status: 'PENDENTE' | 'PAGO' | 'ANULADO';
-    payment_date: Date | null;
     created_at?: Date;
 
     constructor(body: IMonthlyFee) {
@@ -16,8 +14,6 @@ export default class MonthlyFeeEntity {
         this.amount = body.amount;
         this.reference_month = body.reference_month;
         this.reference_year = body.reference_year || new Date().getFullYear();
-        this.status = body.status;
-        this.payment_date = body.payment_date;
         this.created_at = body.created_at;
     }
 }
