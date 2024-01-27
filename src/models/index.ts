@@ -18,6 +18,9 @@ import * as ModelTypes from "../types/TModels";
 import QuoteModel from "./QuoteModel";
 import AppointmentModel from "./AppointmentModel";
 import SymmetricKeyModel from "./SymmetricKeyModel"
+import OrthoHistoryModel from "./OrthoHistoryModel";
+import InstallmentModel from "./InstallmentModel";
+import PaymentModel from "./PaymentModel";
 
 
 class Models {
@@ -39,6 +42,9 @@ class Models {
     PostAuthor: ModelTypes.TPostAuthorModel
     Quotes: ModelTypes.TQuotesModel
     SymmetricKey: ModelTypes.TSymmetricKeyModel
+    OrthoHistory: ModelTypes.TOrthoHistoryModel
+    Installment: ModelTypes.TInstallmentModel
+    Payment: ModelTypes.TPaymentModel
 
     constructor(sequelize: Sequelize) {
         this.User = UserModel.INIT(sequelize)
@@ -59,6 +65,9 @@ class Models {
         this.PostAuthor = PostAuthorModel.INIT(sequelize)
         this.Quotes = QuoteModel.INIT(sequelize)
         this.SymmetricKey = SymmetricKeyModel.INIT(sequelize)
+        this.OrthoHistory = OrthoHistoryModel.INIT(sequelize)
+        this.Installment = InstallmentModel.INIT(sequelize)
+        this.Payment = PaymentModel.INIT(sequelize)
     }
 
 

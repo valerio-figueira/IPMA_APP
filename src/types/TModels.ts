@@ -17,6 +17,9 @@ import BlogPostModel from "../models/BlogPostModel"
 import QuoteModel from "../models/QuoteModel"
 import AppointmentModel from "../models/AppointmentModel"
 import SymmetricKeyModel from "../models/SymmetricKeyModel"
+import OrthoHistoryModel from "../models/OrthoHistoryModel"
+import InstallmentModel from "../models/InstallmentModel"
+import PaymentModel from "../models/PaymentModel"
 
 export type TAccessHierarchyModel = ModelStatic<AccessHierarchyModel>
 export type TAuthenticationModel = ModelStatic<AuthenticationModel>
@@ -36,3 +39,6 @@ export type TBlogPostModel = ModelStatic<BlogPostModel>
 export type TQuotesModel = ModelStatic<QuoteModel>
 export type TAppointmentModel = ModelStatic<AppointmentModel>
 export type TSymmetricKeyModel = ModelStatic<SymmetricKeyModel>
+export type TOrthoHistoryModel = ModelStatic<OrthoHistoryModel>
+export type TInstallmentModel = ModelStatic<InstallmentModel>
+export type TPaymentModel = ModelStatic<PaymentModel>
