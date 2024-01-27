@@ -11,6 +11,7 @@ import { validateAgreements } from "../utils/decorators/validateBody";
 import { Request } from "express";
 import { UploadedFile } from "express-fileupload";
 import ExtractAndCreateData from "../helpers/ExtractAndCreateData";
+import MonthlyFeeEntity from "../entities/MonthlyFeeEntity";
 
 
 
@@ -165,15 +166,30 @@ export default class MemberService {
 
 
 
-    async ReviveMember(body: IMember) {
+    async ReviveMember(body: IMember & IMonthlyFee) {
         const memberEntity = new MemberEntity(body)
+        const monthlyFeeEntity = new MonthlyFeeEntity(body)
         const dependent = await this.findDependent(memberEntity.dependent_id)
         await this.checkIfMemberExists(memberEntity, dependent) // VALIDATE IF ALREADY EXISTS
         await this.findHolder(memberEntity.holder_id) // VALIDATE HOLDER EXISTENCE
         await this.findAgreement(memberEntity.agreement_id) // VALIDATE AGREEMENT EXISTENCE
         await this.checkIfHolderIsActive(memberEntity) // VALIDATE IF HOLDER IS ENABLED IN AGREEMENT BEFORE REVIVE
 
-        return this.memberRepository.ReviveMember(memberEntity)
+        const transaction = await this.db.sequelize.transaction()
+
+        try {
+            const createdMember = await this.memberRepository.ReviveMember(memberEntity, transaction)
+            monthlyFeeEntity.member_id = createdMember.member_id
+            await this.monthlyFeeService.Create(monthlyFeeEntity, transaction)
+
+            await transaction.commit()
+
+            const userType = !createdMember.dependent_id ? 'Holder' : 'Dependent'
+            return this.memberRepository.ReadOneByUserType(createdMember.member_id, userType)
+        } catch (error: any) {
+            await transaction.rollback()
+            throw new CustomError('Falha na transação: ' + error.message, 500)
+        }
     }
 
 
@@ -228,7 +244,7 @@ export default class MemberService {
             where: { holder_id, agreement_id, dependent_id: null }
         })
 
-        if(entries.length === 0) throw new CustomError('O servidor não está registrado no convênio.', 400)
+        if (entries.length === 0) throw new CustomError('O servidor não está registrado no convênio.', 400)
 
         for (let entry of entries) {
             if (entry.active) return

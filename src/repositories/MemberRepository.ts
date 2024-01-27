@@ -126,8 +126,16 @@ export default class MemberRepository {
 
 
 
-    async ReviveMember(body: MemberEntity) {
-        const { member_id, dependent_id } = await this.models.Member.create(body, { raw: true })
+    async ReviveMember(body: MemberEntity, transaction: Transaction) {
+        const { member_id, dependent_id } = await this.models.Member.create(body, { raw: true, transaction })
+        return { member_id, dependent_id }
+    }
+
+
+
+
+
+    async ReadOneByUserType(member_id: string | number, member_type: 'Holder' | 'Dependent') {
         const query = {
             include: [{
                 model: this.models.User,
@@ -144,11 +152,10 @@ export default class MemberRepository {
             }], raw: true, nest: true
         }
 
-        if (dependent_id) {
-            return this.models.Dependent.findOne(query)
-        } else {
-            return this.models.Holder.findOne(query)
-        }
+        if (member_type === 'Dependent') return this.models.Dependent.findOne(query)
+        if (member_type === 'Holder') return this.models.Holder.findOne(query)
+
+        throw new CustomError('O conveniado não existe!', 400)
     }
 
 
