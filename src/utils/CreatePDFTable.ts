@@ -86,11 +86,13 @@ const addDateAndPageNumberAtBottom = (doc: PDFKit.PDFDocument, options: Record<s
 
     doc.fontSize(9).font('Helvetica') // ADD DATE BEFORE NEW PAGE
         .text(`Data de Criação: ${format(new Date(), 'dd/MM/yyyy HH:mm:ss')}`,
-            doc.page.width - 215, doc.page.height - 100, { align: 'right', width: 170 })
+            -22, doc.page.height - 45,
+            { align: 'right', width: doc.page.width, height: doc.page.height })
 
     doc.fontSize(9) // ADD PAGE NUMBER BEFORE NEW PAGE
         .text(`Página: ${pageNumber}`,
-            doc.page.width - 215, doc.page.height - 85, { align: 'right', width: 170 })
+            -22, doc.page.height - 30,
+            { align: 'right', width: doc.page.width, height: doc.page.height })
 }
 
 
@@ -107,7 +109,7 @@ function createPdfTable(doc: PDFKit.PDFDocument,
     title: any) {
     // Definir as coordenadas iniciais da tabela
     const { startX, startY, colWidths } = coordinates
-    const availableSpaceOnPage = doc.page.height - startY
+    const availableSpaceOnPage = doc.page.height - 70
     const [spaceInY, rowHeight] = [15, 15]
 
     createHeader(doc, query, title)

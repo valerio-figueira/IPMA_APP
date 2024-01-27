@@ -85,6 +85,8 @@ export default class ReportRepository {
             '$billing.member_id$': { [Op.not]: null }
         }
 
+        if (query.status) whereClause['$holder.status$'] = query.status
+
         if (query.reference_year)
             whereClause['$billing.reference_year$'] = query.reference_year;
 
@@ -232,6 +234,8 @@ export default class ReportRepository {
             active: query.active || 1,
             '$billing.member_id$': { [Op.not]: null, }
         }
+
+        if (query.status) whereClause['$holder.status$'] = query.status
 
         if (query.reference_year) {
             whereClause['$billing.reference_year$'] = query.reference_year
