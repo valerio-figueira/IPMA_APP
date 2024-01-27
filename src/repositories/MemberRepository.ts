@@ -2,7 +2,6 @@ import IMember from "../interfaces/IMember";
 import CustomError from "../utils/CustomError";
 import Database from "../db/Database";
 import { Op, Transaction } from "sequelize";
-import Queries from "../db/Queries";
 import MemberEntity from "../entities/MemberEntity";
 import MemberModel from "../models/MemberModel";
 
@@ -207,7 +206,17 @@ export default class MemberRepository {
         this.setParams(query, whereClause)
         return this.models.Member.count({
             where: whereClause,
-            include: Queries.MonthlyFeeQuery
+            include: [
+                {
+                    model: this.db.models.Agreement,
+                    as: 'agreement'
+                },
+                {
+                    model: this.db.models.Holder,
+                    as: 'holder',
+                    include: [{ model: this.db.models.User, as: 'user' }]
+                }
+            ]
         })
     }
 

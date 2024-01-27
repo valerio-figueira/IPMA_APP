@@ -2,7 +2,6 @@ import { Transaction } from "sequelize";
 import Database from "../db/Database";
 import CustomError from "../utils/CustomError";
 import UserRepository from "./UserRepository";
-import Queries from "../db/Queries";
 import DependentBundleEntities from "../entities/DependentBundleEntities";
 import { ID } from "../types/ID";
 
@@ -62,8 +61,18 @@ export default class DependentRepository {
     async ReadOne(holder_id: ID, dependent_id: ID) {
         return this.model.findOne({
             where: { holder_id, dependent_id },
-            include: Queries.IncludeDependentUserData,
-            raw: true, nest: true
+            include: [{
+                model: this.db.models.User, as: 'user',
+                attributes: { exclude: ['user_id'] },
+                include: [
+                    { model: this.db.models.Contact, as: 'contact', attributes: { exclude: ['user_id', 'contact_id'] } },
+                    { model: this.db.models.Document, as: 'document', attributes: { exclude: ['user_id', 'document_id'] } },
+                    { model: this.db.models.Location, as: 'location', attributes: { exclude: ['user_id', 'location_id'] } }
+                ]
+            }, {
+                model: this.db.models.Member, as: 'subscription',
+                include: [{ model: this.db.models.Agreement, as: 'agreement' }]
+            }], raw: true, nest: true
         })
     }
 
@@ -71,7 +80,18 @@ export default class DependentRepository {
 
     async findByDependentId(dependent_id: ID) {
         return this.model.findByPk(dependent_id, {
-            include: Queries.IncludeDependentUserData,
+            include: [{
+                model: this.db.models.User, as: 'user',
+                attributes: { exclude: ['user_id'] },
+                include: [
+                    { model: this.db.models.Contact, as: 'contact', attributes: { exclude: ['user_id', 'contact_id'] } },
+                    { model: this.db.models.Document, as: 'document', attributes: { exclude: ['user_id', 'document_id'] } },
+                    { model: this.db.models.Location, as: 'location', attributes: { exclude: ['user_id', 'location_id'] } }
+                ]
+            }, {
+                model: this.db.models.Member, as: 'subscription',
+                include: [{ model: this.db.models.Agreement, as: 'agreement' }]
+            }],
             raw: true, nest: true
         })
     }
@@ -83,8 +103,10 @@ export default class DependentRepository {
         return this.model.findOne({
             where: { holder_id: holder, dependent_id },
             attributes: { exclude: ['user_id'] },
-            include: Queries.IncludeDependentSummary,
-            raw: true, nest: true
+            include: [{
+                model: this.db.models.User, as: 'user',
+                attributes: { exclude: ['user_id'] }
+            }], raw: true, nest: true
         })
     }
 

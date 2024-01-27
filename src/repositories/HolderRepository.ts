@@ -3,7 +3,6 @@ import UserRepository from "./UserRepository";
 import Database from "../db/Database";
 import CustomError from '../utils/CustomError';
 import { Op, Transaction } from 'sequelize';
-import Queries from "../db/Queries";
 import RES from "../utils/messages/HolderResponses";
 import HolderBundleEntities from "../entities/HolderBundleEntities";
 
@@ -36,7 +35,6 @@ export default class HolderRepository {
             return this.ReadOne(holder.holder_id)
         } catch (error: any) {
             await t.rollback();
-            console.log(error)
             throw new CustomError(RES.ServerError, 500)
         }
     }
@@ -91,7 +89,16 @@ export default class HolderRepository {
                 offset,
                 limit: pageSize,
                 where: holderWhereClause,
-                include: Queries.IncludeSummaryUser(whereClause),
+                include: [{
+                    model: this.db.models.User, as: 'user',
+                    where: whereClause,
+                    attributes: { exclude: ['user_id'] },
+                    include: [{
+                        model: this.db.models.Authentication, as: 'authentication',
+                        attributes: { exclude: ['user_id', 'password'] },
+                        include: [{ model: this.db.models.AccessHierarchy, as: 'hierarchy' }]
+                    }]
+                }],
                 raw: true, nest: true,
                 order: [['created_at', 'DESC']]
             })
@@ -103,7 +110,23 @@ export default class HolderRepository {
     async ReadOne(holder_id: string | number) {
         return this.models.Holder
             .findByPk(holder_id, {
-                include: Queries.IncludeUserData,
+                include: [{
+                    model: this.db.models.User, as: 'user', attributes: { exclude: ['user_id'] },
+                    include: [{
+                        model: this.db.models.Authentication, as: 'authentication',
+                        attributes: { exclude: ['user_id', 'password'] },
+                        include: [{ model: this.db.models.AccessHierarchy, as: 'hierarchy' }]
+                    }, {
+                        model: this.db.models.Contact, as: 'contact',
+                        attributes: { exclude: ['user_id', 'contact_id'] }
+                    }, {
+                        model: this.db.models.Document, as: 'document',
+                        attributes: { exclude: ['user_id', 'document_id'] },
+                    }, {
+                        model: this.db.models.Location, as: 'location',
+                        attributes: { exclude: ['user_id', 'location_id'] }
+                    }]
+                }],
                 raw: true, nest: true
             })
     }
@@ -114,8 +137,14 @@ export default class HolderRepository {
     async ReadOneSummary(holder_id: string | number) {
         return this.models.Holder
             .findByPk(holder_id, {
-                include: Queries.IncludeUserDataSummary,
-                raw: true, nest: true
+                include: [{
+                    model: this.db.models.User, as: 'user', attributes: { exclude: ['user_id'] },
+                    include: [{
+                        model: this.db.models.Authentication, as: 'authentication',
+                        attributes: { exclude: ['user_id', 'password'] },
+                        include: [{ model: this.db.models.AccessHierarchy, as: 'hierarchy' }]
+                    }]
+                }], raw: true, nest: true
             })
     }
 
@@ -196,7 +225,15 @@ export default class HolderRepository {
         if (query.name) whereClause.name = { [Op.like]: `%${query.name}%` }
 
         return this.models.Holder.count({
-            include: Queries.IncludeSummaryUser(whereClause)
+            include: [{
+                model: this.db.models.User, as: 'user',
+                where: whereClause, attributes: { exclude: ['user_id'] },
+                include: [{
+                    model: this.db.models.Authentication, as: 'authentication',
+                    attributes: { exclude: ['user_id', 'password'] },
+                    include: [{ model: this.db.models.AccessHierarchy, as: 'hierarchy' }]
+                }]
+            }]
         })
     }
 

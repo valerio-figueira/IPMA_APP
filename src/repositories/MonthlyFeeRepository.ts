@@ -3,8 +3,7 @@ import MonthlyFee from "../models/MonthlyFeeModel";
 import HolderModel from "../models/HolderModel";
 import UserModel from "../models/user/UserModel";
 import AgreementModel from "../models/AgreementModel";
-import { Op, QueryTypes, Transaction, where } from "sequelize";
-import Queries from "../db/Queries";
+import { Op, QueryTypes, Transaction } from "sequelize";
 import Database from "../db/Database";
 
 
@@ -44,9 +43,27 @@ export default class MonthlyFeeRepository {
 
         return this.models.Member.findAll({
             where: whereClause,
-            include: Queries.MonthlyFeeSummary,
-            order: [['created_at', 'DESC']],
-            raw: true, nest: true,
+            include: [{
+                model: this.db.models.MonthlyFee, as: 'billing',
+                attributes: ['monthly_fee_id', 'amount', 'reference_month', 'reference_year', 'created_at'],
+            }, {
+                model: this.db.models.Agreement, as: 'agreement', attributes: ['agreement_name']
+            }, {
+                model: this.db.models.Holder, as: 'holder',
+                attributes: [], include: [{
+                    model: this.db.models.User,
+                    as: 'user',
+                    attributes: ['name']
+                }]
+            }, {
+                model: this.db.models.Dependent, as: 'dependent', attributes: ['relationship_degree'],
+                include: [{
+                    model: this.db.models.User,
+                    as: 'user',
+                    attributes: ['name']
+                }]
+            }],
+            order: [['created_at', 'DESC']], raw: true, nest: true,
             limit: pageSize,
             offset
         })
@@ -56,7 +73,30 @@ export default class MonthlyFeeRepository {
 
 
     async ReadAllSummary(params: Record<string, any>, query: any) {
-        return this.db.sequelize.query(Queries.MonthlyFeeRawQuery, {
+        return this.db.sequelize.query(`SELECT
+                m.holder_id,
+                u.name,
+                a.agreement_name AS AGREEMENT,
+                SUM(billing.amount) AS total_billing,
+                billing.reference_month,
+                billing.reference_year
+            FROM
+                MONTHLY_FEE billing
+                INNER JOIN MEMBER m ON billing.member_id = m.member_id
+                INNER JOIN AGREEMENT a ON m.agreement_id = a.agreement_id
+                INNER JOIN HOLDER h ON m.holder_id = h.holder_id
+                INNER JOIN USER u ON h.user_id = u.user_id
+            WHERE
+                m.holder_id = :holderId AND
+                billing.reference_month = :reference_month AND
+                billing.reference_year = :reference_year
+            GROUP BY
+                m.holder_id,
+                u.name,
+                billing.reference_month,
+                billing.reference_year,
+                a.agreement_id
+        `, {
             replacements: {
                 holderId: params.holder_id,
                 reference_month: query.reference_month,
@@ -155,8 +195,31 @@ export default class MonthlyFeeRepository {
             active: query.active || 1,
             '$billing.member_id$': { [Op.not]: null }
         }
+
         this.setParams(query, whereClause)
-        return this.models.Member.count({ where: whereClause, include: Queries.MonthlyFeeSummary })
+
+        return this.models.Member.count({
+            where: whereClause, include: [{
+                model: this.db.models.MonthlyFee, as: 'billing',
+                attributes: ['monthly_fee_id', 'amount', 'reference_month', 'reference_year', 'created_at'],
+            }, {
+                model: this.db.models.Agreement, as: 'agreement', attributes: ['agreement_name']
+            }, {
+                model: this.db.models.Holder,
+                as: 'holder',
+                attributes: [],
+                include: [{
+                    model: this.db.models.User, as: 'user', attributes: ['name']
+                }]
+            }, {
+                model: this.db.models.Dependent,
+                as: 'dependent',
+                attributes: ['relationship_degree'],
+                include: [{
+                    model: this.db.models.User, as: 'user', attributes: ['name']
+                }]
+            }]
+        })
     }
 
 

@@ -2,7 +2,6 @@ import { Transaction } from "sequelize";
 import Database from "../db/Database";
 import IAppointment from "../interfaces/IAppointment";
 import Models from "../models";
-import Queries from "../db/Queries";
 import MemberModel from "../models/MemberModel";
 import HolderModel from "../models/HolderModel";
 import UserModel from "../models/user/UserModel";
@@ -47,7 +46,6 @@ class AppointmentRepository {
             await transaction.commit()
         } catch (error: any) {
             await transaction.rollback()
-            console.error(error)
             throw new Error(error.message)
         }
 
@@ -144,14 +142,36 @@ class AppointmentRepository {
         if (typeOfUser === 'Holder') {
             return this.models.Member.findOne({
                 where: { '$holder.user.document.cpf$': cpf, agreement_id: 1 },
-                include: Queries.AppointmentQueryBulkCreate, transaction, raw: true
+                include: [{
+                    model: this.models.Holder, as: 'holder',
+                    attributes: ['holder_id'],
+                    include: [{
+                        model: this.models.User, as: 'user',
+                        attributes: ['user_id', 'name'],
+                        include: [{
+                            model: this.models.Document, as: 'document',
+                            attributes: ['document_id', 'cpf'],
+                        }]
+                    }]
+                }], transaction, raw: true
             })
         }
 
         if (typeOfUser === 'Dependent') {
             return this.models.Member.findOne({
                 where: { '$dependent.user.document.cpf$': cpf, agreement_id: 1 },
-                include: Queries.AppointmentQueryFindDependent, transaction, raw: true
+                include: [{
+                    model: this.models.Dependent, as: 'dependent',
+                    attributes: ['holder_id', 'dependent_id'],
+                    include: [{
+                        model: this.models.User, as: 'user',
+                        attributes: ['user_id', 'name'],
+                        include: [{
+                            model: this.models.Document, as: 'document',
+                            attributes: ['document_id', 'cpf'],
+                        }]
+                    }]
+                }], transaction, raw: true
             })
         }
 

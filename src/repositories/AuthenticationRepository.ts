@@ -1,5 +1,4 @@
 import Database from "../db/Database";
-import Queries from "../db/Queries";
 import IAuthentication from "../interfaces/IAuthentication";
 
 
@@ -30,7 +29,8 @@ export default class AuthenticationRepository {
 
     async ReadAll() {
         return this.models.Authentication.findAll({
-            include: Queries.IncludeHierarchyAndUser,
+            include: [{ model: this.models.AccessHierarchy, as: 'hierarchy' },
+            { model: this.models.User, as: 'user' }],
             raw: true, nest: true
         })
     }
@@ -42,7 +42,8 @@ export default class AuthenticationRepository {
         return this.models.Authentication.findOne({
             where: { authentication_id },
             attributes: { exclude: ['password'] },
-            include: Queries.IncludeHierarchyAndUser,
+            include: [{ model: this.models.AccessHierarchy, as: 'hierarchy' },
+            { model: this.models.User, as: 'user' }],
             raw: true, nest: true
         })
     }
@@ -71,7 +72,8 @@ export default class AuthenticationRepository {
         return this.models.Authentication.findOne({
             where: { user_id },
             attributes: { exclude: ['password'] },
-            include: Queries.IncludeHierarchyAndUser,
+            include: [{ model: this.models.AccessHierarchy, as: 'hierarchy' },
+            { model: this.models.User, as: 'user' }],
             raw: true, nest: true
         })
     }
