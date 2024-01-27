@@ -6,7 +6,8 @@ import InstallmentModel from './InstallmentModel';
 class PaymentModel extends Model<IPayment> {
     declare payment_id: number;
     declare installment_id: number;
-    declare paid_amount: number;
+    declare amount: number;
+    declare status: 'PENDENTE' | 'PAGO' | 'CANCELADO';
     declare transaction_date: number;
     declare created_at: Date;
 
@@ -30,13 +31,15 @@ class PaymentModel extends Model<IPayment> {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
-            installment_amount: {
-                type: DataTypes.INTEGER,
+            status: {
+                type: DataTypes.ENUM('PENDENTE', 'PAGO', 'CANCELADO'),
                 allowNull: false,
+                defaultValue: 'PENDENTE'
             },
             transaction_date: {
                 type: DataTypes.DATEONLY,
-                allowNull: false,
+                allowNull: true,
+                defaultValue: null,
             },
             created_at: {
                 type: DataTypes.DATE,
