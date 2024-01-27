@@ -71,26 +71,8 @@ export default class DependentService {
 
 
 
-    async ReadAll(holder: string | number) {
-        const dependents: any[] = await this.dependentRepository
-            .ReadAll(holder);
-
-        const holderData: Record<number, any> = {}
-
-        for (let dependent of dependents) {
-            const holderID = dependent.holder_id
-
-            if (!holderData[holderID]) {
-                const holderFinded: any = await this.holderService
-                    .ReadOne(holderID)
-                holderFinded['dependents'] = []
-                holderData[holderID] = holderFinded
-            }
-
-            holderData[holderID]['dependents'].push({ ...dependent })
-        }
-
-        return Object.values(holderData)[0]
+    async ReadAll(holder_id: string | number) {
+        return this.dependentRepository.ReadAll(holder_id)
     }
 
 

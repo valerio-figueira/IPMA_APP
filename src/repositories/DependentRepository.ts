@@ -30,10 +30,28 @@ export default class DependentRepository {
 
 
 
-    async ReadAll(holder: string | number) {
+    async ReadAll(holder_id: string | number) {
         return this.model.findAll({
-            where: { holder_id: holder },
-            include: Queries.IncludeDependentUserData,
+            where: { holder_id },
+            include: [{
+                model: this.db.models.User,
+                as: 'user',
+                attributes: { exclude: ['user_id'] },
+                include: [
+                    {
+                        model: this.db.models.Contact, as: 'contact',
+                        attributes: { exclude: ['user_id', 'contact_id'] }
+                    },
+                    {
+                        model: this.db.models.Document, as: 'document',
+                        attributes: { exclude: ['user_id', 'document_id'] },
+                    },
+                    {
+                        model: this.db.models.Location, as: 'location',
+                        attributes: { exclude: ['user_id', 'location_id'] }
+                    }
+                ]
+            }],
             raw: true, nest: true
         })
     }
