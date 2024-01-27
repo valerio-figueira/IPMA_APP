@@ -89,6 +89,17 @@ class MemberController {
             res.status(error.status || 500).json({ error: error.message })
         }
     }
+
+
+
+    async ReadDependentsMembers(req: Request, res: Response) {
+        try {
+            res.status(200).json(await this.memberService
+                .ReadDependentsMembers(req.params.holder_id))
+        } catch (error: any) {
+            res.status(error.status || 500).json({ error: error.message })
+        }
+    }
 }
 
 

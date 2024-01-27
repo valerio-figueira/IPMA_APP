@@ -12,6 +12,7 @@ import { Request } from "express";
 import { UploadedFile } from "express-fileupload";
 import ExtractAndCreateData from "../helpers/ExtractAndCreateData";
 import MonthlyFeeEntity from "../entities/MonthlyFeeEntity";
+import HolderService from "./HolderService";
 
 
 
@@ -19,11 +20,13 @@ export default class MemberService {
     private db: Database;
     private memberRepository: MemberRepository;
     private monthlyFeeService: MonthlyFeeService;
+    private holderService: HolderService;
 
     constructor(db: Database) {
         this.db = db
         this.memberRepository = new MemberRepository(db)
         this.monthlyFeeService = new MonthlyFeeService(db)
+        this.holderService = new HolderService(db)
     }
 
 
@@ -190,6 +193,32 @@ export default class MemberService {
             await transaction.rollback()
             throw new CustomError('Falha na transação: ' + error.message, 500)
         }
+    }
+
+
+
+
+
+    async ReadDependentsMembers(holder_id: string | number) {
+        const dependents: any[] = await this.memberRepository
+            .ReadDependentsMembers(holder_id)
+
+        const holderData: Record<number, any> = {}
+
+        for (let dependent of dependents) {
+            const holderID = dependent.holder_id
+
+            if (!holderData[holderID]) {
+                const holderFinded: any = await this.holderService
+                    .ReadOne(holderID)
+                holderFinded['dependents'] = []
+                holderData[holderID] = holderFinded
+            }
+
+            holderData[holderID]['dependents'].push({ ...dependent })
+        }
+
+        return Object.values(holderData)[0]
     }
 
 

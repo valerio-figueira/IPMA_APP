@@ -39,7 +39,15 @@ export default class MemberRepository {
         return this.models.Member.findAll({
             offset,
             limit: pageSize,
-            where: whereClause, include: Queries.MonthlyFeeQuery,
+            where: whereClause, include: [{
+                model: this.db.models.Agreement, as: 'agreement'
+            }, {
+                model: this.db.models.Holder, as: 'holder',
+                include: [{
+                    model: this.db.models.User,
+                    as: 'user'
+                }]
+            }],
             order: [['created_at', 'DESC']],
             raw: true, nest: true
         })
@@ -115,11 +123,43 @@ export default class MemberRepository {
             await transaction.commit()
         } catch (error: any) {
             await transaction.rollback()
-            console.error(error)
             throw new Error(error.message)
         }
 
         return { message: 'Banco de dados atualizado!' }
+    }
+
+
+
+
+    async ReadDependentsMembers(holder_id: string | number) {
+        return this.db.models.Dependent.findAll({
+            where: { holder_id },
+            include: [{
+                model: this.db.models.User,
+                as: 'user',
+                attributes: { exclude: ['user_id'] },
+                include: [
+                    {
+                        model: this.db.models.Contact, as: 'contact',
+                        attributes: { exclude: ['user_id', 'contact_id'] }
+                    },
+                    {
+                        model: this.db.models.Document, as: 'document',
+                        attributes: { exclude: ['user_id', 'document_id'] },
+                    },
+                    {
+                        model: this.db.models.Location, as: 'location',
+                        attributes: { exclude: ['user_id', 'location_id'] }
+                    }
+                ]
+            }, {
+                model: this.db.models.Member, as: 'subscription',
+                include: [{
+                    model: this.db.models.Agreement, as: 'agreement'
+                }]
+            }], raw: true, nest: true
+        })
     }
 
 
