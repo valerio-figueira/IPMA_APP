@@ -122,6 +122,8 @@ export default class MonthlyFeeService {
 
 
     private verifyAmount(billing: IMonthlyFee) {
+        if (!billing.amount) throw new CustomError('Valor inválido!', 400)
+
         if (typeof billing.amount === 'string') {
             billing.amount = Number(billing.amount)
         }
