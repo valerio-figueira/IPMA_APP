@@ -12,11 +12,15 @@ export default class DependentRepository {
     private userRepository: UserRepository;
     private model
 
+
+
     constructor(db: Database) {
         this.db = db
         this.userRepository = new UserRepository(this.db);
         this.model = this.db.models.Dependent
     }
+
+
 
 
 
@@ -29,6 +33,8 @@ export default class DependentRepository {
 
 
 
+
+
     async ReadAll(holder_id: string | number) {
         return this.model.findAll({
             where: { holder_id },
@@ -36,24 +42,24 @@ export default class DependentRepository {
                 model: this.db.models.User,
                 as: 'user',
                 attributes: { exclude: ['user_id'] },
-                include: [
-                    {
-                        model: this.db.models.Contact, as: 'contact',
-                        attributes: { exclude: ['user_id', 'contact_id'] }
-                    },
-                    {
-                        model: this.db.models.Document, as: 'document',
-                        attributes: { exclude: ['user_id', 'document_id'] },
-                    },
-                    {
-                        model: this.db.models.Location, as: 'location',
-                        attributes: { exclude: ['user_id', 'location_id'] }
-                    }
-                ]
+                include: [{
+                    model: this.db.models.Contact, as: 'contact',
+                    attributes: { exclude: ['user_id', 'contact_id'] }
+                },
+                {
+                    model: this.db.models.Document, as: 'document',
+                    attributes: { exclude: ['user_id', 'document_id'] },
+                },
+                {
+                    model: this.db.models.Location, as: 'location',
+                    attributes: { exclude: ['user_id', 'location_id'] }
+                }]
             }],
             raw: true, nest: true
         })
     }
+
+
 
 
 
@@ -64,11 +70,18 @@ export default class DependentRepository {
             include: [{
                 model: this.db.models.User, as: 'user',
                 attributes: { exclude: ['user_id'] },
-                include: [
-                    { model: this.db.models.Contact, as: 'contact', attributes: { exclude: ['user_id', 'contact_id'] } },
-                    { model: this.db.models.Document, as: 'document', attributes: { exclude: ['user_id', 'document_id'] } },
-                    { model: this.db.models.Location, as: 'location', attributes: { exclude: ['user_id', 'location_id'] } }
-                ]
+                include: [{
+                    model: this.db.models.Contact, as: 'contact',
+                    attributes: { exclude: ['user_id', 'contact_id'] }
+                },
+                {
+                    model: this.db.models.Document, as: 'document',
+                    attributes: { exclude: ['user_id', 'document_id'] }
+                },
+                {
+                    model: this.db.models.Location, as: 'location',
+                    attributes: { exclude: ['user_id', 'location_id'] }
+                }]
             }, {
                 model: this.db.models.Member, as: 'subscription',
                 include: [{ model: this.db.models.Agreement, as: 'agreement' }]
@@ -78,16 +91,26 @@ export default class DependentRepository {
 
 
 
+
+
+
     async findByDependentId(dependent_id: ID) {
         return this.model.findByPk(dependent_id, {
             include: [{
                 model: this.db.models.User, as: 'user',
                 attributes: { exclude: ['user_id'] },
-                include: [
-                    { model: this.db.models.Contact, as: 'contact', attributes: { exclude: ['user_id', 'contact_id'] } },
-                    { model: this.db.models.Document, as: 'document', attributes: { exclude: ['user_id', 'document_id'] } },
-                    { model: this.db.models.Location, as: 'location', attributes: { exclude: ['user_id', 'location_id'] } }
-                ]
+                include: [{
+                    model: this.db.models.Contact, as: 'contact',
+                    attributes: { exclude: ['user_id', 'contact_id'] }
+                },
+                {
+                    model: this.db.models.Document, as: 'document',
+                    attributes: { exclude: ['user_id', 'document_id'] }
+                },
+                {
+                    model: this.db.models.Location, as: 'location',
+                    attributes: { exclude: ['user_id', 'location_id'] }
+                }]
             }, {
                 model: this.db.models.Member, as: 'subscription',
                 include: [{ model: this.db.models.Agreement, as: 'agreement' }]
@@ -95,6 +118,8 @@ export default class DependentRepository {
             raw: true, nest: true
         })
     }
+
+
 
 
 
@@ -109,6 +134,8 @@ export default class DependentRepository {
             }], raw: true, nest: true
         })
     }
+
+
 
 
 

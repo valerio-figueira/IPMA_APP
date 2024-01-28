@@ -19,9 +19,15 @@ export default class MemberRepository {
 
 
 
+
+
+
     async Create(query: IMember, transaction: Transaction) {
         return this.models.Member.create(query, { raw: true, transaction })
     }
+
+
+
 
 
 
@@ -55,6 +61,9 @@ export default class MemberRepository {
 
 
 
+
+
+
     async ReadOne(subscription_id: string | number) {
         return this.models.Holder.findOne({
             include: [{
@@ -76,11 +85,17 @@ export default class MemberRepository {
 
 
 
+
+
+
     async Update(body: IMember) {
         return this.models.Member.update(body, {
             where: { member_id: body.member_id }
         })
     }
+
+
+
 
 
 
@@ -94,6 +109,9 @@ export default class MemberRepository {
             }
         })
     }
+
+
+
 
 
 
@@ -131,6 +149,8 @@ export default class MemberRepository {
 
 
 
+
+
     async ReadDependentsMembers(holder_id: string | number) {
         return this.db.models.Dependent.findAll({
             where: { holder_id },
@@ -138,20 +158,18 @@ export default class MemberRepository {
                 model: this.db.models.User,
                 as: 'user',
                 attributes: { exclude: ['user_id'] },
-                include: [
-                    {
-                        model: this.db.models.Contact, as: 'contact',
-                        attributes: { exclude: ['user_id', 'contact_id'] }
-                    },
-                    {
-                        model: this.db.models.Document, as: 'document',
-                        attributes: { exclude: ['user_id', 'document_id'] },
-                    },
-                    {
-                        model: this.db.models.Location, as: 'location',
-                        attributes: { exclude: ['user_id', 'location_id'] }
-                    }
-                ]
+                include: [{
+                    model: this.db.models.Contact, as: 'contact',
+                    attributes: { exclude: ['user_id', 'contact_id'] }
+                },
+                {
+                    model: this.db.models.Document, as: 'document',
+                    attributes: { exclude: ['user_id', 'document_id'] },
+                },
+                {
+                    model: this.db.models.Location, as: 'location',
+                    attributes: { exclude: ['user_id', 'location_id'] }
+                }]
             }, {
                 model: this.db.models.Member, as: 'subscription',
                 include: [{
@@ -160,6 +178,8 @@ export default class MemberRepository {
             }], raw: true, nest: true
         })
     }
+
+
 
 
 
@@ -174,14 +194,14 @@ export default class MemberRepository {
 
 
 
+
+
     async ReadOneByUserType(member_id: string | number, member_type: 'Holder' | 'Dependent') {
         const query = {
             include: [{
-                model: this.models.User,
-                as: 'user'
+                model: this.models.User, as: 'user'
             }, {
-                model: this.models.Member,
-                as: 'subscription',
+                model: this.models.Member, as: 'subscription',
                 where: { member_id: member_id },
                 attributes: { exclude: ['holder_id'] },
                 include: [{
@@ -201,24 +221,25 @@ export default class MemberRepository {
 
 
 
+
+
     async totalCount(query: any) {
         const whereClause: any = {}
         this.setParams(query, whereClause)
         return this.models.Member.count({
             where: whereClause,
-            include: [
-                {
-                    model: this.db.models.Agreement,
-                    as: 'agreement'
-                },
-                {
-                    model: this.db.models.Holder,
-                    as: 'holder',
-                    include: [{ model: this.db.models.User, as: 'user' }]
-                }
-            ]
+            include: [{
+                model: this.db.models.Agreement, as: 'agreement'
+            },
+            {
+                model: this.db.models.Holder, as: 'holder',
+                include: [{ model: this.db.models.User, as: 'user' }]
+            }]
         })
     }
+
+
+
 
 
 
@@ -238,6 +259,8 @@ export default class MemberRepository {
 
 
 
+
+
     private setParams(query: any, whereClause: any) {
         whereClause.dependent_id = null
 
@@ -246,6 +269,8 @@ export default class MemberRepository {
         if (query.name) whereClause['$holder.user.name$'] = { [Op.like]: `%${query.name}%` }
         if (query.agreement_name) whereClause['$agreement.agreement_name$'] = { [Op.like]: `%${query.agreement_name}%` }
     }
+
+
 
 
 

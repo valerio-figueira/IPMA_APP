@@ -22,10 +22,16 @@ export default class MonthlyFeeRepository {
 
 
 
+
+
+
     async Create(query: IMonthlyFee, transaction: Transaction | undefined = undefined) {
         return this.models.MonthlyFee
             .create(query, { raw: true, transaction })
     }
+
+
+
 
 
 
@@ -47,20 +53,19 @@ export default class MonthlyFeeRepository {
                 model: this.db.models.MonthlyFee, as: 'billing',
                 attributes: ['monthly_fee_id', 'amount', 'reference_month', 'reference_year', 'created_at'],
             }, {
-                model: this.db.models.Agreement, as: 'agreement', attributes: ['agreement_name']
+                model: this.db.models.Agreement,
+                as: 'agreement', attributes: ['agreement_name']
             }, {
-                model: this.db.models.Holder, as: 'holder',
-                attributes: [], include: [{
-                    model: this.db.models.User,
-                    as: 'user',
-                    attributes: ['name']
+                model: this.db.models.Holder,
+                as: 'holder', attributes: [],
+                include: [{
+                    model: this.db.models.User, as: 'user', attributes: ['name']
                 }]
             }, {
-                model: this.db.models.Dependent, as: 'dependent', attributes: ['relationship_degree'],
+                model: this.db.models.Dependent,
+                as: 'dependent', attributes: ['relationship_degree'],
                 include: [{
-                    model: this.db.models.User,
-                    as: 'user',
-                    attributes: ['name']
+                    model: this.db.models.User, as: 'user', attributes: ['name']
                 }]
             }],
             order: [['created_at', 'DESC']], raw: true, nest: true,
@@ -68,6 +73,9 @@ export default class MonthlyFeeRepository {
             offset
         })
     }
+
+
+
 
 
 
@@ -110,6 +118,8 @@ export default class MonthlyFeeRepository {
 
 
 
+
+
     async ReadOne(monthly_fee_id: string | number) {
         return this.models.Member.findOne({
             include: [{
@@ -136,6 +146,9 @@ export default class MonthlyFeeRepository {
 
 
 
+
+
+
     async Update(query: Record<string, any>) {
         return this.models.MonthlyFee
             .update(query, {
@@ -146,12 +159,18 @@ export default class MonthlyFeeRepository {
 
 
 
+
+
+
     async Delete(monthly_fee_id: string | number) {
         return this.models.MonthlyFee
             .destroy({
                 where: { monthly_fee_id }
             })
     }
+
+
+
 
 
 
@@ -190,6 +209,8 @@ export default class MonthlyFeeRepository {
 
 
 
+
+
     async totalCount(query: Record<string, any>) {
         const whereClause: Record<string, any> = {
             active: query.active || 1,
@@ -203,24 +224,26 @@ export default class MonthlyFeeRepository {
                 model: this.db.models.MonthlyFee, as: 'billing',
                 attributes: ['monthly_fee_id', 'amount', 'reference_month', 'reference_year', 'created_at'],
             }, {
-                model: this.db.models.Agreement, as: 'agreement', attributes: ['agreement_name']
+                model: this.db.models.Agreement,
+                as: 'agreement', attributes: ['agreement_name']
             }, {
                 model: this.db.models.Holder,
-                as: 'holder',
-                attributes: [],
+                as: 'holder', attributes: [],
                 include: [{
-                    model: this.db.models.User, as: 'user', attributes: ['name']
+                    model: this.db.models.User,
+                    as: 'user', attributes: ['name']
                 }]
             }, {
                 model: this.db.models.Dependent,
-                as: 'dependent',
-                attributes: ['relationship_degree'],
+                as: 'dependent', attributes: ['relationship_degree'],
                 include: [{
                     model: this.db.models.User, as: 'user', attributes: ['name']
                 }]
             }]
         })
     }
+
+
 
 
 

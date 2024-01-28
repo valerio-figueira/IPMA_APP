@@ -65,14 +65,11 @@ class AppointmentRepository {
         return this.models.Appointment.findAll({
             where: whereClause, nest: true, raw: true,
             include: [{
-                model: MemberModel,
-                as: 'subscription',
+                model: MemberModel, as: 'subscription',
                 include: [{
-                    model: HolderModel,
-                    as: 'holder',
+                    model: HolderModel, as: 'holder',
                     include: [{
-                        model: UserModel,
-                        as: 'user'
+                        model: UserModel, as: 'user'
                     }]
                 }]
             }]
@@ -89,11 +86,9 @@ class AppointmentRepository {
                 model: MemberModel,
                 as: 'subscription',
                 include: [{
-                    model: HolderModel,
-                    as: 'holder',
+                    model: HolderModel, as: 'holder',
                     include: [{
-                        model: UserModel,
-                        as: 'user'
+                        model: UserModel, as: 'user'
                     }]
                 }]
             }]
@@ -139,20 +134,21 @@ class AppointmentRepository {
 
 
     private async findOneUser(typeOfUser: string, cpf: string, transaction: Transaction) {
+        const userQuery = [{
+            model: this.models.User, as: 'user', attributes: ['user_id', 'name'],
+            include: [{
+                model: this.models.Document, as: 'document',
+                attributes: ['document_id', 'cpf'],
+            }]
+        }]
+
         if (typeOfUser === 'Holder') {
             return this.models.Member.findOne({
                 where: { '$holder.user.document.cpf$': cpf, agreement_id: 1 },
                 include: [{
                     model: this.models.Holder, as: 'holder',
                     attributes: ['holder_id'],
-                    include: [{
-                        model: this.models.User, as: 'user',
-                        attributes: ['user_id', 'name'],
-                        include: [{
-                            model: this.models.Document, as: 'document',
-                            attributes: ['document_id', 'cpf'],
-                        }]
-                    }]
+                    include: userQuery
                 }], transaction, raw: true
             })
         }
@@ -163,14 +159,7 @@ class AppointmentRepository {
                 include: [{
                     model: this.models.Dependent, as: 'dependent',
                     attributes: ['holder_id', 'dependent_id'],
-                    include: [{
-                        model: this.models.User, as: 'user',
-                        attributes: ['user_id', 'name'],
-                        include: [{
-                            model: this.models.Document, as: 'document',
-                            attributes: ['document_id', 'cpf'],
-                        }]
-                    }]
+                    include: userQuery
                 }], transaction, raw: true
             })
         }

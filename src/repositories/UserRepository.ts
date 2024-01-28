@@ -51,31 +51,24 @@ export default class UserRepository {
         return this.models.UserModel.findAll({
             include: [
                 {
-                    model: AuthenticationModel,
-                    as: 'authentication',
+                    model: AuthenticationModel, as: 'authentication',
                     attributes: { exclude: ['user_id', 'password'] },
                     include: [{
-                        model: AccessHierarchyModel,
-                        as: 'hierarchy'
+                        model: AccessHierarchyModel, as: 'hierarchy'
                     }]
-                },
-                {
-                    model: ContactModel,
-                    as: 'contact',
+                }, {
+                    model: ContactModel, as: 'contact',
                     attributes: { exclude: ['user_id', 'contact_id'] }
                 },
                 {
-                    model: DocumentModel,
-                    as: 'document',
+                    model: DocumentModel, as: 'document',
                     attributes: { exclude: ['user_id', 'document_id'] },
                 },
                 {
-                    model: LocationModel,
-                    as: 'location',
+                    model: LocationModel, as: 'location',
                     attributes: { exclude: ['user_id', 'location_id'] }
                 }
-            ],
-            raw: true, nest: true
+            ], raw: true, nest: true
         })
     }
 
@@ -84,22 +77,18 @@ export default class UserRepository {
 
     async ReadOne(user_id: ID) {
         return this.models.UserModel.findByPk(user_id, {
-            include: [
-                {
-                    model: ContactModel,
-                    as: 'contact',
-                    attributes: { exclude: ['user_id', 'contact_id'] }
-                },
-                {
-                    model: DocumentModel,
-                    as: 'document',
-                    attributes: { exclude: ['user_id', 'document_id'] },
-                },
-                {
-                    model: LocationModel,
-                    as: 'location',
-                    attributes: { exclude: ['user_id', 'location_id'] }
-                }
+            include: [{
+                model: ContactModel, as: 'contact',
+                attributes: { exclude: ['user_id', 'contact_id'] }
+            },
+            {
+                model: DocumentModel, as: 'document',
+                attributes: { exclude: ['user_id', 'document_id'] },
+            },
+            {
+                model: LocationModel, as: 'location',
+                attributes: { exclude: ['user_id', 'location_id'] }
+            }
             ], raw: true, nest: true
         })
     }
