@@ -1,6 +1,5 @@
 import { Sequelize } from "sequelize"
 import Database from "../db/Database"
-import Queries from "../db/Queries"
 import { SST_Props } from "../interfaces/ISocialSecurityTeam"
 import { ID } from "../types/ID"
 import CustomError from "../utils/CustomError"
@@ -57,7 +56,29 @@ class SocialSecurityTeamRepository {
 
         return this.models.SocialSecurityTeam.findAll({
             where: whereClause,
-            include: Queries.IncludeUserData,
+            include: [{
+                model: this.db.models.User, as: 'user',
+                attributes: { exclude: ['user_id'] },
+                include: [{
+                    model: this.db.models.Authentication, as: 'authentication',
+                    attributes: { exclude: ['user_id', 'password'] },
+                    include: [{
+                        model: this.db.models.AccessHierarchy,
+                        as: 'hierarchy'
+                    }]
+                }, {
+                    model: this.db.models.Contact, as: 'contact',
+                    attributes: { exclude: ['user_id', 'contact_id'] }
+                },
+                {
+                    model: this.db.models.Document, as: 'document',
+                    attributes: { exclude: ['user_id', 'document_id'] },
+                },
+                {
+                    model: this.db.models.Location, as: 'location',
+                    attributes: { exclude: ['user_id', 'location_id'] }
+                }]
+            }],
             raw: true, nest: true
         })
     }
@@ -67,7 +88,29 @@ class SocialSecurityTeamRepository {
 
     async ReadOne(query: ID) {
         return this.models.SocialSecurityTeam.findByPk(query, {
-            include: Queries.IncludeUserData,
+            include: [{
+                model: this.db.models.User, as: 'user',
+                attributes: { exclude: ['user_id'] },
+                include: [{
+                    model: this.db.models.Authentication, as: 'authentication',
+                    attributes: { exclude: ['user_id', 'password'] },
+                    include: [{
+                        model: this.db.models.AccessHierarchy,
+                        as: 'hierarchy'
+                    }]
+                }, {
+                    model: this.db.models.Contact, as: 'contact',
+                    attributes: { exclude: ['user_id', 'contact_id'] }
+                },
+                {
+                    model: this.db.models.Document, as: 'document',
+                    attributes: { exclude: ['user_id', 'document_id'] },
+                },
+                {
+                    model: this.db.models.Location, as: 'location',
+                    attributes: { exclude: ['user_id', 'location_id'] }
+                }]
+            }],
             raw: true, nest: true
         })
     }
@@ -77,8 +120,19 @@ class SocialSecurityTeamRepository {
 
     async ReadOneSummary(query: ID) {
         return this.models.SocialSecurityTeam.findByPk(query, {
-            include: Queries.IncludeUserDataSummary,
-            raw: true, nest: true
+            include: [{
+                model: this.db.models.User, as: 'user',
+                attributes: { exclude: ['user_id'] },
+                include: [{
+                    model: this.db.models.Authentication,
+                    as: 'authentication',
+                    attributes: { exclude: ['user_id', 'password'] },
+                    include: [{
+                        model: this.db.models.AccessHierarchy,
+                        as: 'hierarchy'
+                    }]
+                }]
+            }], raw: true, nest: true
         })
     }
 
