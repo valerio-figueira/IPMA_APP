@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import AccessHierarchyModel from "../models/AccessHierarchyModel";
 import Database from "../db/Database";
 import CustomError from "../utils/CustomError";
-import PasswordEncryption from "./PasswordEncryption";
+import PasswordEncryption from "../secure/PasswordEncryption";
 require("dotenv").config();
 
 type TUser = { user_id: number; username: string; role: string };
