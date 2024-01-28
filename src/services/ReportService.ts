@@ -1,10 +1,8 @@
 import Database from "../db/Database";
-import Queries from "../db/Queries";
 import * as ExcelJS from "exceljs";
 import * as path from "path";
 import * as fs from "fs";
 import format from "date-fns/format";
-import { Op } from "sequelize";
 import groupBillings, { groupDetailedBillings } from "../utils/GroupBillings";
 import PDFDocument from 'pdfkit';
 import createPdfTable from "../utils/CreatePDFTable";
@@ -15,11 +13,9 @@ import groupDependents, { groupMembersSummary } from "../utils/GroupUsersInfo";
 export default class ReportService {
     private reportRepository: ReportRepository
     private db: Database
-    private holder
 
     constructor(db: Database) {
         this.db = db
-        this.holder = this.db.models.Holder
         this.reportRepository = new ReportRepository(this.db)
     }
 
@@ -59,13 +55,7 @@ export default class ReportService {
 
 
     private async CreateHolderInfoReport(query: Record<string, any>) {
-        const whereClause: Record<string, any> = {}
-        if (whereClause.holder_status) whereClause.status = query.holder_status
-
-        const holders = await this.holder.findAll({
-            include: Queries.IncludeUserData,
-            where: whereClause, raw: true, nest: true
-        })
+        const holders = await this.reportRepository.ReadHolders(query)
 
         const workbook = new ExcelJS.Workbook()
         const worksheet = workbook.addWorksheet('Titulares')
@@ -122,7 +112,7 @@ export default class ReportService {
         const whereClause: Record<string, any> = {}
         if (whereClause.holder_status) whereClause.status = query.holder_status
 
-        const holders = await this.reportRepository.HoldersAndDependentsReport(query)
+        const holders = await this.reportRepository.ReadHoldersAndDependents(query)
 
         const workbook = new ExcelJS.Workbook()
         const worksheet = workbook.addWorksheet('Titulares e Dependentes')
@@ -151,11 +141,7 @@ export default class ReportService {
 
 
     private async DetailedBillingReport(query: Record<string, any>) {
-        const whereClause = this.setDetailedBillingParams(query)
-        const billings = await this.db.models.Member.findAll({
-            include: Queries.MonthlyFeeSummary,
-            where: whereClause, raw: true, nest: true
-        })
+        const billings = await this.reportRepository.ReadBillings(query)
 
         const workbook = new ExcelJS.Workbook()
         const worksheet = workbook.addWorksheet('Titulares')
@@ -271,19 +257,6 @@ export default class ReportService {
 
 
 
-
-
-    private setDetailedBillingParams(query: any) {
-        const whereClause: Record<string, any> = {}
-        whereClause.active = query.active || 1
-        whereClause['$billing.member_id$'] = { [Op.not]: null }
-        if (query.name) whereClause['$holder.user.name$'] = { [Op.like]: `%${query.name}%` }
-        if (query.holder_status) whereClause['$holder.status$'] = query.holder_status
-        if (query.agreement_id) whereClause['agreement_id'] = query.agreement_id
-        if (query.reference_year) whereClause['$billing.reference_year$'] = query.reference_year
-        if (query.reference_month) whereClause['$billing.reference_month$'] = query.reference_month
-        return whereClause
-    }
 
 
 
