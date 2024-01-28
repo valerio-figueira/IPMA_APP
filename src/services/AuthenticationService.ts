@@ -10,7 +10,7 @@ import { validate } from "../utils/decorators/validateBody";
 import HolderService from "./HolderService";
 import SocialSecurityTeamService from "./SocialSecurityTeamService";
 import ERROR from "../utils/errors/Errors";
-import PasswordEncryption from "../authentication/PasswordEncryption";
+import PasswordEncryption from "../secure/PasswordEncryption";
 
 
 export default class AuthenticationService {
