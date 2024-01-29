@@ -1,13 +1,15 @@
 import Database from "../db/Database";
 import InstallmentRepository from "../repositories/InstallmentRepository";
-
+import PaymentService from "./PaymentService";
 
 
 class InstallmentService {
     private installmentRepository: InstallmentRepository
+    private paymentService: PaymentService
 
     constructor(database: Database) {
         this.installmentRepository = new InstallmentRepository(database)
+        this.paymentService = new PaymentService(database)
     }
 
 

@@ -1,12 +1,14 @@
 import PaymentRepository from "../repositories/PaymentRepository";
 import Database from "../db/Database";
-
+import PaymentEntity from "../entities/PaymentEntity";
 
 
 class PaymentService {
     private paymentRepository: PaymentRepository
+    private db: Database
 
     constructor(database: Database) {
+        this.db = database
         this.paymentRepository = new PaymentRepository(database)
     }
 
