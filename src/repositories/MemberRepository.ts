@@ -186,7 +186,9 @@ export default class MemberRepository {
 
 
     async ReviveMember(body: MemberEntity, transaction: Transaction) {
-        const { member_id, dependent_id } = await this.models.Member.create(body, { raw: true, transaction })
+        const { member_id, dependent_id } = await this.models.Member
+            .create(body, { raw: true, transaction })
+
         return { member_id, dependent_id }
     }
 
@@ -267,7 +269,7 @@ export default class MemberRepository {
         if (query.active) whereClause.active = query.active
         if (query.holder_id) whereClause.holder_id = query.holder_id
         if (query.name) whereClause['$holder.user.name$'] = { [Op.like]: `%${query.name}%` }
-        if (query.agreement_name) whereClause['$agreement.agreement_name$'] = { [Op.like]: `%${query.agreement_name}%` }
+        if (query.agreement_id) whereClause['$agreement.agreement_id$'] = { [Op.like]: `%${query.agreement_id}%` }
     }
 
 

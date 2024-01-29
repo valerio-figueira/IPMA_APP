@@ -278,7 +278,7 @@ export default class MemberService {
         for (let entry of entries) {
             if (entry.active) return
         }
-
+        console.log(member)
         throw new CustomError('O servidor não está ativo no convênio.', 400)
     }
 
