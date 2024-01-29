@@ -4,7 +4,10 @@ interface IInstallment {
     total_amount: number;
     installment_amount: number;
     installment_count: number;
+    description: string;
     start_date: Date;
+    reference_month: number;
+    reference_year: number;
     created_at?: Date;
 }
 
