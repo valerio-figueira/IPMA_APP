@@ -9,9 +9,10 @@ class InstallmentModel extends Model<IInstallment> {
     declare total_amount: number;
     declare installment_amount: number;
     declare installment_count: number;
+    declare description: string;
+    declare reference_month: number;
+    declare reference_year: number;
     declare start_date: Date;
-    declare reference_month: Date;
-    declare reference_year: Date;
     declare created_at: Date;
 
     static INIT(sequelize: Sequelize): ModelStatic<InstallmentModel> {
@@ -40,6 +41,11 @@ class InstallmentModel extends Model<IInstallment> {
             },
             installment_count: {
                 type: DataTypes.INTEGER,
+                allowNull: false
+            },
+            description: {
+                type: DataTypes.STRING(150),
+                allowNull: false
             },
             start_date: {
                 type: DataTypes.DATEONLY,

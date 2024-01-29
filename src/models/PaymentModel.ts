@@ -6,7 +6,7 @@ import InstallmentModel from './InstallmentModel';
 class PaymentModel extends Model<IPayment> {
     declare payment_id: number;
     declare installment_id: number;
-    declare amount: number;
+    declare payment_amount: number;
     declare status: 'PENDENTE' | 'PAGO' | 'CANCELADO';
     declare transaction_date: number;
     declare created_at: Date;
@@ -27,7 +27,7 @@ class PaymentModel extends Model<IPayment> {
                     key: 'installment_id',
                 }
             },
-            paid_amount: {
+            payment_amount: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },

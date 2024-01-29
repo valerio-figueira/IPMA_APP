@@ -6,6 +6,9 @@ export class InstallmentEntity {
     total_amount: number;
     installment_amount: number;
     installment_count: number;
+    description: string;
+    reference_month: number;
+    reference_year: number;
     start_date: Date;
     created_at?: Date;
 
@@ -15,6 +18,9 @@ export class InstallmentEntity {
         this.total_amount = installment.total_amount;
         this.installment_amount = installment.installment_amount;
         this.installment_count = installment.installment_count;
+        this.description = installment.description;
+        this.reference_month = installment.reference_month;
+        this.reference_year = installment.reference_year;
         this.start_date = installment.start_date;
         this.created_at = installment.created_at;
     }
