@@ -24,7 +24,12 @@ Aqui está a lista das principais dependências utilizadas no projeto:
 - express: ^4.18.2
 - express-session: ^1.17.3
 - express-fileupload: ^1.4.1
+- exceljs: ^4.4.0
+- pdfkit: ^0.14.0
 - mysql2: ^3.3.3
+- mysqldump: ^3.2.0
+- bcryptjs: ^2.4.3
+- date-fns: ^2.30.0
 - sequelize: ^6.33.0
 - sequelize-cli: ^6.6.1
 - typescript: ^5.0.4
@@ -32,6 +37,7 @@ Aqui está a lista das principais dependências utilizadas no projeto:
 - pdf-parse: ^1.1.1
 - reflect-metadata: ^0.1.13
 - xlsx: ^0.18.5
+- winston: ^3.11.0
 
 ## Estrutura de Diretórios
 
@@ -70,7 +76,7 @@ A aplicação está em desenvolvimento, terá as seguintes funcionalidades:
 
 ## Modelagem de Dados
 
-![Data Model](https://github.com/valerio-figueira/IPMA_EXPRESS_SERVER/blob/master/src/db/social_security_data_model.png)
+![Data Model](https://github.com/valerio-figueira/IPMA_EXPRESS_SERVER/blob/master/src/db/template/social_security_data_model.png)
 
 ## Como Começar
 
